@@ -615,6 +615,34 @@ async function rejectNonMineral() {
   }
 }
 
+async function imageSkinRatio(src) {
+  const img = new Image();
+  img.src = src;
+  await img.decode();
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, 96, 96);
+  const data = ctx.getImageData(0, 0, 96, 96).data;
+  let skin = 0;
+  const total = 96 * 96;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    if (
+      r > 95 && g > 40 && b > 20 &&
+      r > g && r > b &&
+      r - Math.min(g, b) > 15 &&
+      Math.abs(r - g) > 15
+    ) {
+      skin++;
+    }
+  }
+  return skin / total;
+}
+
 async function imageToTensor(src) {
   const img = new Image();
   img.src = src;
@@ -639,6 +667,9 @@ async function imageToTensor(src) {
 async function predictOnnx() {
   if (!state.currentImage) throw new Error("请先拍照或选择图片");
   await waitFor(() => !!window.MINERAL_CLASSES && !!window.MINERAL_KB);
+  if ((await imageSkinRatio(state.currentImage)) > 0.32) {
+    throw new Error("这不是矿物，请您放入清晰的矿物照片。");
+  }
   if (await rejectNonMineral()) {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
@@ -657,7 +688,7 @@ async function predictOnnx() {
   const maxLogit = Math.max(...probs);
   const shifted = probs.map((x) => x - maxLogit);
   const logSumExp = maxLogit + Math.log(shifted.reduce((a, b) => a + Math.exp(b), 0));
-  if (logSumExp < 4.0) {
+  if (logSumExp < 4.0 || Math.exp(maxLogit - logSumExp) < 0.18) {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
   const exp = shifted.map((x) => Math.exp(x));
