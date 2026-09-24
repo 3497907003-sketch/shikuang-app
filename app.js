@@ -1,5 +1,8 @@
 "use strict";
 
+const DEEPSEEK_API_KEY = window.DEEPSEEK_API_KEY || localStorage.getItem("shikuang_ds_key") || "";
+const DEEPSEEK_MODEL = window.DEEPSEEK_MODEL || "deepseek-flash";
+
 const state = {
   mode: "photo",
   stream: null,
@@ -219,6 +222,107 @@ function setSplash(status) {
   if (el) el.textContent = status;
 }
 
+async function imageToDataUrl(src) {
+  const resp = await fetch(src);
+  const blob = await resp.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function predictOnline() {
+  if (!DEEPSEEK_API_KEY) throw new Error("DeepSeek 密钥未配置，请在设置中填写后重试。");
+  if (state.currentVideo) {
+    const local = await predictOnnx();
+    const text = await deepseekText(
+      `本地识别为 ${local.name_zh}（${local.name_en}）。请判断图片是否为矿物，并补充产地、成因、工业用途和鉴别特征。`
+    );
+    return { ...local, ai: text };
+  }
+  const dataUrl = await imageToDataUrl(state.currentImage);
+  const description = $("#description").value.trim();
+  const prompt = [
+    "你是矿物鉴定专家。请识别图片中的矿物。",
+    "只能返回一个 JSON 对象，不要 Markdown，不要解释。字段：",
+    '{"name_zh":"中文名","name_en":"英文名","formula":"化学式","confidence":0到1,"origin":"产地","formation":"形成原因","industrial_uses":["工业用途"],"features":["鉴别特征"]}',
+    description ? `用户补充描述：${description}` : "",
+    "如果不是矿物、图片不清晰、或属于人物/动物/日常物品，返回 {\"error\":\"这不是矿物，请您放入清晰的矿物照片。\"}",
+  ].join("\n");
+  const res = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${DEEPSEEK_API_KEY}` },
+    body: JSON.stringify({
+      model: DEEPSEEK_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: dataUrl } },
+          ],
+        },
+      ],
+      temperature: 0.2,
+      max_tokens: 700,
+    }),
+  });
+  if (!res.ok) throw new Error(`DeepSeek 请求失败（${res.status}）`);
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content || "";
+  const jsonText = content.replace(/```json|```/g, "").trim();
+  const parsed = JSON.parse(jsonText);
+  if (parsed.error) throw new Error(parsed.error);
+  return parsed;
+}
+
+async function deepseekText(prompt) {
+  if (!DEEPSEEK_API_KEY) return "";
+  const res = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${DEEPSEEK_API_KEY}` },
+    body: JSON.stringify({
+      model: DEEPSEEK_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.4,
+      max_tokens: 600,
+    }),
+  });
+  if (!res.ok) return "";
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+function renderDeepSeekResult(data) {
+  const result = {
+    name_zh: data.name_zh || "未知矿物",
+    name_en: data.name_en || "",
+    formula: data.formula || "",
+    confidence: Number(data.confidence || 0.7),
+    threshold: 0.5,
+    accepted: true,
+    knowledge: {
+      name_zh: data.name_zh,
+      name_en: data.name_en,
+      formula: data.formula,
+      formation: data.formation,
+      typical_localities: [data.origin],
+      industrial_uses: data.industrial_uses || [],
+      crystal_system: (data.features || []).join("；"),
+      luster: "",
+      hardness: "",
+    },
+    rankings: [{ key: data.name_en || "mineral", name_zh: data.name_zh, confidence: Number(data.confidence || 0.7) }],
+    ai: data.ai || "",
+  };
+  renderResult(result);
+  if (result.ai) {
+    document.getElementById("tab-use").innerHTML += `<div class="kv"><dt>AI 辅助</dt><dd>${escapeHtml(result.ai)}</dd></div>`;
+  }
+}
+
 async function predict() {
   if (!state.currentImage && !state.currentVideo) {
     setStatus("请先拍照或选择媒体");
@@ -239,21 +343,8 @@ async function predict() {
   }
   try {
     if (state.onlineMode) {
-      const res = await fetch("/api/predict", { method: "POST", body: form });
-      if (!res.ok) {
-        let detail = "识别失败";
-        const raw = await res.text();
-        try {
-          const err = JSON.parse(raw);
-          if (err.detail) detail = err.detail;
-        } catch (_) {
-          if (raw) detail = raw;
-        }
-        throw new Error(detail);
-      }
-      const data = await res.json();
-      renderResult(data);
-      assistOnline(data);
+      const data = await predictOnline();
+      renderDeepSeekResult(data);
       setStatus("识别完成");
     } else {
       const local = await predictOnnx();
@@ -265,7 +356,10 @@ async function predict() {
     try {
       const local = await predictOnnx();
       renderResult(local);
-      if (state.onlineMode) assistOnline(local);
+      if (state.onlineMode) {
+        const text = await deepseekText(`本地识别为 ${local.name_zh}（${local.name_en}）。请简要补充产地、成因、工业用途与最可靠鉴别特征。`);
+        if (text) document.getElementById("tab-use").innerHTML += `<div class="kv"><dt>AI 辅助</dt><dd>${escapeHtml(text)}</dd></div>`;
+      }
       setStatus("本地识别完成");
       return;
     } catch (localErr) {
@@ -422,6 +516,7 @@ function tagList(items) {
 }
 
 let ortSessions = null;
+let gateSession = null;
 
 async function waitFor(fn, timeout = 15000) {
   const start = Date.now();
@@ -444,6 +539,57 @@ async function getOnnxSessions() {
   const mob = await window.ort.InferenceSession.create(modelBase + "mobilenet.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   ortSessions = [eff, mob];
   return ortSessions;
+}
+
+async function getGateSession() {
+  if (gateSession) return gateSession;
+  await waitFor(() => !!window.ort && !!window.IMAGENET_CLASSES);
+  const modelBase = new URL("./models/", location.href).href;
+  gateSession = await window.ort.InferenceSession.create(modelBase + "imagenet_gate.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  return gateSession;
+}
+
+async function imageToImageNetTensor(src) {
+  const img = new Image();
+  img.src = src;
+  await img.decode();
+  const short = Math.min(img.width, img.height);
+  const sx = (img.width - short) / 2;
+  const sy = (img.height - short) / 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = 224;
+  canvas.height = 224;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, sx, sy, short, short, 0, 0, 224, 224);
+  const data = ctx.getImageData(0, 0, 224, 224).data;
+  const input = new Float32Array(3 * 224 * 224);
+  const mean = [0.485, 0.456, 0.406];
+  const std = [0.229, 0.224, 0.225];
+  for (let c = 0; c < 3; c++) {
+    for (let i = 0; i < 224 * 224; i++) {
+      input[c * 224 * 224 + i] = (data[i * 4 + c] / 255 - mean[c]) / std[c];
+    }
+  }
+  return new window.ort.Tensor("float32", input, [1, 3, 224, 224]);
+}
+
+async function rejectNonMineral() {
+  if (!state.currentImage) return false;
+  try {
+    const session = await getGateSession();
+    const tensor = await imageToImageNetTensor(state.currentImage);
+    const output = await session.run({ input: tensor });
+    const logits = output.logits.data;
+    const exp = logits.map((x) => Math.exp(x));
+    const sum = exp.reduce((a, b) => a + b, 0);
+    const probs = exp.map((x) => x / sum);
+    let top = 0;
+    for (let i = 1; i < probs.length; i++) if (probs[i] > probs[top]) top = i;
+    const isBlocked = window.IMAGENET_BLOCKED?.[top] && probs[top] >= 0.18;
+    return isBlocked ? { index: top, label: window.IMAGENET_CLASSES[top], confidence: probs[top] } : false;
+  } catch (_) {
+    return false;
+  }
 }
 
 async function imageToTensor(src) {
@@ -470,6 +616,9 @@ async function imageToTensor(src) {
 async function predictOnnx() {
   if (!state.currentImage) throw new Error("请先拍照或选择图片");
   await waitFor(() => !!window.MINERAL_CLASSES && !!window.MINERAL_KB);
+  if (await rejectNonMineral()) {
+    throw new Error("这不是矿物，请您放入清晰的矿物照片。");
+  }
   const sessions = await getOnnxSessions();
   const tensor = await imageToTensor(state.currentImage);
   const results = [];

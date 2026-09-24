@@ -1,0 +1,36 @@
+name: Deploy Shikuang Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject DeepSeek configuration
+        run: |
+          cat > config.js <<'EOF'
+          window.DEEPSEEK_API_KEY = "${{ secrets.DEEPSEEK_API_KEY }}";
+          window.DEEPSEEK_MODEL = "deepseek-flash";
+          EOF
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
