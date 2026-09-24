@@ -186,22 +186,28 @@ async function predict() {
     form.append("video", await resp.blob(), "specimen.webm");
   }
   try {
-    const res = await fetch("/api/predict", { method: "POST", body: form });
-    if (!res.ok) {
-      let detail = "识别失败";
-      const raw = await res.text();
-      try {
-        const err = JSON.parse(raw);
-        if (err.detail) detail = err.detail;
-      } catch (_) {
-        if (raw) detail = raw;
+    if (state.onlineMode) {
+      const res = await fetch("/api/predict", { method: "POST", body: form });
+      if (!res.ok) {
+        let detail = "识别失败";
+        const raw = await res.text();
+        try {
+          const err = JSON.parse(raw);
+          if (err.detail) detail = err.detail;
+        } catch (_) {
+          if (raw) detail = raw;
+        }
+        throw new Error(detail);
       }
-      throw new Error(detail);
+      const data = await res.json();
+      renderResult(data);
+      assistOnline(data);
+      setStatus("识别完成");
+    } else {
+      const local = await predictOnnx();
+      renderResult(local);
+      setStatus("本地识别完成");
     }
-    const data = await res.json();
-    renderResult(data);
-    if (state.onlineMode) assistOnline(data);
-    setStatus("识别完成");
   } catch (err) {
     let fallbackError = "";
     try {
@@ -308,11 +314,13 @@ async function getOnnxSessions() {
   if (ortSessions) return ortSessions;
   await waitFor(() => !!window.ort);
   if (!window.ort) throw new Error("浏览器推理组件未加载");
-  window.ort.env.wasm.wasmPaths = "./vendor/";
+  const vendorBase = new URL("./vendor/", location.href).href;
+  const modelBase = new URL("./models/", location.href).href;
+  window.ort.env.wasm.wasmPaths = vendorBase;
   window.ort.env.wasm.numThreads = 1;
   window.ort.env.wasm.proxy = false;
-  const eff = await window.ort.InferenceSession.create("./models/efficientnet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
-  const mob = await window.ort.InferenceSession.create("./models/mobilenet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const eff = await window.ort.InferenceSession.create(modelBase + "efficientnet.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const mob = await window.ort.InferenceSession.create(modelBase + "mobilenet.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   ortSessions = [eff, mob];
   return ortSessions;
 }
