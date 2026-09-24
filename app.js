@@ -1,0 +1,450 @@
+"use strict";
+
+const state = {
+  mode: "photo",
+  stream: null,
+  recorder: null,
+  recordedChunks: [],
+  recording: false,
+  currentImage: null,
+  currentVideo: null,
+  lastResult: null,
+  onlineMode: false,
+};
+
+const $ = (sel) => document.querySelector(sel);
+const camera = $("#camera");
+const preview = $("#preview");
+const placeholder = $("#placeholder");
+const stage = $("#stage");
+const recordingPill = $("#recordingPill");
+const cameraBtn = $("#cameraBtn");
+const recordBtn = $("#recordBtn");
+const galleryBtn = $("#galleryBtn");
+const clearBtn = $("#clearBtn");
+const fileInput = $("#fileInput");
+const predictBtn = $("#predictBtn");
+const resultPanel = $("#result");
+
+function setStatus(text, busy = false) {
+  $("#statusText").textContent = text;
+  $("#statusBadge").querySelector(".dot").style.background = busy ? "#d58a2a" : "#0f8f6b";
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll(".mode").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+  state.currentImage = null;
+  state.currentVideo = null;
+  preview.hidden = true;
+  placeholder.hidden = false;
+  camera.hidden = true;
+  cameraBtn.disabled = mode !== "photo";
+  recordBtn.disabled = mode !== "video";
+  galleryBtn.disabled = mode !== "file";
+  if (mode === "photo") {
+    void startCamera();
+  } else if (mode === "video") {
+    void startCamera();
+  } else {
+    stopCamera();
+  }
+}
+
+async function startCamera() {
+  if (state.stream) return;
+  try {
+    state.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: state.mode === "video",
+    });
+    camera.srcObject = state.stream;
+    camera.hidden = false;
+    preview.hidden = true;
+    placeholder.hidden = true;
+  } catch (err) {
+    setStatus("相机不可用");
+    camera.hidden = true;
+    placeholder.hidden = false;
+  }
+}
+
+function stopCamera() {
+  if (state.stream) {
+    state.stream.getTracks().forEach((t) => t.stop());
+    state.stream = null;
+    camera.srcObject = null;
+  }
+  camera.hidden = true;
+  if (!state.currentImage && !state.currentVideo) placeholder.hidden = false;
+}
+
+function showPreviewFromImage(url) {
+  state.currentImage = url;
+  state.currentVideo = null;
+  preview.src = url;
+  preview.hidden = false;
+  camera.hidden = true;
+  placeholder.hidden = true;
+  stopCamera();
+}
+
+function showPreviewFromVideo(url) {
+  state.currentVideo = url;
+  state.currentImage = null;
+  preview.src = "";
+  preview.hidden = true;
+  camera.hidden = true;
+  placeholder.hidden = false;
+  placeholder.innerHTML = '<i data-lucide="clapperboard"></i><p>视频已就绪</p><span>点击“识别矿物”开始分析</span>';
+  if (window.lucide) lucide.createIcons();
+  stopCamera();
+}
+
+function capturePhoto() {
+  if (!state.stream) return;
+  const canvas = document.createElement("canvas");
+  canvas.width = camera.videoWidth || 1280;
+  canvas.height = camera.videoHeight || 720;
+  canvas.getContext("2d").drawImage(camera, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => {
+    showPreviewFromImage(URL.createObjectURL(blob));
+    setStatus("照片已就绪");
+  }, "image/jpeg", 0.92);
+}
+
+async function toggleRecording() {
+  if (state.recording) {
+    state.recorder.stop();
+    return;
+  }
+  if (!state.stream) await startCamera();
+  const mime = MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "video/mp4";
+  state.recordedChunks = [];
+  state.recorder = new MediaRecorder(state.stream, { mimeType: mime });
+  state.recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) state.recordedChunks.push(e.data);
+  };
+  state.recorder.onstop = () => {
+    state.recording = false;
+    recordBtn.querySelector("i").dataset.lucide = "circle";
+    if (window.lucide) lucide.createIcons();
+    recordingPill.hidden = true;
+    const blob = new Blob(state.recordedChunks, { type: mime });
+    showPreviewFromVideo(URL.createObjectURL(blob));
+    setStatus("视频已就绪");
+  };
+  state.recording = true;
+  recordingPill.hidden = false;
+  recordBtn.querySelector("i").dataset.lucide = "square";
+  if (window.lucide) lucide.createIcons();
+  state.recorder.start();
+}
+
+function clearAll() {
+  state.currentImage = null;
+  state.currentVideo = null;
+  fileInput.value = "";
+  $("#description").value = "";
+  preview.hidden = true;
+  camera.hidden = false;
+  placeholder.innerHTML = '<i data-lucide="scan-line"></i><p>将矿物置于取景框内</p><span>支持照片、视频与文字描述</span>';
+  placeholder.hidden = false;
+  resultPanel.hidden = true;
+  if (window.lucide) lucide.createIcons();
+  if (state.mode === "photo" || state.mode === "video") void startCamera();
+}
+
+function dismissSplash() {
+  const splash = document.getElementById("splash");
+  if (!splash) return;
+  splash.classList.add("done");
+  setTimeout(() => splash.remove(), 700);
+}
+
+function setSplash(status) {
+  const el = document.getElementById("splashStatus");
+  if (el) el.textContent = status;
+}
+
+async function predict() {
+  if (!state.currentImage && !state.currentVideo) {
+    setStatus("请先拍照或选择媒体");
+    return;
+  }
+  predictBtn.disabled = true;
+  predictBtn.classList.add("loading");
+  $("#predictLabel").textContent = "识别中…";
+  setStatus("识别中…", true);
+  const form = new FormData();
+  form.append("description", $("#description").value.trim());
+  if (state.currentImage) {
+    const resp = await fetch(state.currentImage);
+    form.append("image", await resp.blob(), "specimen.jpg");
+  } else if (state.currentVideo) {
+    const resp = await fetch(state.currentVideo);
+    form.append("video", await resp.blob(), "specimen.webm");
+  }
+  try {
+    const res = await fetch("/api/predict", { method: "POST", body: form });
+    if (!res.ok) {
+      let detail = "识别失败";
+      const raw = await res.text();
+      try {
+        const err = JSON.parse(raw);
+        if (err.detail) detail = err.detail;
+      } catch (_) {
+        if (raw) detail = raw;
+      }
+      throw new Error(detail);
+    }
+    const data = await res.json();
+    renderResult(data);
+    if (state.onlineMode) assistOnline(data);
+    setStatus("识别完成");
+  } catch (err) {
+    let fallbackError = "";
+    try {
+      const local = await predictOnnx();
+      renderResult(local);
+      if (state.onlineMode) assistOnline(local);
+      setStatus("本地识别完成");
+      return;
+    } catch (localErr) {
+      fallbackError = localErr.message || String(localErr);
+    }
+    setStatus("识别失败");
+    resultPanel.hidden = false;
+    resultPanel.classList.remove("show");
+    void resultPanel.offsetWidth;
+    resultPanel.classList.add("show");
+    $("#resultName").textContent = "无法识别";
+    $("#resultFormula").textContent = "";
+    $("#resultConf").textContent = "—";
+    $("#meterFill").style.width = "0";
+    $("#verdict").textContent = fallbackError || err.message || "无法连接识别服务";
+    $("#verdict").className = "verdict rejected";
+    ["basic", "origin", "use", "rank"].forEach((id) => {
+      document.getElementById(`tab-${id}`).innerHTML = "";
+    });
+  } finally {
+    predictBtn.disabled = false;
+    predictBtn.classList.remove("loading");
+    $("#predictLabel").textContent = "识别矿物";
+  }
+}
+
+function renderResult(data) {
+  state.lastResult = data;
+  resultPanel.hidden = false;
+  resultPanel.classList.remove("show");
+  void resultPanel.offsetWidth;
+  resultPanel.classList.add("show");
+  $("#resultName").textContent = `${data.name_zh} · ${data.name_en}`;
+  $("#resultFormula").textContent = data.formula || "";
+  const pct = Math.round(data.confidence * 100);
+  $("#resultConf").textContent = `${pct}%`;
+  $("#meterFill").style.width = `${pct}%`;
+  const verdict = $("#verdict");
+  if (data.accepted) {
+    verdict.textContent = `置信度高于判定阈值 ${Math.round(data.threshold * 100)}%`;
+    verdict.className = "verdict accepted";
+  } else {
+    verdict.textContent = `低于判定阈值 ${Math.round(data.threshold * 100)}%，建议补充描述或更换拍摄角度`;
+    verdict.className = "verdict rejected";
+  }
+
+  const k = data.knowledge || {};
+  $("#tab-basic").innerHTML = kvTable({
+    "矿物名称": `${k.name_zh || data.name_zh} (${k.name_en || data.name_en})`,
+    "化学式": k.formula || data.formula,
+    "晶系": k.crystal_system,
+    "摩氏硬度": k.hardness,
+    "光泽": k.luster,
+    "条痕": k.streak,
+    "颜色": k.color,
+    "晶体习性": k.habit,
+  });
+  $("#tab-origin").innerHTML = kvTable({
+    "典型产地": (k.typical_localities || []).join("、"),
+    "形成原因": k.formation,
+  });
+  $("#tab-use").innerHTML = tagList(k.industrial_uses || []);
+  $("#tab-rank").innerHTML = (data.rankings || [])
+    .map(
+      (r, i) => `
+      <div class="rank-row">
+        <span>${i + 1}. ${r.name_zh}</span>
+        <div class="rank-bar"><span style="width:${Math.round(r.confidence * 100)}%"></span></div>
+        <span class="rank-conf">${Math.round(r.confidence * 100)}%</span>
+      </div>`
+    )
+    .join("");
+}
+
+function kvTable(rows) {
+  return Object.entries(rows)
+    .filter(([, v]) => v !== undefined && v !== null && v !== "")
+    .map(([k, v]) => `<dl class="kv"><dt>${k}</dt><dd>${v}</dd></dl>`)
+    .join("");
+}
+
+function tagList(items) {
+  if (!items.length) return "<p>暂无资料</p>";
+  return `<div class="tag-list">${items.map((x) => `<span class="tag">${x}</span>`).join("")}</div>`;
+}
+
+let ortSessions = null;
+
+async function waitFor(fn, timeout = 15000) {
+  const start = Date.now();
+  while (!fn()) {
+    if (Date.now() - start > timeout) throw new Error("资源加载超时");
+    await new Promise((r) => setTimeout(r, 250));
+  }
+}
+
+async function getOnnxSessions() {
+  if (ortSessions) return ortSessions;
+  await waitFor(() => !!window.ort);
+  if (!window.ort) throw new Error("浏览器推理组件未加载");
+  window.ort.env.wasm.wasmPaths = "/vendor/";
+  window.ort.env.wasm.numThreads = 1;
+  window.ort.env.wasm.proxy = false;
+  const eff = await window.ort.InferenceSession.create("/models/efficientnet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const mob = await window.ort.InferenceSession.create("/models/mobilenet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  ortSessions = [eff, mob];
+  return ortSessions;
+}
+
+async function imageToTensor(src) {
+  const img = new Image();
+  img.src = src;
+  await img.decode();
+  const canvas = document.createElement("canvas");
+  canvas.width = 224;
+  canvas.height = 224;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, 224, 224);
+  const data = ctx.getImageData(0, 0, 224, 224).data;
+  const input = new Float32Array(3 * 224 * 224);
+  const mean = [0.485, 0.456, 0.406];
+  const std = [0.229, 0.224, 0.225];
+  for (let c = 0; c < 3; c++) {
+    for (let i = 0; i < 224 * 224; i++) {
+      input[c * 224 * 224 + i] = (data[i * 4 + c] / 255 - mean[c]) / std[c];
+    }
+  }
+  return new window.ort.Tensor("float32", input, [1, 3, 224, 224]);
+}
+
+async function predictOnnx() {
+  if (!state.currentImage) throw new Error("请先拍照或选择图片");
+  await waitFor(() => !!window.MINERAL_CLASSES && !!window.MINERAL_KB);
+  const sessions = await getOnnxSessions();
+  const tensor = await imageToTensor(state.currentImage);
+  const results = [];
+  for (const session of sessions) {
+    const output = await session.run({ input: tensor });
+    results.push(output.logits.data);
+  }
+  const classes = Object.keys(window.MINERAL_CLASSES || {});
+  const probs = new Array(classes.length).fill(0);
+  for (let i = 0; i < classes.length; i++) {
+    probs[i] = (results[0][i] + results[1][i]) / 2;
+  }
+  const maxLogit = Math.max(...probs);
+  const shifted = probs.map((x) => x - maxLogit);
+  const logSumExp = maxLogit + Math.log(shifted.reduce((a, b) => a + Math.exp(b), 0));
+  if (logSumExp < 4.0) {
+    throw new Error("这不是矿物，请您放入清晰的矿物照片。");
+  }
+  const exp = shifted.map((x) => Math.exp(x));
+  const sum = exp.reduce((a, b) => a + b, 0);
+  const softmax = exp.map((x) => x / sum);
+  const order = softmax.map((v, i) => i).sort((a, b) => softmax[b] - softmax[a]).slice(0, 5);
+  const rankings = order.map((idx, rank) => ({
+    key: classes[idx],
+    name_zh: window.MINERAL_CLASSES[classes[idx]].zh,
+    confidence: softmax[idx],
+    rank: rank + 1,
+  }));
+  const top = rankings[0];
+  const kb = window.MINERAL_KB?.[top.key] || {};
+  return {
+    name_zh: kb.name_zh || top.name_zh,
+    name_en: kb.name_en || classes[top.key],
+    formula: kb.formula || window.MINERAL_CLASSES[top.key].formula || "",
+    confidence: top.confidence,
+    threshold: 0.2,
+    accepted: top.confidence >= 0.2,
+    knowledge: kb,
+    rankings,
+  };
+}
+
+async function assistOnline(result) {
+  const prompt = `用户上传了一张矿物照片，本地识别结果：${result.name_zh}（${result.name_en}，${result.formula || "未知化学式"}），置信度 ${Math.round(result.confidence * 100)}%。请补充该矿物的产地、形成原因和工业用途，并说明识别时最可靠的鉴别特征。`;
+  try {
+    const res = await fetch("/api/deepseek", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || data.detail || "";
+    document.getElementById("tab-use").innerHTML += `<div class="kv"><dt>AI 辅助</dt><dd>${text}</dd></div>`;
+  } catch (_) {
+    // offline fallback
+  }
+}
+
+document.querySelectorAll(".mode").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+cameraBtn.addEventListener("click", () => {
+  if (state.mode !== "photo") setMode("photo");
+  void startCamera().then(capturePhoto);
+});
+recordBtn.addEventListener("click", () => {
+  if (state.mode !== "video") setMode("video");
+  toggleRecording();
+});
+galleryBtn.addEventListener("click", () => {
+  if (state.mode !== "file") setMode("file");
+  fileInput.click();
+});
+clearBtn.addEventListener("click", clearAll);
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  if (file.type.startsWith("video/")) showPreviewFromVideo(url);
+  else showPreviewFromImage(url);
+  setStatus("媒体已就绪");
+});
+predictBtn.addEventListener("click", predict);
+document.querySelectorAll(".tab").forEach((t) =>
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === t));
+    document.querySelectorAll(".tab-panel").forEach((p) => (p.hidden = p.id !== `tab-${t.dataset.tab}`));
+  })
+);
+document.querySelectorAll(".mode-chip").forEach((chip) =>
+  chip.addEventListener("click", () => {
+    state.onlineMode = chip.dataset.netmode === "online";
+    document.querySelectorAll(".mode-chip").forEach((c) => c.classList.toggle("active", c === chip));
+    setStatus(state.onlineMode ? "联网模式" : "离线模式");
+  })
+);
+
+window.addEventListener("load", () => {
+  if (window.lucide) lucide.createIcons();
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+  }
+  setMode("photo");
+  setTimeout(() => {
+    setSplash("识别服务已就绪");
+    setStatus("就绪");
+    dismissSplash();
+  }, 1600);
+});
