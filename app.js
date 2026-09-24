@@ -273,9 +273,30 @@ async function predictOnline() {
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content || "";
   const jsonText = content.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(jsonText);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch (_) {
+    parsed = { name_zh: content.replace(/\n/g, " ").slice(0, 80) };
+  }
+  parsed = normalizeDeepSeekResult(parsed);
   if (parsed.error) throw new Error(parsed.error);
   return parsed;
+}
+
+function normalizeDeepSeekResult(data) {
+  const first = (keys) => keys.map((k) => data[k]).find((v) => v !== undefined && v !== null && v !== "");
+  return {
+    ...data,
+    name_zh: first(["name_zh", "矿物名称", "中文名", "名称", "矿物名"]) || data.name_zh || "",
+    name_en: first(["name_en", "英文名称", "英文名", "English Name", "英文"]) || data.name_en || "",
+    formula: first(["formula", "化学式", "分子式", "Formula"]) || data.formula || "",
+    confidence: first(["confidence", "置信度", "Confidence"]) ?? data.confidence,
+    origin: first(["origin", "产地", "Origin", "典型产地"]) || data.origin || "",
+    formation: first(["formation", "形成原因", "成因", "Formation"]) || data.formation || "",
+    industrial_uses: first(["industrial_uses", "工业用途", "用途", "Industrial Uses"]) || data.industrial_uses || [],
+    features: first(["features", "鉴别特征", "特征", "Features"]) || data.features || [],
+  };
 }
 
 async function deepseekText(prompt) {
