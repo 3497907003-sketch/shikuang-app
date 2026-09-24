@@ -1,11 +1,11 @@
 const CACHE = "shikuang-v2";
 const ASSETS = [
-  "/",
-  "/index.html",
-  "/styles.css",
-  "/app.js",
-  "/manifest.webmanifest",
-  "/icon.svg",
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.webmanifest",
+  "./icon.svg",
   "https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css",
   "https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js",
 ];

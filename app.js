@@ -308,11 +308,11 @@ async function getOnnxSessions() {
   if (ortSessions) return ortSessions;
   await waitFor(() => !!window.ort);
   if (!window.ort) throw new Error("浏览器推理组件未加载");
-  window.ort.env.wasm.wasmPaths = "/vendor/";
+  window.ort.env.wasm.wasmPaths = "./vendor/";
   window.ort.env.wasm.numThreads = 1;
   window.ort.env.wasm.proxy = false;
-  const eff = await window.ort.InferenceSession.create("/models/efficientnet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
-  const mob = await window.ort.InferenceSession.create("/models/mobilenet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const eff = await window.ort.InferenceSession.create("./models/efficientnet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const mob = await window.ort.InferenceSession.create("./models/mobilenet.onnx", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   ortSessions = [eff, mob];
   return ortSessions;
 }
