@@ -14,9 +14,11 @@
     <script defer src="./vendor/ort.min.js?v=5"></script>
     <script defer src="./data/classes.js?v=5"></script>
     <script defer src="./data/minerals.js?v=5"></script>
-    <script defer src="./app.js?v=5"></script>
+    <script defer src="./data/graph.js?v=5"></script>
+    <script defer src="./app.js?v=6"></script>
   </head>
   <body>
+    <div class="ambient" id="ambient" aria-hidden="true"></div>
     <div class="splash" id="splash" role="status" aria-live="polite">
       <div class="splash-core">
         <span class="splash-mark"></span>
@@ -97,11 +99,13 @@
           <button class="tab active" data-tab="basic" type="button">基本信息</button>
           <button class="tab" data-tab="origin" type="button">产地成因</button>
           <button class="tab" data-tab="use" type="button">工业用途</button>
+          <button class="tab" data-tab="graph" type="button">关系图谱</button>
           <button class="tab" data-tab="rank" type="button">候选排名</button>
         </div>
         <div class="tab-panel" id="tab-basic"></div>
         <div class="tab-panel" id="tab-origin" hidden></div>
         <div class="tab-panel" id="tab-use" hidden></div>
+        <div class="tab-panel" id="tab-graph" hidden></div>
         <div class="tab-panel" id="tab-rank" hidden></div>
       </section>
     </main>

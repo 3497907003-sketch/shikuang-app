@@ -31,6 +31,58 @@ function setStatus(text, busy = false) {
   $("#statusBadge").querySelector(".dot").style.background = busy ? "#d58a2a" : "#0f8f6b";
 }
 
+function initAmbient() {
+  const canvas = $("#ambient");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let dots = [];
+  const resize = () => {
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    const count = Math.min(70, Math.max(28, Math.round(innerWidth * innerHeight / 22000)));
+    dots = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: (Math.random() - 0.5) * 0.22,
+      r: Math.random() * 1.7 + 0.7,
+      hue: Math.random() > 0.5 ? 154 : 34,
+    }));
+  };
+  const tick = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < dots.length; i++) {
+      const a = dots[i];
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < 0 || a.x > canvas.width) a.vx *= -1;
+      if (a.y < 0 || a.y > canvas.height) a.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${a.hue}, 52%, 34%, .16)`;
+      ctx.fill();
+      for (let j = i + 1; j < dots.length; j++) {
+        const b = dots[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 15000) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = "rgba(15,143,107,.055)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(tick);
+  };
+  addEventListener("resize", resize);
+  resize();
+  tick();
+}
+
 function setMode(mode) {
   state.mode = mode;
   document.querySelectorAll(".mode").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
@@ -230,7 +282,7 @@ async function predict() {
     $("#meterFill").style.width = "0";
     $("#verdict").textContent = fallbackError || err.message || "无法连接识别服务";
     $("#verdict").className = "verdict rejected";
-    ["basic", "origin", "use", "rank"].forEach((id) => {
+    ["basic", "origin", "use", "graph", "rank"].forEach((id) => {
       document.getElementById(`tab-${id}`).innerHTML = "";
     });
   } finally {
@@ -286,6 +338,75 @@ function renderResult(data) {
       </div>`
     )
     .join("");
+  renderGraph(data);
+}
+
+function renderGraph(data) {
+  const panel = document.getElementById("tab-graph");
+  if (!panel) return;
+  const key = data.key || data.rankings?.[0]?.key;
+  const graph = window.MINERAL_GRAPH?.[key];
+  if (!graph || !graph.nodes?.length) {
+    panel.innerHTML = "<p>暂无关系图谱</p>";
+    return;
+  }
+  const mineral = graph.nodes.find((n) => n.id === "mineral");
+  const others = graph.nodes.filter((n) => n.id !== "mineral");
+  const total = others.length;
+  const cx = 300;
+  const cy = 220;
+  const radius = Math.min(155, 88 + total * 8);
+  const positions = new Map();
+  positions.set("mineral", { x: cx, y: cy });
+  others.forEach((node, i) => {
+    const angle = (Math.PI * 2 * i) / total - Math.PI / 2;
+    positions.set(node.id, {
+      x: cx + Math.cos(angle) * radius,
+      y: cy + Math.sin(angle) * radius,
+    });
+  });
+  const color = (type) =>
+    type === "mineral"
+      ? "#0a6b50"
+      : type === "formula"
+        ? "#c9473f"
+        : type === "locality"
+          ? "#b6761b"
+          : type === "use"
+            ? "#315fa8"
+            : "#68716a";
+  const short = (text) => (text.length > 10 ? `${text.slice(0, 10)}…` : text);
+  const nodesSvg = graph.nodes
+    .map((node) => {
+      const p = positions.get(node.id);
+      const fill = color(node.type);
+      const r = node.type === "mineral" ? 27 : 12;
+      return `<g transform="translate(${p.x} ${p.y})">
+        <circle r="${r}" fill="${fill}" opacity=".92"></circle>
+        <circle r="${r}" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1"></circle>
+        <text y="${r + 13}" text-anchor="middle" fill="#4c554e" font-size="11">${escapeHtml(short(node.label))}</text>
+      </g>`;
+    })
+    .join("");
+  const linksSvg = graph.links
+    .map((link) => {
+      const a = positions.get(link.source);
+      const b = positions.get(link.target);
+      if (!a || !b) return "";
+      return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="rgba(15,143,107,.25)" stroke-width="1"></line>`;
+    })
+    .join("");
+  panel.innerHTML = `
+    <div class="graph-wrap">
+      <svg viewBox="0 0 600 440" role="img" aria-label="矿物关系图谱">
+        <g>${linksSvg}${nodesSvg}</g>
+      </svg>
+      <p class="graph-hint">中心为识别矿物，外圈为成分、晶系、产地与工业用途关系。</p>
+    </div>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 }
 
 function kvTable(rows) {
@@ -446,6 +567,7 @@ document.querySelectorAll(".mode-chip").forEach((chip) =>
 
 window.addEventListener("load", () => {
   if (window.lucide) lucide.createIcons();
+  initAmbient();
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
   }
