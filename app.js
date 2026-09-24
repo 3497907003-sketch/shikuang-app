@@ -272,7 +272,9 @@ async function predictOnline() {
   if (!res.ok) throw new Error(`DeepSeek 请求失败（${res.status}）`);
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content || "";
-  const jsonText = content.replace(/```json|```/g, "").trim();
+  const firstBrace = content.indexOf("{");
+  const lastBrace = content.lastIndexOf("}");
+  const jsonText = firstBrace >= 0 && lastBrace > firstBrace ? content.slice(firstBrace, lastBrace + 1) : content.trim();
   let parsed;
   try {
     parsed = JSON.parse(jsonText);
