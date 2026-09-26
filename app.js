@@ -561,7 +561,7 @@ async function getOnnxSessions() {
   window.ort.env.wasm.wasmPaths = vendorBase;
   window.ort.env.wasm.numThreads = 1;
   window.ort.env.wasm.proxy = false;
-  const eff = await window.ort.InferenceSession.create(modelBase + "efficientnet.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const eff = await window.ort.InferenceSession.create(modelBase + "efficientnet.onnx?v=3", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   const mob = await window.ort.InferenceSession.create(modelBase + "mobilenet.onnx?v=2", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   ortSessions = [eff, mob];
   return ortSessions;
