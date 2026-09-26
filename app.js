@@ -266,7 +266,7 @@ async function predictOnline() {
         },
       ],
       temperature: 0.2,
-      max_tokens: 700,
+      max_tokens: 6000,
     }),
   });
   if (!res.ok) throw new Error(`DeepSeek 请求失败（${res.status}）`);
@@ -310,7 +310,7 @@ async function deepseekText(prompt) {
       model: DEEPSEEK_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.4,
-      max_tokens: 600,
+      max_tokens: 3000,
     }),
   });
   if (!res.ok) return "";
@@ -682,20 +682,16 @@ async function predictOnnx() {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
   const sessions = await getOnnxSessions();
-  const variants = [await imageToTensor(state.currentImage), await imageToTensor(state.currentImage, true, false)];
+  const tensor = await imageToTensor(state.currentImage);
   const classCount = Object.keys(window.MINERAL_CLASSES || {}).length;
   const summed = new Array(classCount).fill(0);
-  let runs = 0;
-  for (const tensor of variants) {
-    for (const session of sessions) {
-      const output = await session.run({ input: tensor });
-      const logits = output.logits.data;
-      for (let i = 0; i < classCount; i++) summed[i] += logits[i];
-      runs++;
-    }
+  for (const session of sessions) {
+    const output = await session.run({ input: tensor });
+    const logits = output.logits.data;
+    for (let i = 0; i < classCount; i++) summed[i] += logits[i];
   }
   const classes = Object.keys(window.MINERAL_CLASSES || {});
-  const probs = summed.map((x) => x / runs);
+  const probs = summed.map((x) => x / sessions.length);
   const description = ($("#description").value || "").trim().toLowerCase();
   if (description) {
     for (let i = 0; i < classes.length; i++) {
