@@ -690,16 +690,13 @@ async function predictOnnx() {
   const sessions = await getOnnxSessions();
   const tensor = await imageToTensor(state.currentImage);
   const classCount = Object.keys(window.MINERAL_CLASSES || {}).length;
-  const probs = new Array(classCount).fill(0);
+  const summed = new Array(classCount).fill(0);
   for (const session of sessions) {
     const output = await session.run({ input: tensor });
     const logits = output.logits.data;
-    const maxLogit = Math.max(...logits);
-    const exp = logits.map((x) => Math.exp(x - maxLogit));
-    const sum = exp.reduce((a, b) => a + b, 0);
-    for (let i = 0; i < classCount; i++) probs[i] += exp[i] / sum;
+    for (let i = 0; i < classCount; i++) summed[i] += logits[i];
   }
-  for (let i = 0; i < classCount; i++) probs[i] /= sessions.length;
+  const probs = summed.map((x) => x / sessions.length);
   const classes = Object.keys(window.MINERAL_CLASSES || {});
   const description = ($("#description").value || "").trim().toLowerCase();
   if (description) {
@@ -713,16 +710,19 @@ async function predictOnnx() {
       }
     }
   }
-  const probSum = probs.reduce((a, b) => a + b, 0);
-  for (let i = 0; i < probs.length; i++) probs[i] /= probSum;
-  if (Math.max(...probs) < 0.18) {
+  const maxLogit = Math.max(...probs);
+  const shifted = probs.map((x) => x - maxLogit);
+  const exp = shifted.map((x) => Math.exp(x));
+  const sum = exp.reduce((a, b) => a + b, 0);
+  const softmax = exp.map((x) => x / sum);
+  if (softmax.reduce((a, b) => Math.max(a, b), 0) < 0.18) {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
-  const order = probs.map((v, i) => i).sort((a, b) => probs[b] - probs[a]).slice(0, 5);
+  const order = softmax.map((v, i) => i).sort((a, b) => softmax[b] - softmax[a]).slice(0, 5);
   const rankings = order.map((idx, rank) => ({
     key: classes[idx],
     name_zh: window.MINERAL_CLASSES[classes[idx]].zh,
-    confidence: probs[idx],
+    confidence: softmax[idx],
     rank: rank + 1,
   }));
   const top = rankings[0];
