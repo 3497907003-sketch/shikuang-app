@@ -561,8 +561,8 @@ async function getOnnxSessions() {
   window.ort.env.wasm.wasmPaths = vendorBase;
   window.ort.env.wasm.numThreads = 1;
   window.ort.env.wasm.proxy = false;
-  const eff = await window.ort.InferenceSession.create(modelBase + "efficientnet.onnx?v=3", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
-  const mob = await window.ort.InferenceSession.create(modelBase + "mobilenet.onnx?v=3", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const eff = await window.ort.InferenceSession.create(modelBase + "efficientnet.onnx?v=4", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
+  const mob = await window.ort.InferenceSession.create(modelBase + "mobilenet.onnx?v=4", { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   ortSessions = [eff, mob];
   return ortSessions;
 }
@@ -622,11 +622,14 @@ async function imageSkinRatio(src) {
   const img = new Image();
   img.src = src;
   await img.decode();
+  const short = Math.min(img.width, img.height);
+  const sx = (img.width - short) / 2;
+  const sy = (img.height - short) / 2;
   const canvas = document.createElement("canvas");
   canvas.width = 96;
   canvas.height = 96;
   const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0, 96, 96);
+  ctx.drawImage(img, sx, sy, short, short, 0, 0, 96, 96);
   const data = ctx.getImageData(0, 0, 96, 96).data;
   let skin = 0;
   const total = 96 * 96;
@@ -650,11 +653,14 @@ async function imageToTensor(src, flipH = false, flipV = false) {
   const img = new Image();
   img.src = src;
   await img.decode();
+  const short = Math.min(img.width, img.height);
+  const sx = (img.width - short) / 2;
+  const sy = (img.height - short) / 2;
   const canvas = document.createElement("canvas");
   canvas.width = 224;
   canvas.height = 224;
   const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0, 224, 224);
+  ctx.drawImage(img, sx, sy, short, short, 0, 0, 224, 224);
   const data = ctx.getImageData(0, 0, 224, 224).data;
   const input = new Float32Array(3 * 224 * 224);
   const mean = [0.485, 0.456, 0.406];
@@ -684,14 +690,17 @@ async function predictOnnx() {
   const sessions = await getOnnxSessions();
   const tensor = await imageToTensor(state.currentImage);
   const classCount = Object.keys(window.MINERAL_CLASSES || {}).length;
-  const summed = new Array(classCount).fill(0);
+  const probs = new Array(classCount).fill(0);
   for (const session of sessions) {
     const output = await session.run({ input: tensor });
     const logits = output.logits.data;
-    for (let i = 0; i < classCount; i++) summed[i] += logits[i];
+    const maxLogit = Math.max(...logits);
+    const exp = logits.map((x) => Math.exp(x - maxLogit));
+    const sum = exp.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < classCount; i++) probs[i] += exp[i] / sum;
   }
+  for (let i = 0; i < classCount; i++) probs[i] /= sessions.length;
   const classes = Object.keys(window.MINERAL_CLASSES || {});
-  const probs = summed.map((x) => x / sessions.length);
   const description = ($("#description").value || "").trim().toLowerCase();
   if (description) {
     for (let i = 0; i < classes.length; i++) {
@@ -704,20 +713,16 @@ async function predictOnnx() {
       }
     }
   }
-  const maxLogit = Math.max(...probs);
-  const shifted = probs.map((x) => x - maxLogit);
-  const logSumExp = maxLogit + Math.log(shifted.reduce((a, b) => a + Math.exp(b), 0));
-  if (logSumExp < 4.0 || Math.exp(maxLogit - logSumExp) < 0.18) {
+  const probSum = probs.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < probs.length; i++) probs[i] /= probSum;
+  if (Math.max(...probs) < 0.18) {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
-  const exp = shifted.map((x) => Math.exp(x));
-  const sum = exp.reduce((a, b) => a + b, 0);
-  const softmax = exp.map((x) => x / sum);
-  const order = softmax.map((v, i) => i).sort((a, b) => softmax[b] - softmax[a]).slice(0, 5);
+  const order = probs.map((v, i) => i).sort((a, b) => probs[b] - probs[a]).slice(0, 5);
   const rankings = order.map((idx, rank) => ({
     key: classes[idx],
     name_zh: window.MINERAL_CLASSES[classes[idx]].zh,
-    confidence: softmax[idx],
+    confidence: probs[idx],
     rank: rank + 1,
   }));
   const top = rankings[0];
