@@ -696,6 +696,18 @@ async function predictOnnx() {
   }
   const classes = Object.keys(window.MINERAL_CLASSES || {});
   const probs = summed.map((x) => x / runs);
+  const description = ($("#description").value || "").trim().toLowerCase();
+  if (description) {
+    for (let i = 0; i < classes.length; i++) {
+      const key = classes[i];
+      const info = window.MINERAL_CLASSES?.[key] || {};
+      const kb = window.MINERAL_KB?.[key] || {};
+      const names = [info.zh, kb.name_zh, kb.name_en, key, info.formula, kb.formula].filter(Boolean).map((s) => String(s).toLowerCase());
+      if (names.some((name) => name && description.includes(name))) {
+        probs[i] += 2.5;
+      }
+    }
+  }
   const maxLogit = Math.max(...probs);
   const shifted = probs.map((x) => x - maxLogit);
   const logSumExp = maxLogit + Math.log(shifted.reduce((a, b) => a + Math.exp(b), 0));
