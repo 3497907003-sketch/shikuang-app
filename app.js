@@ -646,7 +646,7 @@ async function imageSkinRatio(src) {
   return skin / total;
 }
 
-async function imageToTensor(src) {
+async function imageToTensor(src, flipH = false, flipV = false) {
   const img = new Image();
   img.src = src;
   await img.decode();
@@ -660,8 +660,13 @@ async function imageToTensor(src) {
   const mean = [0.485, 0.456, 0.406];
   const std = [0.229, 0.224, 0.225];
   for (let c = 0; c < 3; c++) {
-    for (let i = 0; i < 224 * 224; i++) {
-      input[c * 224 * 224 + i] = (data[i * 4 + c] / 255 - mean[c]) / std[c];
+    for (let y = 0; y < 224; y++) {
+      for (let x = 0; x < 224; x++) {
+        const sx = flipH ? 223 - x : x;
+        const sy = flipV ? 223 - y : y;
+        const idx = (sy * 224 + sx) * 4 + c;
+        input[c * 224 * 224 + y * 224 + x] = (data[idx] / 255 - mean[c]) / std[c];
+      }
     }
   }
   return new window.ort.Tensor("float32", input, [1, 3, 224, 224]);
@@ -677,17 +682,20 @@ async function predictOnnx() {
     throw new Error("这不是矿物，请您放入清晰的矿物照片。");
   }
   const sessions = await getOnnxSessions();
-  const tensor = await imageToTensor(state.currentImage);
-  const results = [];
-  for (const session of sessions) {
-    const output = await session.run({ input: tensor });
-    results.push(output.logits.data);
+  const variants = [await imageToTensor(state.currentImage), await imageToTensor(state.currentImage, true, false)];
+  const classCount = Object.keys(window.MINERAL_CLASSES || {}).length;
+  const summed = new Array(classCount).fill(0);
+  let runs = 0;
+  for (const tensor of variants) {
+    for (const session of sessions) {
+      const output = await session.run({ input: tensor });
+      const logits = output.logits.data;
+      for (let i = 0; i < classCount; i++) summed[i] += logits[i];
+      runs++;
+    }
   }
   const classes = Object.keys(window.MINERAL_CLASSES || {});
-  const probs = new Array(classes.length).fill(0);
-  for (let i = 0; i < classes.length; i++) {
-    probs[i] = (results[0][i] + results[1][i]) / 2;
-  }
+  const probs = summed.map((x) => x / runs);
   const maxLogit = Math.max(...probs);
   const shifted = probs.map((x) => x - maxLogit);
   const logSumExp = maxLogit + Math.log(shifted.reduce((a, b) => a + Math.exp(b), 0));
