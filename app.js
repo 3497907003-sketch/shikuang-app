@@ -433,6 +433,9 @@ function renderResult(data) {
   $("#tab-basic").innerHTML = kvTable({
     "矿物名称": `${k.name_zh || data.name_zh} (${k.name_en || data.name_en})`,
     "化学式": k.formula || data.formula,
+    "Strunz大类": k.classification?.strunz_10,
+    "九大类体系": k.classification?.class_9,
+    "八大类体系": k.classification?.class_8,
     "晶系": k.crystal_system,
     "摩氏硬度": k.hardness,
     "光泽": k.luster,
