@@ -795,6 +795,10 @@ window.addEventListener("load", () => {
   }
   setMode("photo");
   setTimeout(() => {
+    getOnnxSessions().catch(() => {});
+    getGateSession().catch(() => {});
+  }, 1700);
+  setTimeout(() => {
     setSplash("识别服务已就绪");
     setStatus("就绪");
     dismissSplash();
