@@ -648,7 +648,7 @@ async function waitFor(fn, timeout = 15000) {
 
 async function getOnnxSessions() {
   if (ortSessions) return ortSessions;
-  await waitFor(() => !!window.ort);
+  await waitFor(() => !!window.ort, 6000);
   if (!window.ort) throw new Error("浏览器推理组件未加载");
   const vendorBase = new URL("./vendor/", location.href).href;
   const modelBase = new URL("./models/", location.href).href;
