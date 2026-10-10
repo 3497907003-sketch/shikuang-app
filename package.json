@@ -1,1 +1,17 @@
-{"name":"shikuang-web","version":"2.0.0-preview","private":true,"scripts":{"test":"node --test tests/*.test.cjs","check":"node tools/check.cjs","build":"node tools/build.cjs","evaluate":"node tools/evaluate.cjs"},"engines":{"node":">=20"},"devDependencies":{"fake-indexeddb":"^6.2.5"}}
+{
+  "name": "shikuang-web",
+  "version": "2.0.1-preview",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "check": "node tools/check.cjs",
+    "build": "node tools/build.cjs",
+    "evaluate": "node tools/evaluate.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5"
+  }
+}
