@@ -44,18 +44,19 @@ python3 -m http.server 8765
 将 `tools/samples-template.csv` 复制到数据集目录，填写真实标本：
 
 - `split` 为 `calibration` 或 `test`，同一实物标本只能属于一个分区。
-- `specimen_id` 是实物编号；每个标本 1–3 张照片，禁止重复图片。
+- `specimen_namespace` 是实验室或收藏机构命名空间，`specimen_id` 是该机构的实物编号；每个标本 1–3 张照片，禁止重复图片。已知近重复、不同角度或裁剪的同一实物应合组，程序的 SHA 检查不能代替这一审核。
 - `scene` 为 `lab` 或 `daily`；`label` 使用 `model-manifest.json` 中的模型键，未覆盖矿物、岩石、动物、日用品使用 `unknown`。
 - `image` 相对 CSV 路径；`crop` 为中心裁剪比例 0.5–1，默认 1；实测 `hardness` 和 `luster` 可留空，光泽选 `metal` 或 `nonmetal`。
-- 真值必须来自检测或可靠的人工鉴定，不能把 App 自己的候选当成真值。
+- `label_basis` 记录真值依据及报告编号或来源，例如 XRD 检测、核验过的馆藏记录，非矿物也记录观察依据。不能把 App 自己的候选当成真值；填入文字本身不构成独立鉴定证明。
 
 ```sh
 python3 -m pip install -r tools/requirements.txt
 python3 tools/predict_samples.py /path/to/samples.csv --out /path/to/raw.json
 node tools/evaluate.cjs /path/to/raw.json > /path/to/report.json
+node tools/evaluate.cjs /path/to/raw.json fast > /path/to/fast-report.json
 ```
 
-报告按分区和场景分别给出 Top-1、Top-5、宏平均 F1、Cohen Kappa、强线索覆盖率、强线索子集正确率、未知类误报率与拒判率。质量与拒判规则调用共享 JavaScript 逻辑。Python 图像重采样与 WebView 可能有细微差异，最终还需在目标手机重复验证。没有真实数据时工具明确失败，不生成空准确率。
+报告按分区和场景分别给出 Top-1、Top-5、宏平均 F1、Cohen Kappa、强线索覆盖率、强线索子集正确率、未知类误报率与拒判率。V3 原始输出绑定清单 SHA、各模型 SHA、当前温度及照片 SHA，拒绝旧版无身份结果或不完整模型输出；快速与多模型分别计算。质量与拒判规则调用共享 JavaScript 逻辑。Python 与 Canvas 重采样的真实照片差异已观察到，几何一致不等于分数一致；最终应在不同性能与 Android/WebView 版本的手机验证。没有真实数据时工具明确失败，不生成空准确率。
 
 正式验收应包括实验室干净背景、生活复杂背景、光照与反光变化、模糊、共生/多矿物、相似矿物、未覆盖类别，并按不同实物、设备划分校准与盲测集。预览包通过构建与逻辑测试不等于通过准确率验收。
 
