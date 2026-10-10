@@ -70,3 +70,13 @@ test('legacy labels for the same official species share one searchable card and 
   await f.documentClick('[data-detail]',{detail:'elbait'});assert.match(f.node('detailBody').innerHTML,/Elbaite/);assert.match(f.node('detailType').textContent,/图像模型支持/);
   assert.deepEqual(Object.keys(f.context.MINERAL_CLASSES),['quartz','elbait']);
 });
+
+test('specimen image references stay collapsed, link to evidence and preserve permission and training gaps',async()=>{
+  const records=Array.from({length:7},(_,i)=>({id:'image-'+i,mineral_name:'Quartz',source:i?'RRUFF':'Wikimedia Commons',sample_id:'sample-'+i,image_page_url:'https://example.org/photo-'+i,original_image_url:'https://example.org/original-image.jpg',author:i?null:'Museum author',license:i?null:'CC BY-SA 4.0',license_url:'https://creativecommons.org/licenses/by-sa/4.0/',permission_status:i?'unverified_photo_reuse_permission':'per_file_open_license_requires_compliance_and_review',identification_evidence:{level:i?'rruff_xrd_and_chemical_analysis':'museum_photo_label_only_requires_expert_review',evidence_url:'https://example.org/evidence',independently_verified:false},training_ready:false}));
+  const f=fixture({catalog:mockCatalog(0),images:{records:[...records,{...records[0],image_page_url:'javascript:alert(1)'}]}});await f.settle();await f.documentClick('[data-detail]',{detail:'quartz'});
+  const body=f.node('detailBody').innerHTML,images=f.node('imageRecords').innerHTML;
+  assert.match(body,/<details class="detail-section image-section">/);assert.match(body,/共生标本需专家标注/);
+  assert.equal((images.match(/class="image-record"/g)||[]).length,5);assert.match(images,/Museum author/);assert.match(images,/CC BY-SA 4.0/);assert.match(images,/许可：待查/);assert.match(images,/来源称已用 X 射线衍射与化学分析确认/);assert.match(images,/尚未通过训练审核/);
+  assert.doesNotMatch(images,/<img|original-image\.jpg|javascript:/);assert.match(f.node('catalogIntro').innerHTML,/7 条图片出处/);assert.match(f.node('catalogIntro').innerHTML,/通过训练审核 0 条/);
+  await f.documentClick('[data-more-images]');assert.equal((f.node('imageRecords').innerHTML.match(/class="image-record"/g)||[]).length,7);assert.equal(f.node('moreImages').hidden,true);
+});
