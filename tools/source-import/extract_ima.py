@@ -20,6 +20,21 @@ import pdfplumber
 
 SUB = str.maketrans('0123456789+-=()aeiorux', '₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ')
 SUP = str.maketrans('0123456789+-=()n', '⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ')
+# The September 2026 PDF embeds Symbol as CIDFont+F8. Its ToUnicode map
+# contains private-use code points that cannot be rendered by phone fonts.
+# Visually checked on source pages 79 (Gachingite), 160 (Orcelite) and
+# 201 (Sluzhenikinite): approximate equality, less-than-or-equal and space.
+SYMBOL_GLYPHS = {'\uf0bb': '≈', '\uf0a3': '≤', '\uf020': ' '}
+
+
+def formula_character(character):
+    text = character['text']
+    font = character.get('fontname', '')
+    if font == 'CIDFont+F8' or 'Symbol' in font:
+        text = ''.join(SYMBOL_GLYPHS.get(c, c) for c in text)
+    if any('\ue000' <= c <= '\uf8ff' for c in text):
+        raise ValueError(f'Unreviewed private-use formula glyph in {font}: {text!r}')
+    return text
 
 
 def clean(value):
@@ -60,7 +75,7 @@ def formula_from_chars(chars):
         # Coordinates restore the exact reading order that ordinary extract_text
         # loses by placing all quantities on a later line.
         for c, kind in sorted(line, key=lambda item: item[0]['x0']):
-            text = c['text']
+            text = formula_character(c)
             if kind == 'sub':
                 plain_parts.append(text.translate(SUB))
             elif kind == 'sup':
@@ -134,7 +149,7 @@ def main():
         'license_url': 'https://creativecommons.org/licenses/by-sa/3.0/',
         'scope': f'Official list of {declared_count} currently valid mineral species; approved formula, IMA status/number or year, first-discovery country and references. This is a reference catalog, not inference-model coverage.',
         'sha256': hashlib.sha256(args.pdf.read_bytes()).hexdigest(),
-        'extraction': 'Original seven-column PDF table grid and character coordinates; whitespace normalized; chemical scripts preserved in Unicode and HTML. No generated descriptions.',
+        'extraction': 'Original seven-column PDF table grid and character coordinates; whitespace normalized; chemical scripts preserved in Unicode and HTML. Three Symbol private-use glyphs visually mapped to ≈, ≤ and space on original pages 79, 160 and 201. Unreviewed private-use glyphs rejected. No generated descriptions.',
         'attribution': f'IMA-CNMNC, The New IMA List of Minerals, {month_year}; original authors and contributors credited in the source PDF. Extracted for 识矿 on {args.retrieved_at}; changes: machine-readable format and chemical-script encoding.',
     }
     payload = {'schema_version': 1, 'version': args.version, 'retrieved_at': args.retrieved_at, 'count': len(minerals), 'source': source, 'minerals': minerals}

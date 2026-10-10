@@ -81,15 +81,20 @@ def main():
     original_images = read(source / 'image-sources.json')
     originals = {row['id']: row for row in original['minerals']}
     species = {row['id']: row for row in catalog['minerals']}
+    by_name = {normal(row['name_en']): row for row in species.values()}
     expression = "const fs=require('node:fs'),vm=require('node:vm');const c={window:{}};vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),c);process.stdout.write(JSON.stringify(c.window.MINERAL_KB));"
     kb = json.loads(subprocess.run([args.node, '-e', expression, str(repo / 'data/minerals.js')], check=True, capture_output=True, text=True).stdout)
     check('official_catalog_count_and_unique_ids', [] if catalog['count'] == len(catalog['minerals']) == len(species) == len(originals) == 6239 else ['count or unique ID mismatch'])
     check('official_names_unique', [] if len({r['name_en'] for r in species.values()}) == 6239 else ['duplicate name'])
     check('official_fields_preserved', [row['id'] + ':' + field for row in species.values() for field in ORIGINAL_FIELDS if row.get(field) != originals.get(row['id'], {}).get(field)])
-    check('formula_unicode_html_equivalent', [r['id'] for r in species.values() if formula_plain(r['formula_html']) != r['formula'] or re.search(r'</?(?:sub|sup)\b|�', r['formula'])])
+    check('formula_unicode_html_equivalent', [r['id'] for r in species.values() if formula_plain(r['formula_html']) != r['formula'] or re.search(r'</?(?:sub|sup)\b|�|[\ue000-\uf8ff]', r['formula'])])
+    check('symbol_formula_glyphs_match_reviewed_pdf_pages', [name for name, formula in {
+        'Gachingite': 'Au(Te₁₋ₓSeₓ) (0.2 ≈ x ≤ 0.5)',
+        'Orcelite': 'Ni₅₋ₓAs₂ (x ≈ 0.25)',
+        'Sluzhenikinite': 'Pd₁₅(Sb₇₋ₓSnₓ) (3 ≤ x ≤ 4)',
+    }.items() if by_name.get(normal(name), {}).get('formula') != formula])
     check('source_page_valid', [r['id'] for r in species.values() if not isinstance(r['source_page'], int) or not 3 <= r['source_page'] <= 244])
     legacy_formulas = [key for key, row in kb.items() if row.get('formula_source')]
-    by_name = {normal(row['name_en']): row for row in species.values()}
     check('legacy_official_formula_and_source', [key for key in legacy_formulas if normal(kb[key]['name_en']) not in by_name or kb[key]['formula'] != by_name[normal(kb[key]['name_en'])]['formula'] or kb[key]['formula_source'] != {'source_id': 'ima-cnmnc', 'url': by_name[normal(kb[key]['name_en'])]['source_url'], 'page': by_name[normal(kb[key]['name_en'])]['source_page'], 'version': catalog['version']}])
     check('legacy_kb_count', [] if len(kb) == 105 else ['expected 105 original labels'])
     pdf = source / 'IMA_Master_List_2026-09.pdf'

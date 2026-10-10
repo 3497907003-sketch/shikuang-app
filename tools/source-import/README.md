@@ -21,6 +21,8 @@ python3 tools/source-import/extract_ima.py \
 
 输出 JSON、CSV 和 `ima-extraction-report.json`。使用 PDF 表格及原字符坐标保留化学式上下标、官方七列和页码；不生成描述、属性或分类。检查源文件的日期、数量及 CC BY-SA 3.0 声明。更新版本时同时传入 `--source-url`，重新核对表格布局及提取质量，不能只改变数量参数。
 
+2026-09 原 PDF 的 `CIDFont+F8` 字体在三条公式中输出私用字符：第 79 页 Gachingite、第 160 页 Orcelite 和第 201 页 Sluzhenikinite 已逐页渲染核对，分别保留 `≈`、`≤` 与空格的原意。提取程序只转换这三个已核对字形，其余私用字符会中止提取并要求复核，避免手机显示方框或猜测化学式。正式目录、来源复跑结果和离线校验清单必须同时更新；`validate_sources.py` 检查全部条目可复现及这三条原式。
+
 ## Handbook 选定物性事实
 
 `physical-targets.json` 是原项目 89 个标签的官方 PDF 来源清单，包含原数据缺项信息与未匹配的 16 个标签。它不是新推理类别列表。采集限最多 2 个请求同时运行，请求开始至少相隔 2 秒；本地复跑使用 `--offline`：
