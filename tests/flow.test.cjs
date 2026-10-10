@@ -46,7 +46,8 @@ test('prepared reference metadata and attribution remain available after the cur
   f.context.fetch=async request=>typeof request==='string'?{ok:true,json:async()=>({models:[]})}:new Response('prepared '+new URL(request.url).pathname);
   await f.click('offlineBtn');assert.match(f.node('offlineProgress').textContent,/离线资源已准备/);
   const events={},scope=f.context.location.href,worker={addEventListener:(type,fn)=>{events[type]=fn;},registration:{scope},clients:{claim(){}}};
-  vm.runInNewContext(fs.readFileSync(require.resolve('../sw.js'),'utf8'),{self:worker,caches,URL,Response,fetch:async()=>{throw new Error('offline');}});
+  const WEB=fs.existsSync(require('node:path').join(__dirname,'../web/sw.js'))?'../web/':'../';
+  vm.runInNewContext(fs.readFileSync(require.resolve(WEB+'sw.js'),'utf8'),{self:worker,caches,URL,Request,Response,Headers,TextDecoder,AbortController,setTimeout,clearTimeout,importScripts(){},fetch:async()=>{throw new Error('offline');}});
   let activation;events.activate({waitUntil:promise=>{activation=promise;}});await activation;
   for(const asset of ['data/catalog.json','data/crystals.json','data/image-sources.json','data/reference-manifest.json','data/licenses/ima-cnmnc-2026-09.txt']){
     let response;events.fetch({request:new Request(new URL(asset,scope)),respondWith:promise=>{response=promise;},waitUntil(){}});
