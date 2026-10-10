@@ -2,6 +2,12 @@
 
 以手机上的矿物标本识别为核心。网页版与 Android 使用相同的识别逻辑、知识库和界面。
 
+先打开[原网站](https://3497907003-sketch.github.io/shikuang-app/)的“快速上手”，或“设置 → 打开使用指南”，了解提交、分析、物性复核、离线准备和备份。
+
+2.5.0-preview.1 安装文件：[Android APK](https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/shikuang-2.5.0-preview.1-android.apk)、[Windows x64](https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/Shikuang-2.5.0-preview.1-windows-x64.zip)、[Mac arm64](https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/Shikuang-2.5.0-preview.1-macos-arm64.zip)。Mac 为 ad hoc 签名、未公证。升级前导出备份；旧临时签名和原1.0跨包迁移限制见下文。校验和及门报告随对应发布页提供，[公开验收记录](docs/release-validation)保留实际源码、运行证据和已知限制。
+
+**预览版尚未通过矿物准确率验收。** 八类来源照片重训的锁定测试Kappa为0.6564，未达0.95；新权重未上线，仍使用原98标签模型。目录覆盖、功能回归与安装发布不代表全矿物识别、实验室不规则标本泛化或所有设备已经验收。
+
 面向实验室同事的不同手机和电脑。Android 安装版要求 Android 7.0（API 24）及以上和可用的系统 WebView，具体设备的相机、内存和识别效果仍需实测。照片文件支持 JPEG、PNG、WebP，限 20 MB、4000 万像素，先读取压缩头检查尺寸再解码；HEIC、AVIF 或无法读取尺寸的文件请先转换。相机与视频直接缩小画布，分析图最长边 1536 像素。读取可取消，离开识别页或开始新标本会拒绝旧任务的迟到结果；已提交照片与保存记录分别保留。合法高像素照片仍可能超出低内存设备的能力。
 
 ## 本次升级

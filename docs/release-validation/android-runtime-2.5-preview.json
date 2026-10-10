@@ -1,0 +1,824 @@
+{
+  "schemaVersion": 1,
+  "scope": "Public summary of actual Android emulator regression evidence. No additional blind test, new training or accuracy acceptance is implied.",
+  "sourceIdentity": {
+    "androidCommit": "ade9b11beb0b5b59c838574657a4a633f0815193",
+    "androidCommitUrl": "https://github.com/3497907003-sketch/shikuang-android/commit/ade9b11beb0b5b59c838574657a4a633f0815193",
+    "sharedWebCommit": "697be109a20cf5ce2724d68efd670c74949f38b6",
+    "sharedWebCommitUrl": "https://github.com/3497907003-sketch/shikuang-app/commit/697be109a20cf5ce2724d68efd670c74949f38b6",
+    "publicWebMergeCommit": "95b4b4e4d1d9be561a18ed745c95eb60f0b6ab0f",
+    "packagedAssets": 157,
+    "packageName": "com.shikuang.app.preview",
+    "versionName": "2.5.0-preview.1",
+    "versionCode": 25001
+  },
+  "ci": {
+    "runtimeRun": 38073430916,
+    "runtimeUrl": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916",
+    "effectiveAttempt": 2,
+    "effectiveAttemptUrl": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/attempts/2",
+    "allFourEffectiveJobsSucceeded": true,
+    "attemptInheritance": "API24/30/35 executed successfully in attempt1 and GitHub exposes their successful records in effective attempt2. Only failed API35-16K executed again in attempt2 at the unchanged source commit.",
+    "persistentSignedBuildRun": 38073436669,
+    "persistentSignedBuildUrl": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073436669",
+    "persistentSignedBuildSameSourceCommit": true
+  },
+  "models": {
+    "version": "inherited-2.0-audited",
+    "manifestSha256": "ddbe27e79489df0ff63647b37c17f701e458a59e076df14d47d93873085ae7fa",
+    "mineralClasses": 98,
+    "ensembleClassifiers": 3,
+    "screeningGraphs": 1,
+    "ortRuntimeVersion": "1.24.3",
+    "graphs": [
+      {
+        "id": "mobilenet",
+        "sha256": "e2ff79ed2b2e05773a6ad5e41502c1ea1eea4db24b9c6f0983432c289d7e6b34",
+        "classes": 98,
+        "finiteOutput": true
+      },
+      {
+        "id": "efficientnet",
+        "sha256": "dccf5215abfbc212ca41e6423f97dc037f5a8d5190449072b3a9276b090fb0ce",
+        "classes": 98,
+        "finiteOutput": true
+      },
+      {
+        "id": "efficientnet-legacy",
+        "sha256": "6390e8ac0fbbf7b0fd79284fc5f762a6150774a81549aa7529b3f49cd7d5cf24",
+        "classes": 98,
+        "finiteOutput": true
+      },
+      {
+        "id": "imagenet-gate",
+        "sha256": "941bf9142c8983ad110319811cb2d8149567e1acf1c5cc24212c58b305149eab",
+        "classes": 1000,
+        "finiteOutput": true
+      }
+    ],
+    "graphSmokeScope": "Zero float32 NCHW224 input verifies actual graph execution, shape, finite output and runtime compatibility; not classification accuracy."
+  },
+  "photos": {
+    "sourceRecords": 871,
+    "packagedJpegs": 117,
+    "photoManifestSha256": "dd6a3892cd9be22eaa51fa6886403cff956d63e7e8a02020cf004eda56c0e9ec",
+    "allFourEnvironmentsVerifiedBytesSha256AndNativeDecode": true,
+    "scope": "Source metadata and real licensed packaged photo display/decode. No independent mineral-phase confirmation or model-training claim."
+  },
+  "environments": [
+    {
+      "environment": "api24",
+      "api": 24,
+      "actualDeviceAbi": "x86_64",
+      "systemImage": "system-images;android-24;google_apis;x86_64",
+      "kernelPageSizeBytes": 4096,
+      "nativeOsSysconfPageSizeBytes": 4096,
+      "actualExecutionAttempt": 1,
+      "effectiveAttempt": 2,
+      "effectiveJob": {
+        "id": 114276803352,
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/job/114276803352",
+        "name": "runtime (24, 24, google_apis, 4096)",
+        "headSha": "ade9b11beb0b5b59c838574657a4a633f0815193",
+        "conclusion": "success",
+        "startedAt": "2026-10-10T17:51:20Z",
+        "completedAt": "2026-10-10T17:55:46Z",
+        "requiredSteps": {
+          "Boot emulator and disconnect device networking": "success",
+          "Run packaged WebView with actual native ONNX inference": "success",
+          "Require screenshots and JSON from successful runtime tests": "success"
+        }
+      },
+      "artifact": {
+        "id": 11677876552,
+        "name": "shikuang-runtime-api-24",
+        "createdAt": "2026-10-10T17:55:40Z",
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/artifacts/11677876552"
+      },
+      "phase": "unsupported-webview-recovery-passed",
+      "junit": [
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1
+        }
+      ],
+      "offlineBefore": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": null
+      },
+      "nativeGraphs": {
+        "count": 4,
+        "allManifestHashesMatched": true,
+        "allFiniteOutput": true
+      },
+      "packagedJpegs": {
+        "nativeDecoded": 117,
+        "allExpectedByteSizesAndSha256Matched": true,
+        "minDimension": 227,
+        "maxDimension": 512,
+        "activeNetworkBefore": null,
+        "activeNetworkAfter": null
+      },
+      "screenshots": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/legacy-webview-recovery.png",
+          "sha256": "7b250a07734fad7ed2ef1b8e6617c4df536b4d9c60cb7a2b4ae4eddefec3e336"
+        }
+      ],
+      "rawEvidenceSha256": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/runtime-report.json",
+          "sha256": "581d7bb6a9abf33d422a1cd3db2043127b9f92ba46dd9fef7f2b12b52a5cfd08"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/native-contract-runtime.json",
+          "sha256": "ebd9a76d3a5c5e49d7611e4c2d98b21cd406297daba0e732c60414a8d82dd82c"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/reviewed-photo-runtime.json",
+          "sha256": "5dbdc08d33d75c6ea7165295ba6c759f3b9287afa7dd74def657a0cd0ef55d8e"
+        },
+        {
+          "file": "runtime-artifacts/system-image.txt",
+          "sha256": "dbda64763f9daa5f738959a4de24a56b12ba7c9eac639ed728f49baaae8a5f99"
+        },
+        {
+          "file": "runtime-artifacts/device-page-size.txt",
+          "sha256": "25ac87b7309b7946b51c32e824793ff48b56b735efa16875cf33e4ba67523d91"
+        },
+        {
+          "file": "android/app/build/outputs/androidTest-results/connected/debug/TEST-emulator-5554 - 7.0-_app-.xml",
+          "sha256": "96983a398b9efc776862735606913a27a9eef192bf461ab7be0d54f800614a15"
+        }
+      ],
+      "photoUiRecognitionVerified": false,
+      "limitation": "Factory Chrome69 WebView displays readable component-update and reload guidance; full photo UI is not supported or claimed. Android7+ requires a modern WebView (Chrome83+). Native graph and packaged JPEG tests passed independently.",
+      "webViewVersion": "69.0.3497.100"
+    },
+    {
+      "environment": "api30",
+      "api": 30,
+      "actualDeviceAbi": "x86_64",
+      "systemImage": "system-images;android-30;google_apis;x86_64",
+      "kernelPageSizeBytes": 4096,
+      "nativeOsSysconfPageSizeBytes": 4096,
+      "actualExecutionAttempt": 1,
+      "effectiveAttempt": 2,
+      "effectiveJob": {
+        "id": 114276803612,
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/job/114276803612",
+        "name": "runtime (30, 30, google_apis, 4096)",
+        "headSha": "ade9b11beb0b5b59c838574657a4a633f0815193",
+        "conclusion": "success",
+        "startedAt": "2026-10-10T17:51:20Z",
+        "completedAt": "2026-10-10T17:55:52Z",
+        "requiredSteps": {
+          "Boot emulator and disconnect device networking": "success",
+          "Run packaged WebView with actual native ONNX inference": "success",
+          "Require screenshots and JSON from successful runtime tests": "success"
+        }
+      },
+      "artifact": {
+        "id": 11677292738,
+        "name": "shikuang-runtime-api-30",
+        "createdAt": "2026-10-10T17:55:46Z",
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/artifacts/11677292738"
+      },
+      "phase": "passed",
+      "junit": [
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "offlineBefore": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "nativeGraphs": {
+        "count": 4,
+        "allManifestHashesMatched": true,
+        "allFiniteOutput": true
+      },
+      "packagedJpegs": {
+        "nativeDecoded": 117,
+        "allExpectedByteSizesAndSha256Matched": true,
+        "minDimension": 227,
+        "maxDimension": 512,
+        "activeNetworkBefore": null,
+        "activeNetworkAfter": null
+      },
+      "screenshots": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/abellaite-reference-details.png",
+          "sha256": "f2281d032e70b75e76e12fbcac91e9f7c41053957bb01c287559576e70edc1fc"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/dog-rejection.png",
+          "sha256": "49d4e6f5b9fd74d6fc46a2fe5505a3f08a90c29172d0c9887bdaf8ed0500f492"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/library-offline-overview.png",
+          "sha256": "bf115c1d326df019fb6fd802c26c97dcd89d1f9c40a2fe1fa88380abf74f4ae4"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-image-references.png",
+          "sha256": "c381c7fa776e9ad315d38b4b9380017843aff2f892a1f00ac2d9b9a334518423"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-reference-details.png",
+          "sha256": "92104b0b8eaa99317139994a98abde40181e838754759dbbb2d72cfee0b8c532"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-result.png",
+          "sha256": "7492172d8dce5c71f974051d55e36fd5b012e8d8c5ff525b60d264cbac215cc3"
+        }
+      ],
+      "rawEvidenceSha256": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/runtime-report.json",
+          "sha256": "eef7a03bc73f0e3318ddc4be25890c0a61ce0aa9bc17a061aa473e661713bef2"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/native-contract-runtime.json",
+          "sha256": "f89f25f4b56df08e269506105f2b2dfc619849ef52ef554cc5aa821d7af6fdec"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/reviewed-photo-runtime.json",
+          "sha256": "8b4f66d5e667a16dc7b6e371fa581248e6441a8e73266381f9bd74dca0c4a9bb"
+        },
+        {
+          "file": "runtime-artifacts/system-image.txt",
+          "sha256": "c8975e4d80d29f7143a5243fc6a4b26087bd26d3b4f055393c9f1717dadd4a34"
+        },
+        {
+          "file": "runtime-artifacts/device-page-size.txt",
+          "sha256": "25ac87b7309b7946b51c32e824793ff48b56b735efa16875cf33e4ba67523d91"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/asset-migration-report.json",
+          "sha256": "de069a52d04c26d1735f128267d7afec4ea70bfdc09f3376a2e0a1c6e45fc1ac"
+        },
+        {
+          "file": "android/app/build/outputs/androidTest-results/connected/debug/TEST-emulator-5554 - 11-_app-.xml",
+          "sha256": "0bd3211afe116118195cbfa68148d043f9afbb6612ec8bf35f6cdd3dba636e64"
+        }
+      ],
+      "photoUiRecognitionVerified": true,
+      "offlineAfterCatalog": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "visibleVersion": "2.5",
+      "quartzFixture": {
+        "key": "quartz",
+        "modelCount": 3,
+        "engine": "onnx-native-android",
+        "score": 0.6632603105334385,
+        "status": "consistent",
+        "scope": "One genuine mineral fixture regression; model score is not an accuracy estimate.",
+        "elapsedMs": 1316
+      },
+      "fastFixture": {
+        "input": "same quartz fixture",
+        "result": "carnelian",
+        "correct": false,
+        "modelCount": 1,
+        "engine": "onnx-native-android",
+        "scope": "Selected-model execution/cache lifecycle only, not accuracy"
+      },
+      "cancellation": {
+        "trigger": "native-progress",
+        "error": {
+          "name": "AbortError",
+          "message": "分析已停止"
+        },
+        "subsequentEnsembleQuartzResultPassed": true
+      },
+      "savedHistory": {
+        "recordsBeforeDogRejection": 1,
+        "recordsAfterDogRejection": 1,
+        "sameSavedRecordPreserved": true,
+        "savedMineral": "quartz",
+        "savedModelCount": 3
+      },
+      "dogRejection": {
+        "exactVisibleText": "这不是矿物，请您放入清晰的矿物照片。",
+        "passed": true
+      },
+      "catalog": {
+        "imaSpecies": 6239,
+        "crystalSpecies": 3430,
+        "imageReferences": 871,
+        "localPackagedPhotos": 117
+      },
+      "gallery": {
+        "startupReferenceRequests": [],
+        "decodedQuartzPhotos": 3,
+        "blobUrlsRevokedOnClose": 3,
+        "decodedAfterReopen": 3,
+        "freshBlobUrlsAfterReopen": true,
+        "localPhotoHashIdentityPreserved": true
+      },
+      "nativeAssetMigration": {
+        "phase": "migration-passed",
+        "historyPreserved": true,
+        "unrelatedCachePreserved": true,
+        "oldAssetCachesRemoved": 1,
+        "serviceWorkerRegistrationSupported": false,
+        "controlledServiceWorkerMigrationReproduced": false,
+        "scope": "Actual CacheStorage/IndexedDB migration; controlled ServiceWorker migration was unavailable in the native localhost bridge."
+      },
+      "standaloneWorkerProbe": {
+        "status": "message",
+        "message": {
+          "type": "boot-error",
+          "message": "Unexpected token '='"
+        }
+      },
+      "webViewVersion": "83.0.4103.106"
+    },
+    {
+      "environment": "api35",
+      "api": 35,
+      "actualDeviceAbi": "x86_64",
+      "systemImage": "system-images;android-35;google_apis;x86_64",
+      "kernelPageSizeBytes": 4096,
+      "nativeOsSysconfPageSizeBytes": 4096,
+      "actualExecutionAttempt": 1,
+      "effectiveAttempt": 2,
+      "effectiveJob": {
+        "id": 114276803470,
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/job/114276803470",
+        "name": "runtime (35, 35, google_apis, 4096)",
+        "headSha": "ade9b11beb0b5b59c838574657a4a633f0815193",
+        "conclusion": "success",
+        "startedAt": "2026-10-10T17:51:20Z",
+        "completedAt": "2026-10-10T17:55:25Z",
+        "requiredSteps": {
+          "Boot emulator and disconnect device networking": "success",
+          "Run packaged WebView with actual native ONNX inference": "success",
+          "Require screenshots and JSON from successful runtime tests": "success"
+        }
+      },
+      "artifact": {
+        "id": 11678116105,
+        "name": "shikuang-runtime-api-35",
+        "createdAt": "2026-10-10T17:55:21Z",
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/artifacts/11678116105"
+      },
+      "phase": "passed",
+      "junit": [
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "offlineBefore": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "nativeGraphs": {
+        "count": 4,
+        "allManifestHashesMatched": true,
+        "allFiniteOutput": true
+      },
+      "packagedJpegs": {
+        "nativeDecoded": 117,
+        "allExpectedByteSizesAndSha256Matched": true,
+        "minDimension": 227,
+        "maxDimension": 512,
+        "activeNetworkBefore": null,
+        "activeNetworkAfter": null
+      },
+      "screenshots": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/abellaite-reference-details.png",
+          "sha256": "5b844fa2b72ed4ef09f01e416f7bbb9e61e76409dd78cb2479fee2106e7a12ae"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/dog-rejection.png",
+          "sha256": "09888c257598c146fbc8390e47250ff04d7071686391611a21508a5023ca82fa"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/library-offline-overview.png",
+          "sha256": "8393db3ba375d7d9878e4cab84c883702edebbc964c229f05b0b4130a963a7c3"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-image-references.png",
+          "sha256": "435272b388d1015ede2a90d6e50c5413b34e82d35db074f9237368327e7790cd"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-reference-details.png",
+          "sha256": "3128dde675f5ae4774a07cc2ceaa163ef4734e7ea9684dc8eaa27b26765473c8"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-result.png",
+          "sha256": "c200b5a1f63b1edd1be56c3c51b07b3e4024f6268f903656d0a3e2b08c43035f"
+        }
+      ],
+      "rawEvidenceSha256": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/runtime-report.json",
+          "sha256": "3504430e544c17134c6ecb8f127987c1ca15f9ed2f8286137dcd57beed8818d1"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/native-contract-runtime.json",
+          "sha256": "95140dea321a30d48e80a6e0df6e01a48a1e9339872b38e9e0d6f8babe4d7244"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/reviewed-photo-runtime.json",
+          "sha256": "7e548dd292044790fba12f223af293a02a6e9c99db3f0c6d83d80410698a023f"
+        },
+        {
+          "file": "runtime-artifacts/system-image.txt",
+          "sha256": "00c76b414c640b5b9e53c3bf8a698a335ca578656879e11d1ff2a9bcb04dff81"
+        },
+        {
+          "file": "runtime-artifacts/device-page-size.txt",
+          "sha256": "25ac87b7309b7946b51c32e824793ff48b56b735efa16875cf33e4ba67523d91"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/asset-migration-report.json",
+          "sha256": "de069a52d04c26d1735f128267d7afec4ea70bfdc09f3376a2e0a1c6e45fc1ac"
+        },
+        {
+          "file": "android/app/build/outputs/androidTest-results/connected/debug/TEST-emulator-5554 - 15-_app-.xml",
+          "sha256": "c62eac8bebe33cad8c63ff0cf8cbf0a8ac6ad32f108ab3873d70df1289df755e"
+        }
+      ],
+      "photoUiRecognitionVerified": true,
+      "offlineAfterCatalog": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "visibleVersion": "2.5",
+      "quartzFixture": {
+        "key": "quartz",
+        "modelCount": 3,
+        "engine": "onnx-native-android",
+        "score": 0.6622475219104605,
+        "status": "consistent",
+        "scope": "One genuine mineral fixture regression; model score is not an accuracy estimate.",
+        "elapsedMs": 616
+      },
+      "fastFixture": {
+        "input": "same quartz fixture",
+        "result": "chrysoberyl",
+        "correct": false,
+        "modelCount": 1,
+        "engine": "onnx-native-android",
+        "scope": "Selected-model execution/cache lifecycle only, not accuracy"
+      },
+      "cancellation": {
+        "trigger": "native-progress",
+        "error": {
+          "name": "AbortError",
+          "message": "分析已停止"
+        },
+        "subsequentEnsembleQuartzResultPassed": true
+      },
+      "savedHistory": {
+        "recordsBeforeDogRejection": 1,
+        "recordsAfterDogRejection": 1,
+        "sameSavedRecordPreserved": true,
+        "savedMineral": "quartz",
+        "savedModelCount": 3
+      },
+      "dogRejection": {
+        "exactVisibleText": "这不是矿物，请您放入清晰的矿物照片。",
+        "passed": true
+      },
+      "catalog": {
+        "imaSpecies": 6239,
+        "crystalSpecies": 3430,
+        "imageReferences": 871,
+        "localPackagedPhotos": 117
+      },
+      "gallery": {
+        "startupReferenceRequests": [],
+        "decodedQuartzPhotos": 3,
+        "blobUrlsRevokedOnClose": 3,
+        "decodedAfterReopen": 3,
+        "freshBlobUrlsAfterReopen": true,
+        "localPhotoHashIdentityPreserved": true
+      },
+      "nativeAssetMigration": {
+        "phase": "migration-passed",
+        "historyPreserved": true,
+        "unrelatedCachePreserved": true,
+        "oldAssetCachesRemoved": 1,
+        "serviceWorkerRegistrationSupported": false,
+        "controlledServiceWorkerMigrationReproduced": false,
+        "scope": "Actual CacheStorage/IndexedDB migration; controlled ServiceWorker migration was unavailable in the native localhost bridge."
+      },
+      "standaloneWorkerProbe": {
+        "status": "message",
+        "message": {
+          "type": "ready"
+        }
+      },
+      "webViewVersion": "124.0.6367.219"
+    },
+    {
+      "environment": "api35-16k",
+      "api": 35,
+      "actualDeviceAbi": "x86_64",
+      "systemImage": "system-images;android-35;google_apis_ps16k;x86_64",
+      "kernelPageSizeBytes": 16384,
+      "nativeOsSysconfPageSizeBytes": 16384,
+      "actualExecutionAttempt": 2,
+      "effectiveAttempt": 2,
+      "effectiveJob": {
+        "id": 114276802567,
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/job/114276802567",
+        "name": "runtime (35, 35-16k, google_apis_ps16k, 16384)",
+        "headSha": "ade9b11beb0b5b59c838574657a4a633f0815193",
+        "conclusion": "success",
+        "startedAt": "2026-10-10T17:58:47Z",
+        "completedAt": "2026-10-10T18:02:48Z",
+        "requiredSteps": {
+          "Boot emulator and disconnect device networking": "success",
+          "Run packaged WebView with actual native ONNX inference": "success",
+          "Require screenshots and JSON from successful runtime tests": "success"
+        }
+      },
+      "artifact": {
+        "id": 11678116953,
+        "name": "shikuang-runtime-api-35-16k",
+        "createdAt": "2026-10-10T18:02:46Z",
+        "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/artifacts/11678116953"
+      },
+      "phase": "passed",
+      "junit": [
+        {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "offlineBefore": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "nativeGraphs": {
+        "count": 4,
+        "allManifestHashesMatched": true,
+        "allFiniteOutput": true
+      },
+      "packagedJpegs": {
+        "nativeDecoded": 117,
+        "allExpectedByteSizesAndSha256Matched": true,
+        "minDimension": 227,
+        "maxDimension": 512,
+        "activeNetworkBefore": null,
+        "activeNetworkAfter": null
+      },
+      "screenshots": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/abellaite-reference-details.png",
+          "sha256": "3420374ca70a79d859315ec30a84971f8588f6f6b3ed8b7aea60891fc4f36106"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/dog-rejection.png",
+          "sha256": "f8f7c90f5b7c01b74bc1b13dab446c84a2d2377cb9c0f9d88bb427e040823ebd"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/library-offline-overview.png",
+          "sha256": "1177442dd49014cfa717e6416048c2c0a8faaedb594234388d1306b0790a118c"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-image-references.png",
+          "sha256": "227191a77ca3ecb63d406479a4d45bc5cf6086c52017e3514aa822ff0fdddc50"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-reference-details.png",
+          "sha256": "3e2bd1db5a3950d7a7826d23a927fca53b62df90ca875a4ab8ef606c92d798f8"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/quartz-result.png",
+          "sha256": "23845e75cdb565e67ffd96b58bb4f4b22547d5db8cbe0a35046a6a9dfbccd69d"
+        }
+      ],
+      "rawEvidenceSha256": [
+        {
+          "file": "runtime-artifacts/runtime-smoke/runtime-report.json",
+          "sha256": "e00a11bc61931db2d2636a3cdc06c2b1277e27f92c30f70027b6290ed525d4c8"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/native-contract-runtime.json",
+          "sha256": "4ce2a1c4ff3d73e6886cd8789a587847f22013b5ef42315626b464056a7b54a1"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/reviewed-photo-runtime.json",
+          "sha256": "6d010413b11e44a288b977d0a7d5f35fabb76e6eba36843e998109f8341b2ef4"
+        },
+        {
+          "file": "runtime-artifacts/system-image.txt",
+          "sha256": "1f95dd2c1d1beef1c7a0baca7af44dd179dcd5b7d5784ff8d842f5375ecc0422"
+        },
+        {
+          "file": "runtime-artifacts/device-page-size.txt",
+          "sha256": "33f50728129313570f6b953c08b559d9cb5f673e981e647cee4dc10d6cd48e99"
+        },
+        {
+          "file": "runtime-artifacts/runtime-smoke/asset-migration-report.json",
+          "sha256": "de069a52d04c26d1735f128267d7afec4ea70bfdc09f3376a2e0a1c6e45fc1ac"
+        },
+        {
+          "file": "android/app/build/outputs/androidTest-results/connected/debug/TEST-emulator-5554 - 15-_app-.xml",
+          "sha256": "f4ee1d528f4ecd4b78cf26bfa2f2841e405ce1c1da64d67b0b60b339485515ab"
+        }
+      ],
+      "photoUiRecognitionVerified": true,
+      "offlineAfterCatalog": {
+        "nativeActiveNetwork": null,
+        "nativeConnected": false,
+        "nativeInternetCapability": false,
+        "nativeValidated": false,
+        "ipv4DefaultRoutes": [],
+        "ipv6DefaultRoutes": [],
+        "navigatorOnline": false
+      },
+      "visibleVersion": "2.5",
+      "quartzFixture": {
+        "key": "quartz",
+        "modelCount": 3,
+        "engine": "onnx-native-android",
+        "score": 0.6622475219104605,
+        "status": "consistent",
+        "scope": "One genuine mineral fixture regression; model score is not an accuracy estimate.",
+        "elapsedMs": 823
+      },
+      "fastFixture": {
+        "input": "same quartz fixture",
+        "result": "chrysoberyl",
+        "correct": false,
+        "modelCount": 1,
+        "engine": "onnx-native-android",
+        "scope": "Selected-model execution/cache lifecycle only, not accuracy"
+      },
+      "cancellation": {
+        "trigger": "native-progress",
+        "error": {
+          "name": "AbortError",
+          "message": "分析已停止"
+        },
+        "subsequentEnsembleQuartzResultPassed": true
+      },
+      "savedHistory": {
+        "recordsBeforeDogRejection": 1,
+        "recordsAfterDogRejection": 1,
+        "sameSavedRecordPreserved": true,
+        "savedMineral": "quartz",
+        "savedModelCount": 3
+      },
+      "dogRejection": {
+        "exactVisibleText": "这不是矿物，请您放入清晰的矿物照片。",
+        "passed": true
+      },
+      "catalog": {
+        "imaSpecies": 6239,
+        "crystalSpecies": 3430,
+        "imageReferences": 871,
+        "localPackagedPhotos": 117
+      },
+      "gallery": {
+        "startupReferenceRequests": [],
+        "decodedQuartzPhotos": 3,
+        "blobUrlsRevokedOnClose": 3,
+        "decodedAfterReopen": 3,
+        "freshBlobUrlsAfterReopen": true,
+        "localPhotoHashIdentityPreserved": true
+      },
+      "nativeAssetMigration": {
+        "phase": "migration-passed",
+        "historyPreserved": true,
+        "unrelatedCachePreserved": true,
+        "oldAssetCachesRemoved": 1,
+        "serviceWorkerRegistrationSupported": false,
+        "controlledServiceWorkerMigrationReproduced": false,
+        "scope": "Actual CacheStorage/IndexedDB migration; controlled ServiceWorker migration was unavailable in the native localhost bridge."
+      },
+      "standaloneWorkerProbe": {
+        "status": "message",
+        "message": {
+          "type": "ready"
+        }
+      },
+      "webViewVersion": "124.0.6367.219"
+    }
+  ],
+  "screenshots": {
+    "total": 19,
+    "allOriginalsManuallyReviewed": true,
+    "allHashesRecomputed": true,
+    "artifactRelativePaths": true,
+    "sceneByFilename": {
+      "legacy-webview-recovery.png": "Readable WebView update/reload recovery guide.",
+      "quartz-result.png": "Quartz ensemble candidate with visible score and separated formula.",
+      "dog-rejection.png": "Exact red non-mineral rejection and recoverable controls.",
+      "library-offline-overview.png": "Visible2.5 badge and6239/871/117 offline-library information.",
+      "quartz-reference-details.png": "Quartz subscripted formula, Chinese hardness and authoritative sources.",
+      "quartz-image-references.png": "Actual packaged Quartz photo, author and CC license.",
+      "abellaite-reference-details.png": "Abellaite name and readable subscripted formula; no classifier coverage claim."
+    }
+  },
+  "preservedFirst16KBFailure": {
+    "runtimeRun": 38073430916,
+    "attempt": 1,
+    "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/attempts/1",
+    "artifact": {
+      "id": 11677951495,
+      "name": "shikuang-runtime-api-35-16k",
+      "createdAt": "2026-10-10T17:55:41Z",
+      "url": "https://github.com/3497907003-sketch/shikuang-android/actions/runs/38073430916/artifacts/11677951495"
+    },
+    "pageSizeBytes": 16384,
+    "failure": "APP CRASH(NATIVE), signal11 SIGSEGV, fault0x10, null pointer dereference",
+    "applicationPid": 5541,
+    "topNativeFrame": "libart.so art::ClassTable::Lookup",
+    "javaFrameworkPath": [
+      "ArrayUtils.emptyArray",
+      "SpannableStringBuilder.getSpans/setSpan",
+      "BaseInputConnection.finishComposingText",
+      "RemoteInputConnectionImpl"
+    ],
+    "observedPhase": "After migration-passed proof and MainActivity destruction; before photo inference",
+    "historyMigrationHadPassed": true,
+    "photoOnnxInferenceHadStarted": false,
+    "appOrOrtNativeFrameObserved": false,
+    "rootCauseConfirmed": false,
+    "rawEvidenceSha256": [
+      {
+        "file": "runtime-artifacts/logcat-final.txt",
+        "sha256": "535e34a2b4e6138408ed7102700b1e567cef7be49c515d1eb74ff95ff2123338"
+      },
+      {
+        "file": "runtime-artifacts/app-exit-info.txt",
+        "sha256": "94d3a4ffdc1733fa6416191740a0dc8679dd014024253b7b1efaeb37d44ef553"
+      },
+      {
+        "file": "runtime-artifacts/device-page-size.txt",
+        "sha256": "33f50728129313570f6b953c08b559d9cb5f673e981e647cee4dc10d6cd48e99"
+      },
+      {
+        "file": "runtime-artifacts/system-image.txt",
+        "sha256": "1f95dd2c1d1beef1c7a0baca7af44dd179dcd5b7d5784ff8d842f5375ecc0422"
+      }
+    ],
+    "retry": "Same-commit failed-job rerun passed every 16KB gate. Successful retry does not establish a root cause or demonstrate a fix."
+  },
+  "signatureBoundary": {
+    "runtimeApks": "CI debug-signed emulator APKs",
+    "deliverableApk": "Separately built APK using the persistent signing key at the identical ade9 source commit and packaged source assets; not the same tested APK binary.",
+    "persistentSignerCertificateSha256RootVerified": "DC81C921827B7BBDAA9E0C7FD8C8492CA2239AAAB9795421698313025A6B99B6",
+    "runtimeDebugBinaryEqualsSignedDeliverable": false
+  },
+  "notValidated": [
+    "Physical ARM64/OEM/low-memory/camera/video flows not executed by these x86_64 emulator tests",
+    "No independent shipped98class Kappa measurement, no proof that6239catalogspecies are image-recognizable",
+    "Single-model fast fixture misclassifiedQuartz; ensemble recognized that fixture, not a dataset accuracy claim",
+    "Native controlled-service-worker migration unavailable; realCacheStorage/IndexedDB preserved, controlledPWA migration has separate browser evidence",
+    "16KB attempt1 ART/framework native crash retained; root cause remains unconfirmed despite successful same-head retry"
+  ],
+  "independentShippedModelAccuracyValidated": false,
+  "physicalAndroidDevicesValidated": false
+}

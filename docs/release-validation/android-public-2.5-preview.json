@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-10T18:21:05.570234+00:00",
+  "passed": true,
+  "release": {
+    "id": 409120208,
+    "tag": "v2.5.0-preview.1",
+    "draft": false,
+    "prerelease": true,
+    "target_commit": "ade9b11beb0b5b59c838574657a4a633f0815193",
+    "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/tag/v2.5.0-preview.1"
+  },
+  "anonymous_requests": true,
+  "authenticated_headers_sent": false,
+  "assets": [
+    {
+      "name": "shikuang-2.5.0-preview.1-android.apk",
+      "asset_id": 628660874,
+      "bytes": 121431443,
+      "official_digest": "sha256:b65cadf0528eba615918a8872b5c2562c39992bed097380239508c18ea482009",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/shikuang-2.5.0-preview.1-android.apk",
+      "passed": true,
+      "anonymous_head": {
+        "http_status": 200,
+        "redirects": 1,
+        "downloaded_body_bytes": 0,
+        "tls_verify_result": 0,
+        "content_length": 121431443
+      }
+    },
+    {
+      "name": "android-preview-gate.json",
+      "asset_id": 628660627,
+      "bytes": 45163,
+      "official_digest": "sha256:088472ea85d0cb613d29aec031282c20c728189f0f7dc9b4a1e70052d3f76740",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/android-preview-gate.json",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 45163,
+        "actual_sha256": "088472ea85d0cb613d29aec031282c20c728189f0f7dc9b4a1e70052d3f76740"
+      }
+    },
+    {
+      "name": "ANDROID_SOURCE_SYNC.json",
+      "asset_id": 628660492,
+      "bytes": 27431,
+      "official_digest": "sha256:d6ecdb7f1187afd3aea6911bbf3baee6231d8978f7deefde3369dddddb54b483",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/ANDROID_SOURCE_SYNC.json",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 27431,
+        "actual_sha256": "d6ecdb7f1187afd3aea6911bbf3baee6231d8978f7deefde3369dddddb54b483"
+      }
+    },
+    {
+      "name": "apk-native-compatibility.json",
+      "asset_id": 628660673,
+      "bytes": 7554,
+      "official_digest": "sha256:1f7b52be2163246628e9e862fb6b8ab1ebf1803c65d32c1eb09df35b750c8f96",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/apk-native-compatibility.json",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 7554,
+        "actual_sha256": "1f7b52be2163246628e9e862fb6b8ab1ebf1803c65d32c1eb09df35b750c8f96"
+      }
+    },
+    {
+      "name": "apk-package-verification.txt",
+      "asset_id": 628660721,
+      "bytes": 5740,
+      "official_digest": "sha256:ee4fa6dc1c399baf4f36546c3256b8af729139e0ffe9bfe2b9569d3f666f789e",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/apk-package-verification.txt",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 5740,
+        "actual_sha256": "ee4fa6dc1c399baf4f36546c3256b8af729139e0ffe9bfe2b9569d3f666f789e"
+      }
+    },
+    {
+      "name": "apk-signature-verification.txt",
+      "asset_id": 628660787,
+      "bytes": 953,
+      "official_digest": "sha256:4db6f02daa55fbd4c32d4bb0524832927c6b1e2a0b8a0c4a7b8804c48308cb55",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/apk-signature-verification.txt",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 953,
+        "actual_sha256": "4db6f02daa55fbd4c32d4bb0524832927c6b1e2a0b8a0c4a7b8804c48308cb55"
+      }
+    },
+    {
+      "name": "apk-zipalign-16k.txt",
+      "asset_id": 628660831,
+      "bytes": 78201,
+      "official_digest": "sha256:d537fb934f2274b9ea2ada69ef8b9374a61db18a8c7d23eb4e7e40bffa532d14",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/apk-zipalign-16k.txt",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 78201,
+        "actual_sha256": "d537fb934f2274b9ea2ada69ef8b9374a61db18a8c7d23eb4e7e40bffa532d14"
+      }
+    },
+    {
+      "name": "SHA256SUMS",
+      "asset_id": 628660554,
+      "bytes": 661,
+      "official_digest": "sha256:d9b929df8552e3d25278b23d771a383a703f84189646ad797236322eb15b3d08",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-android/releases/download/v2.5.0-preview.1/SHA256SUMS",
+      "passed": true,
+      "anonymous_get": {
+        "actual_bytes": 661,
+        "actual_sha256": "d9b929df8552e3d25278b23d771a383a703f84189646ad797236322eb15b3d08"
+      }
+    }
+  ],
+  "source_identity": {
+    "android_commit": "ade9b11beb0b5b59c838574657a4a633f0815193",
+    "web_commit": "697be109a20cf5ce2724d68efd670c74949f38b6",
+    "source_asset_count": 157,
+    "reviewed_photo_count": 117,
+    "source_sync_sha256": "d6ecdb7f1187afd3aea6911bbf3baee6231d8978f7deefde3369dddddb54b483",
+    "model_manifest_sha256": "ddbe27e79489df0ff63647b37c17f701e458a59e076df14d47d93873085ae7fa"
+  },
+  "package": {
+    "packageName": "com.shikuang.app.preview",
+    "versionCode": 25001,
+    "versionName": "2.5.0-preview.1",
+    "certificateSha256": "DC81C921827B7BBDAA9E0C7FD8C8492CA2239AAAB9795421698313025A6B99B6",
+    "apkSha256": "b65cadf0528eba615918a8872b5c2562c39992bed097380239508c18ea482009",
+    "apkBytes": 121431443,
+    "officialSdkBuildTools": "35.0.0",
+    "elf16kVerified": true,
+    "zip16kVerified": true
+  },
+  "signature": {
+    "single_signer": true,
+    "v2_verified": true,
+    "v3_verified": false,
+    "certificate_sha256": "DC81C921827B7BBDAA9E0C7FD8C8492CA2239AAAB9795421698313025A6B99B6"
+  },
+  "runtime_matrices": [
+    {
+      "matrix": "24",
+      "sdk": 24,
+      "page_size": 4096,
+      "phase": "unsupported-webview-recovery-passed",
+      "native_graphs": 4,
+      "photos_decoded": 117,
+      "screenshot_count": 1,
+      "screenshot_sha_metadata_valid": true,
+      "limitation": "API24 factory WebView recovery,actual four Java graphs and117 JPEG decodes passed; photo UI recognition is not claimed."
+    },
+    {
+      "matrix": "30",
+      "sdk": 30,
+      "page_size": 4096,
+      "phase": "passed",
+      "native_graphs": 4,
+      "photos_decoded": 117,
+      "screenshot_count": 6,
+      "screenshot_sha_metadata_valid": true,
+      "limitation": "Regression fixtures and runtime compatibility only; real-scene accuracy/Kappa not established."
+    },
+    {
+      "matrix": "35",
+      "sdk": 35,
+      "page_size": 4096,
+      "phase": "passed",
+      "native_graphs": 4,
+      "photos_decoded": 117,
+      "screenshot_count": 6,
+      "screenshot_sha_metadata_valid": true,
+      "limitation": "Regression fixtures and runtime compatibility only; real-scene accuracy/Kappa not established."
+    },
+    {
+      "matrix": "35-16k",
+      "sdk": 35,
+      "page_size": 16384,
+      "phase": "passed",
+      "native_graphs": 4,
+      "photos_decoded": 117,
+      "screenshot_count": 6,
+      "screenshot_sha_metadata_valid": true,
+      "limitation": "Regression fixtures and runtime compatibility only; real-scene accuracy/Kappa not established."
+    }
+  ],
+  "screenshot_png_evidence_count": 19,
+  "old_failed_artifact_retained": {
+    "id": 11677951495,
+    "official_digest": "sha256:ea7f28177eff6ea47aff617463160ff7cacd8398676f996d5973a963d4cf9623",
+    "expired_in_gate_record": false,
+    "excluded_from_success": true,
+    "prior_runtime_attempt": 1,
+    "prior_conclusion": "failure"
+  },
+  "native_abi_structure": {
+    "abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86",
+      "x86_64"
+    ],
+    "libraries": 8,
+    "structural_failures": [],
+    "all_64_bit_libraries_elf16k_compatible": true,
+    "32_bit_elf16k_status": "not applicable; null in structural report",
+    "runtime_claim_from_structure_only": false
+  },
+  "gate_passed": true,
+  "production_accuracy_claim": false,
+  "known_limits": "API24 factory WebView recovery/native graphs/117 JPEG decodes is distinguished from photo UI inference. Other3 matrices are emulator regression, not all physical laboratory phones or human camera/save-dialog tests. Inherited98-label weights remain packaged; retraining pilot Kappa0.6564 was not deployed.",
+  "review_scope": "Anonymous API metadata; APK HEAD only; all7 small attachments actual anonymous bytes/SHA verified. Gate identities,4 environment summaries,117 photo assets,19 screenshot SHA metadata and retained failed artifact independently read. Full APK/SDK/16KB and screenshot pixels were verified before publication, not re-downloaded or re-executed here.",
+  "code_or_git_changes": false,
+  "release_mutation_performed": false
+}

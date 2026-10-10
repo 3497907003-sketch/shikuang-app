@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-10T18:11:23.427519+00:00",
+  "passed": true,
+  "release": {
+    "id": 409107126,
+    "tag": "v2.5.0-preview.1",
+    "draft": false,
+    "prerelease": true,
+    "target_commit": "3f94d9aeae55cd8c1bb342ab3e937c8f2307c262",
+    "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/tag/v2.5.0-preview.1"
+  },
+  "anonymous_requests": true,
+  "authenticated_headers_sent": false,
+  "assets": [
+    {
+      "name": "Shikuang-2.5.0-preview.1-windows-x64.zip",
+      "asset_id": 628629395,
+      "bytes": 406485949,
+      "official_digest": "sha256:1369269885f45fb0f8da54b97167e11300a950ad1147b9e2b0c511e0fbf4e73f",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/Shikuang-2.5.0-preview.1-windows-x64.zip",
+      "anonymous_head": {
+        "curl_exit": 0,
+        "http_status": 200,
+        "redirects": 1,
+        "downloaded_body_bytes": 0.0,
+        "tls_verify_result": 0,
+        "content_length": 406485949
+      },
+      "passed": true
+    },
+    {
+      "name": "Shikuang-2.5.0-preview.1-macos-arm64.zip",
+      "asset_id": 628613905,
+      "bytes": 83020386,
+      "official_digest": "sha256:d5cd1a93c61dc1b73c99107f6b5650c5fca581d64a52fb680de4ea5e28ddac8e",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/Shikuang-2.5.0-preview.1-macos-arm64.zip",
+      "anonymous_head": {
+        "curl_exit": 0,
+        "http_status": 200,
+        "redirects": 1,
+        "downloaded_body_bytes": 0.0,
+        "tls_verify_result": 0,
+        "content_length": 83020386
+      },
+      "passed": true
+    },
+    {
+      "name": "windows-gate-report.json",
+      "asset_id": 628630051,
+      "bytes": 3492,
+      "official_digest": "sha256:ba718b3c44460b5f7f27c083ede5578ddf2c9fa7b2e07c56def0928bcf4da77b",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/windows-gate-report.json",
+      "anonymous_get": {
+        "curl_exit": 0,
+        "actual_bytes": 3492,
+        "actual_sha256": "ba718b3c44460b5f7f27c083ede5578ddf2c9fa7b2e07c56def0928bcf4da77b"
+      },
+      "passed": true
+    },
+    {
+      "name": "macos-gate-report.json",
+      "asset_id": 628605582,
+      "bytes": 8777,
+      "official_digest": "sha256:103f884d43fcc43c50a911272e680115577b38eda94485bac6088d0872ac4513",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/macos-gate-report.json",
+      "anonymous_get": {
+        "curl_exit": 0,
+        "actual_bytes": 8777,
+        "actual_sha256": "103f884d43fcc43c50a911272e680115577b38eda94485bac6088d0872ac4513"
+      },
+      "passed": true
+    },
+    {
+      "name": "macos-independent-gallery-decode.json",
+      "asset_id": 628615203,
+      "bytes": 1063,
+      "official_digest": "sha256:ec0539de2818c27811eff9ef0f2dc43327ee03a78d9f40585e00910e231fd81a",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/macos-independent-gallery-decode.json",
+      "anonymous_get": {
+        "curl_exit": 0,
+        "actual_bytes": 1063,
+        "actual_sha256": "ec0539de2818c27811eff9ef0f2dc43327ee03a78d9f40585e00910e231fd81a"
+      },
+      "passed": true
+    },
+    {
+      "name": "SHA256SUMS-windows.txt",
+      "asset_id": 628629993,
+      "bytes": 107,
+      "official_digest": "sha256:a85d719afec894b7a433cba11b6cade7fff1abb80f84e710a8b3251079342cb4",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/SHA256SUMS-windows.txt",
+      "anonymous_get": {
+        "curl_exit": 0,
+        "actual_bytes": 107,
+        "actual_sha256": "a85d719afec894b7a433cba11b6cade7fff1abb80f84e710a8b3251079342cb4"
+      },
+      "passed": true
+    },
+    {
+      "name": "SHA256SUMS-macos.txt",
+      "asset_id": 628605581,
+      "bytes": 107,
+      "official_digest": "sha256:f61fdb9f41c1278247bec0fe59c568f058b32af98612f2b2f2d3db5aff8bf469",
+      "public_url": "https://github.com/3497907003-sketch/shikuang-desktop/releases/download/v2.5.0-preview.1/SHA256SUMS-macos.txt",
+      "anonymous_get": {
+        "curl_exit": 0,
+        "actual_bytes": 107,
+        "actual_sha256": "f61fdb9f41c1278247bec0fe59c568f058b32af98612f2b2f2d3db5aff8bf469"
+      },
+      "passed": true
+    }
+  ],
+  "scope": "Anonymous public release API; HEAD only for both large installers; byte/SHA verified anonymous downloads of the five small reports/checksum files. No temporary redirect URL recorded; no large installer re-download.",
+  "known_limits": {
+    "macos": "Apple Silicon arm64; adhoc signed, not Developer ID signed or notarized. Intel Mac unverified.",
+    "windows": "Actual packaged two-process tests on Windows Server 2022 x64 with fixed WebView2. No complete Windows10/11 physical-device, human camera or native save-dialog verification; no native screenshots provided.",
+    "recognition": "Inherited98-label weights; eight-class retraining pilot did not reach Kappa0.95 and was not packaged. Runtime Quartz/dog checks and 117 source-reviewed photos are not field/lab accuracy validation.",
+    "offline": "Windows adapters/routes physically disabled in tests. macOS blocked external HTTP(S) at WKWebView, not the whole host network."
+  },
+  "code_or_git_changes": false,
+  "release_mutation_performed": false
+}
