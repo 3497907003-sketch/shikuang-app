@@ -235,7 +235,10 @@ class MetricTests(unittest.TestCase):
         self.assertGreater(result['kappa_bootstrap_undefined_resamples'], 5)
         self.assertEqual(result['kappa_bootstrap_undefined_resamples'] + result['kappa_bootstrap_defined_resamples'], 100)
         result = training.bootstrap_kappa(np.tile(np.eye(2), (10, 1)), np.tile([0, 1], 10), ['a', 'b'], 1, repeats=100)
-        self.assertEqual(result['kappa_bootstrap_95_ci'], [1, 1])
+        self.assertIsNone(result['kappa_bootstrap_95_ci'])
+        self.assertIn('No observed errors', result['kappa_interval_withheld_reason'])
+        self.assertLess(result['accuracy_wilson_95_ci'][0], 0.9)
+        self.assertAlmostEqual(result['accuracy_wilson_95_ci'][1], 1)
 
     @unittest.skipUnless(shutil.which('node'), 'Node is required to compare the real Core implementation')
     def test_temperature_models_views_and_group_scores_match_real_core(self):

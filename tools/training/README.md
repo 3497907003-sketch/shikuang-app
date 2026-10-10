@@ -18,6 +18,8 @@
 
 训练提供头部热身、受限真实图增强、权重衰减、dropout、标签平滑、梯度裁剪与早停。逐类验证召回率会调整下一轮的有界损失权重，这是用户要求的及时反馈；验证集同时用于权重选择与温度拟合，因此验证结果是开发指标，不能称为未见数据上的最终准确率。训练分层抽样的 Kappa 和训练/验证差距用于观察过拟合，也不是独立验收数据。标签噪声、来源偏差或共生主目标错误仍需回到数据审核处理。
 
+真实照片增强包含中心附近裁剪、翻转、直角转向、小角度旋转、受限透视/亮度/对比度/饱和度变化、轻微模糊与小范围遮挡；不得用生成矿物图片替代原照片。`stress` 命令在冻结验证照片上测试 90/180 度转向、75% 中心区域、0.7/1.3 倍亮度、轻微模糊和 JPEG 60 压缩，分别报告单模型与多模型的真实预测变化。它不访问测试集作推理，也不产生新的实验室实物样本；裁剪可能移走来源标记的主矿物，这些变化不能自动当作真实现场准确率或独立泛化证明。
+
 训练监测先固定每组至多三张图。总量不超过 1024 张时评估所有训练组，否则逐类等额抽取完整组，避免按 CSV 前部截断遗漏最后类别或截断某组的角度。报告实际监测图片数、组数、逐类组数及是否覆盖全部训练组。`train_validation_kappa_gap` 是该训练监测队列与验证组的差值，不能称作全部原始训练照片与验证集的准确率差距。
 
 训练完成后，先冻结选定的分类器与模式，再运行一次验证集温度校准。每模型温度仅通过验证组拟合（每组总照片 NLL 权重相同，0.3–5 范围）。评分按每模型 `softmax(logits/temperature)`、每张图平均模型、每个组平均照片，与 App 的 Core 顺序一致；原始 logits 不能先合并后做一次 softmax。
@@ -32,7 +34,7 @@ App 最多输入三张照片。验证与测试组在推理前按已审核照片 
 
 结果包括组级 Top-1、Top-5、宏 F1、Kappa、混淆矩阵、每类支持数与召回、组重采样置信区间、ECE/Brier/NLL、单模型与多模型报告。是否达到 0.95 仅表示本次来源标记数据上的观察值，报告样本量与置信区间仍必须一起解读。这个分类器评估不包含未覆盖矿物、非矿物输入 gate、共生矿物拒判或 App 的一致性/低分阈值验收；不能将其称为所有矿物、任意场景或完整手机识别链路的准确率。
 
-报告分别显示观察值达到目标和置信区间下界支持目标。小样本的自助重采样可能只含一个类别而使 Kappa 未定义；这些次数单独报告，达到 5% 时不发布看似精确的区间，避免两张刚好正确的照片产生伪精确 `[1,1]`。即使区间较窄，它也只描述当前来源分布，不证明复杂背景或实验室外推。
+报告分别显示观察值达到目标和置信区间下界支持目标。小样本的自助重采样可能只含一个类别而使 Kappa 未定义；这些次数单独报告，达到 5% 时不发布看似精确的区间。任何全部预测正确的样本也不发布退化的 `[1,1]` Kappa 区间，因为从零次观察错误中重采样无法估计未见错误的不确定性；另报正确率的 Wilson 区间，不能将其冒充 Kappa 区间。即使区间较窄，它也只描述当前来源分布，不证明复杂背景或实验室外推。
 
 保留审核后的可选 `scene_source_domain,background,lighting,device_id,coexistence,lab_scene_confirmed,specimen_regularity` 可获得分场景统计。没有字段或未观察值明确列为 `not_recorded`，组内不同角度的条件不一致/不完整列为 `mixed_or_incomplete`；不据这些组编造某个场景准确率。分组来源标记也不能独立证明照片拍摄环境或完成了实验室鉴定。
 
@@ -51,6 +53,7 @@ App 最多输入三张照片。验证与测试组在推理前按已审核照片 
 ```sh
 python tools/training/train.py train --train-csv DATA/train.csv --val-csv DATA/val.csv --test-csv DATA/test.csv --labels DATA/labels.json --data-root DATA --imagenet-weights WEIGHTS/model.safetensors --imagenet-source-url https://OFFICIAL-SOURCE/model.safetensors --output WORK/classifier.pt
 python tools/training/train.py calibrate --val-csv DATA/val.csv --labels DATA/labels.json --data-root DATA --checkpoints WORK/classifier.pt WORK/second.pt --output WORK/calibration.json
+python tools/training/train.py stress --val-csv DATA/val.csv --labels DATA/labels.json --data-root DATA --checkpoints WORK/classifier.pt WORK/second.pt --calibration WORK/calibration.json --output WORK/validation-stress.json
 python tools/training/train.py evaluate --test-csv DATA/test.csv --labels DATA/labels.json --data-root DATA --checkpoints WORK/classifier.pt WORK/second.pt --calibration WORK/calibration.json --output WORK/test.json
 python tools/training/train.py export --checkpoint WORK/classifier.pt --output WORK/classifier.onnx
 ```

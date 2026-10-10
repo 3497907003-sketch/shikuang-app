@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import io
 import json
 import math
 import random
@@ -21,7 +22,7 @@ from urllib.parse import urldefrag
 import numpy as np
 import torch
 import torch.nn as nn
-from PIL import Image, ImageOps, __version__ as PIL_VERSION
+from PIL import Image, ImageOps, ImageEnhance, ImageFilter, __version__ as PIL_VERSION
 from safetensors.torch import load_file
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms as T
@@ -228,9 +229,35 @@ class CenterSquare:
                             box=(left, top, left + side, top + side))
 
 
+class RandomQuarterTurn:
+    def __call__(self, image):
+        operation = random.choice([None, Image.Transpose.ROTATE_90, Image.Transpose.ROTATE_180, Image.Transpose.ROTATE_270])
+        return image if operation is None else image.transpose(operation)
+
+
+VALIDATION_VARIANTS = ('original', 'rotate90', 'rotate180', 'center_roi75', 'dimmer', 'brighter', 'mild_blur', 'jpeg60')
+
+
+def validation_variant(image, variant):
+    if variant == 'original': return image
+    if variant in ('rotate90', 'rotate180'):
+        return image.transpose(Image.Transpose.ROTATE_90 if variant == 'rotate90' else Image.Transpose.ROTATE_180)
+    if variant == 'center_roi75':
+        w, h = image.size; side = min(w, h) * 0.75; left, top = (w - side) / 2, (h - side) / 2
+        return image.resize((SIZE, SIZE), Image.Resampling.BILINEAR, box=(left, top, left + side, top + side))
+    if variant in ('dimmer', 'brighter'):
+        return ImageEnhance.Brightness(image).enhance(0.7 if variant == 'dimmer' else 1.3)
+    if variant == 'mild_blur': return image.filter(ImageFilter.GaussianBlur(radius=0.7))
+    if variant == 'jpeg60':
+        buffer = io.BytesIO(); image.save(buffer, format='JPEG', quality=60); buffer.seek(0)
+        with Image.open(buffer) as decoded: return decoded.convert('RGB')
+    raise ValueError('Unknown validation-only perturbation')
+
+
 class PhotoDataset(Dataset):
-    def __init__(self, rows, labels, train=False, strength='moderate'):
+    def __init__(self, rows, labels, train=False, strength='moderate', variant='original'):
         self.rows, self.classes = rows, {key: i for i, key in enumerate(labels)}
+        self.variant = variant
         if train:
             distortion = 0.08 if strength == 'moderate' else 0.12
             brightness = 0.15 if strength == 'moderate' else 0.23
@@ -238,6 +265,7 @@ class PhotoDataset(Dataset):
                 T.RandomResizedCrop(SIZE, scale=(0.65, 1.0), ratio=(0.85, 1.18),
                                     interpolation=T.InterpolationMode.BILINEAR),
                 T.RandomHorizontalFlip(), T.RandomVerticalFlip(p=0.1),
+                T.RandomApply([RandomQuarterTurn()], p=0.5 if strength == 'field' else 0.25),
                 T.RandomRotation(18, interpolation=T.InterpolationMode.BILINEAR),
                 T.RandomPerspective(distortion_scale=distortion, p=0.2,
                                     interpolation=T.InterpolationMode.BILINEAR),
@@ -257,7 +285,7 @@ class PhotoDataset(Dataset):
         row = self.rows[index]
         with Image.open(row['resolved_path']) as source:
             image = ImageOps.exif_transpose(source).convert('RGB')
-        return self.transform(image), self.classes[row['class']], index
+        return self.transform(validation_variant(image, self.variant)), self.classes[row['class']], index
 
 
 def seed_worker(worker_id):
@@ -268,7 +296,7 @@ def seed_worker(worker_id):
 
 def loader(rows, labels, args, train=False):
     generator = torch.Generator().manual_seed(args.seed)
-    return DataLoader(PhotoDataset(rows, labels, train, getattr(args, 'augmentation', 'moderate')),
+    return DataLoader(PhotoDataset(rows, labels, train, getattr(args, 'augmentation', 'moderate'), getattr(args, 'variant', 'original')),
                       batch_size=args.batch_size, shuffle=train, num_workers=args.workers,
                       persistent_workers=args.workers > 0, worker_init_fn=seed_worker,
                       generator=generator)
@@ -376,11 +404,20 @@ def bootstrap_kappa(scores, truth, labels, seed, repeats=1000):
         if value is not None:
             kappas.append(value)
     undefined = repeats - len(kappas)
+    correct = int((scores.argmax(axis=1) == truth).sum())
+    n = len(truth); fraction = correct / n; z = 1.959963984540054
+    denominator = 1 + z * z / n
+    center = (fraction + z * z / (2 * n)) / denominator
+    radius = z * math.sqrt(fraction * (1 - fraction) / n + z * z / (4 * n * n)) / denominator
+    perfect = correct == n
     return {'kappa_bootstrap_95_ci': np.quantile(kappas, [0.025, 0.975]).tolist()
-            if kappas and undefined < repeats * 0.05 else None,
+            if kappas and undefined < repeats * 0.05 and not perfect else None,
+            'accuracy_wilson_95_ci': [max(0.0, center - radius), min(1.0, center + radius)],
+            'kappa_interval_withheld_reason': 'No observed errors: empirical resampling cannot estimate unseen-error uncertainty.' if perfect
+            else 'At least 5 percent of resamples have undefined Kappa.' if undefined >= repeats * 0.05 else None,
             'kappa_bootstrap_defined_resamples': len(kappas),
             'kappa_bootstrap_undefined_resamples': undefined,
-            'kappa_bootstrap_method': 'Specimen/source group resampling; interval withheld if at least 5% of resamples have undefined Kappa.'}
+            'kappa_bootstrap_method': 'Specimen/source group resampling; interval withheld for a perfect sample or at least 5% undefined Kappa. Wilson interval describes accuracy on this source distribution, not laboratory extrapolation.'}
 
 
 @torch.no_grad()
@@ -575,7 +612,7 @@ def predict_checkpoints(args, rows):
         model, ck = model_from_checkpoint(path, device)
         if ck['labels'] != labels: raise ValueError('Checkpoint label order differs')
         frozen_partitions(ck, args, labels)
-        split = 'val' if args.command == 'calibrate' else 'test'
+        split = 'val' if args.command in ('calibrate', 'stress') else 'test'
         if ck['partition_hashes'][split] != digest(getattr(args, split + '_csv')):
             raise ValueError('Evaluation split differs from the frozen training partition')
         logits, current_truth = infer(model, loader(rows, labels, args), device)
@@ -626,6 +663,45 @@ def calibration(args):
         report['per_model_validation_metrics'].append(dict(checkpoint, metrics=metrics(scores, target, labels),
                                                           confidence_calibration=confidence_metrics(scores, target)))
     save_json(args.output, report); print(json.dumps({k: report[k] for k in ('temperatures', 'groups', 'validation_only')}, ensure_ascii=False), flush=True)
+
+
+def stress(args):
+    """Development diagnostics on transformed validation pixels, never a new field holdout."""
+    labels = read_labels(args.labels); all_rows = read_rows(args.val_csv, args.data_root, labels)
+    rows = evaluation_rows(all_rows)
+    calibration = json.loads(Path(args.calibration).read_text(encoding='utf-8'))
+    if (not calibration.get('validation_only') or calibration['labels'] != labels or
+            calibration['validation_sha256'] != digest(args.val_csv) or
+            [digest(p) for p in args.checkpoints] != [p['sha256'] for p in calibration['checkpoints']] or
+            len(calibration['temperatures']) != len(args.checkpoints) or
+            any(not isinstance(t, (int, float)) or not 0.3 <= t <= 5 for t in calibration['temperatures'])):
+        raise ValueError('Stress diagnostics require the frozen validation-only calibration')
+    report = {'schema': 'shikuang-validation-stress-v1', 'validation_only': True,
+              'validation_sha256': digest(args.val_csv), 'calibration_sha256': digest(args.calibration),
+              'scope': 'Controlled transformations of the same reviewed validation photographs. Not independent lab, phone or field photographs; ROI may exclude the labelled target.',
+              'variants': {}, 'test_inferred': False}
+    baseline = None; per_model_baselines = []
+    for variant in VALIDATION_VARIANTS:
+        args.variant = variant
+        outputs, truth, checkpoints = predict_checkpoints(args, rows)
+        scores, targets, groups = grouped(ensemble_probabilities(outputs, calibration['temperatures']), truth, rows)
+        predictions = scores.argmax(axis=1)
+        if baseline is None: baseline = predictions
+        report['variants'][variant] = {'metrics': metrics(scores, targets, labels),
+                                       'groups': len(groups), 'top1_stability_to_original': float((predictions == baseline).mean()),
+                                       'confidence_calibration': confidence_metrics(scores, targets)}
+        single = []
+        for index, (values, temperature, checkpoint) in enumerate(zip(outputs, calibration['temperatures'], checkpoints)):
+            model_scores, model_targets, _ = grouped(probabilities(values, temperature), truth, rows)
+            predicted = model_scores.argmax(axis=1)
+            if variant == 'original': per_model_baselines.append(predicted)
+            single.append(dict(checkpoint, metrics=metrics(model_scores, model_targets, labels),
+                               top1_stability_to_original=float((predicted == per_model_baselines[index]).mean())))
+        report['variants'][variant]['per_model_metrics'] = single
+        print(json.dumps({'validation_variant': variant, 'kappa': report['variants'][variant]['metrics']['kappa'],
+                          'top1_stability_to_original': report['variants'][variant]['top1_stability_to_original']}), flush=True)
+    report['checkpoints'] = checkpoints
+    save_json(args.output, report)
 
 
 def evaluate(args):
@@ -725,12 +801,12 @@ def main():
     train_parser.add_argument('--min-delta', type=float, default=0.001)
     train_parser.add_argument('--augmentation', choices=['moderate', 'field'], default='moderate')
     train_parser.set_defaults(action=train)
-    for name, action in [('calibrate', calibration), ('evaluate', evaluate)]:
+    for name, action in [('calibrate', calibration), ('stress', stress), ('evaluate', evaluate)]:
         p = sub.add_parser(name)
-        p.add_argument('--' + ('val-csv' if name == 'calibrate' else 'test-csv'), type=Path, required=True)
+        p.add_argument('--' + ('test-csv' if name == 'evaluate' else 'val-csv'), type=Path, required=True)
         for field in ('labels', 'data-root', 'output'): p.add_argument('--' + field, type=Path, required=True)
         p.add_argument('--checkpoints', nargs='+', type=Path, required=True)
-        if name == 'evaluate': p.add_argument('--calibration', type=Path, required=True)
+        if name in ('stress', 'evaluate'): p.add_argument('--calibration', type=Path, required=True)
         p.set_defaults(action=action)
     p = sub.add_parser('export')
     p.add_argument('--checkpoint', type=Path, required=True); p.add_argument('--output', type=Path, required=True); p.set_defaults(action=export)
