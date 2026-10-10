@@ -164,6 +164,30 @@ def evaluation_rows(rows, maximum=MAX_VIEWS):
             for row in sorted(groups[group], key=lambda item: item['sha256'])[:maximum]]
 
 
+def training_audit_rows(rows, labels, maximum=1024):
+    """All training groups when bounded; otherwise equal whole-group quotas.
+
+    An audit group keeps the same fixed one-to-three views as validation. CSV
+    ordering cannot remove the final classes or cut a selected group in half.
+    """
+    selected = evaluation_rows(rows)
+    groups = defaultdict(list)
+    for row in selected:
+        groups[row['group_id']].append(row)
+    by_class = {key: [] for key in labels}
+    for group in sorted(groups):
+        key = groups[group][0]['class']
+        if key not in by_class or any(row['class'] != key for row in groups[group]):
+            raise ValueError('Training audit needs consistent supported group labels')
+        by_class[key].append(groups[group])
+    if not isinstance(maximum, int) or maximum < len(labels) * MAX_VIEWS or any(not groups for groups in by_class.values()):
+        raise ValueError('Training audit budget/support cannot retain every output class')
+    if len(selected) <= maximum:
+        return selected
+    quota = maximum // (len(labels) * MAX_VIEWS)
+    return [row for key in labels for group in by_class[key][:quota] for row in group]
+
+
 def frozen_partitions(checkpoint, args, labels):
     paths, hashes = checkpoint.get('partition_paths'), checkpoint.get('partition_hashes')
     if not isinstance(paths, dict) or not isinstance(hashes, dict) or set(paths) != set(SPLIT_RATIOS):
@@ -449,11 +473,8 @@ def train(args):
     train_loader = loader(rows['train'], labels, args, True)
     val_rows = evaluation_rows(rows['val'])
     val_loader = loader(val_rows, labels, args)
-    audit_rows = evaluation_rows(rows['train'])
-    # A deterministic, class-stratified monitoring sample; it is never an independent holdout.
-    by_class = {key: [row for row in audit_rows if row['class'] == key] for key in labels}
-    limit = max(1, 1024 // len(labels))
-    audit_rows = [row for key in labels for row in by_class[key][:limit]]
+    audit_rows = training_audit_rows(rows['train'], labels)
+    audit_group_labels = {row['group_id']: row['class'] for row in audit_rows}
     audit_loader = loader(audit_rows, labels, args)
     counts = np.asarray([audit['train']['class_counts'][key] for key in labels], dtype=float)
     base_weights = np.sqrt(np.median(counts) / counts).clip(0.65, 1.6)
@@ -485,7 +506,11 @@ def train(args):
                                              'selection': 'ascending reviewed SHA256 before inference'},
                   'physical_specimen_partition_proven': False,
                   'partition_scope': 'Recorded IDs/source proxies are audited; source-photo proxies do not prove physical-specimen exclusivity.',
-                  'training_audit_scope': 'Class-stratified training groups, capped at 1024 photos; monitoring only, not an unseen holdout.',
+                  'training_audit_scope': 'All training groups when at most 1024 capped-view photos, otherwise equal whole-group quotas per class. Monitoring, not full-photo training accuracy or an unseen holdout.',
+                  'training_audit_photos': len(audit_rows),
+                  'training_audit_groups': len({row['group_id'] for row in audit_rows}),
+                  'training_audit_full_group_coverage': len({row['group_id'] for row in audit_rows}) == audit['train']['groups'],
+                  'training_audit_group_class_counts': dict(Counter(audit_group_labels.values())),
                   'hyperparameters': {'epochs': args.epochs, 'lr': args.lr, 'weight_decay': args.weight_decay,
                                       'dropout': args.dropout, 'label_smoothing': args.label_smoothing,
                                       'augmentation': args.augmentation, 'warmup_epochs': args.warmup_epochs}}

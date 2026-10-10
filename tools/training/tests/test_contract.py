@@ -101,6 +101,27 @@ class PartitionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             training.evaluation_rows(rows, 4)
 
+    def test_training_monitor_keeps_last_classes_and_whole_groups(self):
+        # More than 1024 rows ordered by class reproduces the former lost-class path.
+        labels = ['first', 'middle', 'last']
+        rows = []
+        for label in labels:
+            for group in range(150):
+                for angle in range(3):
+                    item = row(f'{label}-{group}-{angle}', label)
+                    item['group_id'] = f'{label}:{group}'
+                    rows.append(item)
+        selected = training.training_audit_rows(rows, labels)
+        self.assertLessEqual(len(selected), 1024)
+        self.assertEqual({item['class'] for item in selected}, set(labels))
+        self.assertEqual(selected, training.training_audit_rows(list(reversed(rows)), labels))
+        counts = training.Counter(item['group_id'] for item in selected)
+        self.assertEqual(set(counts.values()), {3})
+        class_counts = training.Counter(item['class'] for item in selected)
+        self.assertEqual(len(set(class_counts.values())), 1)
+        short = rows[:3] + rows[450:453] + rows[900:903]
+        self.assertEqual(len(training.training_audit_rows(short, labels)), 9)
+
     def test_dataset_test_lock_survives_report_filename_and_checkpoint_changes(self):
         with tempfile.TemporaryDirectory() as temporary:
             lock = training.acquire_test_lock(temporary, 'a' * 64, ['first'], 'calibration')
