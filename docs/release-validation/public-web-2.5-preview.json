@@ -1,0 +1,54 @@
+{
+  "publicURL": "https://3497907003-sketch.github.io/shikuang-app/",
+  "sourceCommit": "697be109a20cf5ce2724d68efd670c74949f38b6",
+  "purpose": "Public deployment acceptance; inherited model regression only",
+  "errors": [],
+  "firstLoadMilliseconds": 2464,
+  "version": {
+    "version": "2.5.0-preview.1",
+    "updated_at": "2026-10-10T17:02:52.399539+00:00"
+  },
+  "publicAssetSHA256": {
+    "app.js": "4f46db8da64a2ad9bf4d55208837d5d76fe54d60e2a81700d1f27afd94ec45fc",
+    "sw.js": "3f04937d303d1d7c14c969510d8b26cacd7abf77e72d96b545bbc2e657048905",
+    "index.html": "18530a4efa8bfcf90ab82fe9a8a97167c96a267fc600f9640cafb25eeb0843a0",
+    "data/sources.js": "2606a060895867b56f8ad0f4de6107ef2cc954dae18a51bb6b6d46fc434e5608",
+    "data/reviewed-photo-assets.json": "dd6a3892cd9be22eaa51fa6886403cff956d63e7e8a02020cf004eda56c0e9ec",
+    "data/reference-manifest.json": "862f03b248382c826c9748f890e92bfd37de1597a3235a4b1b130bc0f6603ecd"
+  },
+  "guidePages": [
+    "认识你的矿物工作台",
+    "先提交一个清晰的标本",
+    "补充观察，让复核有依据",
+    "读懂候选，再决定是否确认",
+    "联网与离线，分别怎样使用",
+    "保存、搜索与备份你的发现"
+  ],
+  "references": {
+    "catalog": 6239,
+    "photos": 117,
+    "records": 871
+  },
+  "quartzPhotos": [
+    {
+      "width": 400,
+      "height": 382
+    },
+    {
+      "width": 512,
+      "height": 480
+    },
+    {
+      "width": 400,
+      "height": 366
+    }
+  ],
+  "quartz": {
+    "key": "quartz",
+    "modelCount": 3,
+    "manifestSha256": "ddbe27e79489df0ff63647b37c17f701e458a59e076df14d47d93873085ae7fa",
+    "modelVersion": "inherited-2.0-audited",
+    "elapsedMilliseconds": 28207.19999999553
+  },
+  "result": "passed"
+}
