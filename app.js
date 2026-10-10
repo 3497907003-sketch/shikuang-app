@@ -815,6 +815,7 @@
     try{setMode(localStorage.getItem('shikuang-mode-v2'));}catch(_){setMode('offline');}
     $('#sourceList').innerHTML=MINERAL_SOURCES.map(s=>`<a href="${html(s.url)}" target="_blank" rel="noopener noreferrer"><strong>${html(s.title)}</strong><span>${html(s.status)}</span><small>${html(s.use)}</small></a>`).join('');
     route();
+    window.__shikuangAppReady=true;
     try{await SpecimenStore.migrate();}catch(e){toast(e.message);}
     if(isNative()){
       $('#offlineInfo').textContent='安装包内置原生识别引擎、模型和资料。关闭网络后仍可分析，首次使用无需下载模型。';$('#offlineBtn').hidden=true;
