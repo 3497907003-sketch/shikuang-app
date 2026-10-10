@@ -309,6 +309,9 @@
   function updateModelUi(error=false){
     const ensemble=MineralEngine.getModels?.(true)||MineralEngine.models||[],fast=MineralEngine.getModels?.(false)||ensemble.slice(0,1),count=ensemble.length;
     $('#precisionHelp').textContent=count?`综合 ${count} 个图像模型；${isNative()?'资源已随安装包内置':'网页版首次离线使用需准备资源'}`:error?'模型清单未就绪；分析时可重试读取':'正在读取本机模型清单';
+    const version=String(MineralEngine.configuration?.version||'').slice(0,120),cached=MineralEngine.manifestCacheState==='offline-cache';
+    $('#modelResourceState').textContent=cached?`网络不可达，使用已验证的缓存模型清单${version?'（'+version+'）':''}。模型仍逐个校验；资源不完整时停止分析，请重新准备离线资源。`:version?`${isNative()?'安装包模型清单':'已读取模型清单'}：${version}。` :'';
+    $('#modelResourceState').hidden=!$('#modelResourceState').textContent;
     $('#guideModelMode').textContent=count?`点击“分析矿物候选”。多模型模式综合 ${count} 个图像模型；取消勾选后使用 ${fast.length} 个模型快速分析。输入筛查独立运行，实际参与数量在结果中显示。`:'点击“分析矿物候选”。多模型与快速模式按当前模型清单运行，实际参与数量在结果中显示。';
   }
   function prepareModelUi(){
@@ -707,7 +710,7 @@
     if(!crypto.subtle||!/^[a-f0-9]{64}$/i.test(model.sha256||''))throw new Error('当前环境无法校验模型，请使用支持 HTTPS 的浏览器或安装版');
     try{
       const check=()=>{if(signal?.aborted)throw new DOMException('准备已停止','AbortError');};check();
-      const bytes=await MineralCore.readResource(response.clone(),MineralCore.MODEL_MAX_BYTES,model.bytes,check);check();
+      const bytes=await MineralCore.readResource(response.clone(),MineralCore.MODEL_MAX_BYTES,model.bytes,check,{signal,timeout:90000});check();
       const digest=await crypto.subtle.digest('SHA-256',bytes);check();
       return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('')===model.sha256;
     }catch(error){if(signal?.aborted||error.name==='AbortError')throw error;return false;}
@@ -736,7 +739,7 @@
       const res=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',signal,
         headers:{'Content-Type':'application/json',Authorization:`Bearer ${key}`},body:JSON.stringify({model:window.DEEPSEEK_MODEL || 'deepseek-flash',messages:[{role:'user',content}],max_tokens:1000,temperature:0.2,thinking:{type:'disabled'}})});
       if (!res.ok) throw new Error(res.status===401?'密钥无效，请检查后重试':`服务请求失败 (${res.status})`);
-      const bytes=await MineralCore.readResource(res,1024*1024,undefined,()=>{if(signal.aborted)throw new DOMException('请求已停止','AbortError');});
+      const bytes=await MineralCore.readResource(res,1024*1024,undefined,()=>{if(signal.aborted)throw new DOMException('请求已停止','AbortError');},{signal,timeout:45000});
       const body=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)), text=body.choices?.[0]?.message?.content;
       if (typeof text!=='string' || !text.trim()) throw new Error('服务未返回文字说明');
       return text;

@@ -20,8 +20,8 @@ test('oversized service bodies fail within the 1MB bound and preserve the local 
 });
 test('45s deadline includes a stalled response body rather than only response headers',async()=>{
   let id=0;const timers=new Map(),f=fixture({timers:{setTimeout:(fn,ms)=>{timers.set(++id,{fn,ms});return id;},clearTimeout:timer=>timers.delete(timer)}});await ready(f);
-  const stream=new ReadableStream({start(){}});f.context.fetch=async()=>new Response(stream);await f.click('assistBtn');
-  const deadline=[...timers.values()].find(timer=>timer.ms===45000);assert.ok(deadline);assert.equal(f.node('assistBtn').disabled,true);deadline.fn();await f.settle();assert.equal(f.node('assistBtn').disabled,false);assert.match(f.node('assistText').textContent,/45 秒/);assert.equal(f.node('result').hidden,false);
+  let canceled=false;const stream=new ReadableStream({start(){},cancel(){canceled=true;}});f.context.fetch=async()=>new Response(stream);await f.click('assistBtn');
+  const deadline=[...timers.values()].find(timer=>timer.ms===45000);assert.ok(deadline);assert.equal(f.node('assistBtn').disabled,true);deadline.fn();await f.settle();assert.equal(canceled,true);assert.equal(f.node('assistBtn').disabled,false);assert.match(f.node('assistText').textContent,/45 秒/);assert.equal(f.node('result').hidden,false);
 });
 test('explicit offline mode aborts assistance while leaving the image result available',async()=>{
   const pending=deferred();let signal;const f=fixture();await ready(f);f.context.fetch=(_url,options)=>{signal=options.signal;return pending.promise;};await f.click('assistBtn');
