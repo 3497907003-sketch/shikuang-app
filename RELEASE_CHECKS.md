@@ -135,3 +135,5 @@ Android 最终应用源 ade9b11beb0b5b59c838574657a4a633f0815193 对应共同网
 root独立下载小gate、签名和结构报告并核对远端官方SHA，通过后公开：https://github.com/3497907003-sketch/shikuang-android/releases/tag/v2.5.0-preview.1 。release409120208为draft=false/prerelease=true，目标仍为ade9，全部8附件匹配。Kappa与实验室泛化仍未通过；该预览公开不改变未完成的验收状态。
 
 创建身份的后续辅助程序修正a04dbc9使用结构化POST响应中的正整数release ID，并核对tag/source/draft/prerelease；每次上传前按同ID复核，最终列表和全部digest门保留。92项自包含测试通过，PR6合并。此修正仅是辅助程序，未重新创建已公开release，也不作为已交付APK曾运行该新辅助程序的证据；交付文件仍来自38074908650第二次执行和同源ade9。
+
+独立匿名Android交付检查通过：APK HEAD返回HTTP200，TLS验证成功，Content-Length为121,431,443；七份小附件实际匿名GET字节与SHA全部符合官方digest。复核gate源身份、四环境/117解码/19截图SHA及旧失败工件保留，记录在docs/release-validation/android-public-2.5-preview.json。签名实际为唯一签者APK v2，不要求或宣称v3；16KB ELF兼容明确核验64位arm64-v8a/x86_64，32位报告为不适用/null，不冒充其16KB运行实测。
