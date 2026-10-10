@@ -38,3 +38,18 @@ test('leaving identification cancels video extraction and refuses late frames',a
   complete({duration:4,frames:[{src:'data:image/jpeg;base64,TEFURQ==',time:2}]});await f.settle();
   assert.match(f.node('inputSummary').textContent,/已提交 1 张/);assert.equal(f.node('cancelInput').hidden,true);assert.equal(f.node('galleryBtn').disabled,false);
 });
+
+test('prepared reference metadata and attribution remain available after the current service worker activates offline',async()=>{
+  const fs=require('node:fs'),vm=require('node:vm'),stored=new Map();
+  const caches={open:async name=>{if(!stored.has(name))stored.set(name,new Map());const cache=stored.get(name);return {put:async(request,response)=>cache.set(typeof request==='string'?request:request.url,response),match:async request=>cache.get(typeof request==='string'?request:request.url),delete:async request=>cache.delete(typeof request==='string'?request:request.url)};},keys:async()=>[...stored.keys()],delete:async name=>stored.delete(name)};
+  const f=fixture({register:async()=>({})});f.context.caches=caches;f.context.URL=URL;f.context.Request=Request;
+  f.context.fetch=async request=>typeof request==='string'?{ok:true,json:async()=>({models:[]})}:new Response('prepared '+new URL(request.url).pathname);
+  await f.click('offlineBtn');assert.match(f.node('offlineProgress').textContent,/离线资源已准备/);
+  const events={},scope=f.context.location.href,worker={addEventListener:(type,fn)=>{events[type]=fn;},registration:{scope},clients:{claim(){}}};
+  vm.runInNewContext(fs.readFileSync(require.resolve('../sw.js'),'utf8'),{self:worker,caches,URL,Response,fetch:async()=>{throw new Error('offline');}});
+  let activation;events.activate({waitUntil:promise=>{activation=promise;}});await activation;
+  for(const asset of ['data/catalog.json','data/crystals.json','data/image-sources.json','data/reference-manifest.json','data/licenses/ima-cnmnc-2026-09.txt']){
+    let response;events.fetch({request:new Request(new URL(asset,scope)),respondWith:promise=>{response=promise;},waitUntil(){}});
+    const cached=await response;assert.equal(cached.status,200,asset);assert.match(await cached.text(),/^prepared /,asset);
+  }
+});

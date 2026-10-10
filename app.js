@@ -288,7 +288,7 @@
       let text,provenance='';
       if(usable){const url=safeLink(fact.source_url),page=Number(fact.source_page);text=html(value)+(fact.unit&&fact.unit!=='Mohs'?' '+html(fact.unit):'');if(fact.raw&&String(fact.raw)!==String(value))text+=`<small class="property-raw">原文：${html(fact.raw)}</small>`;provenance=url?`<a class="property-source" href="${html(url.replace(/#.*$/,'')+(Number.isInteger(page)&&page>0?'#page='+page:''))}" target="_blank" rel="noopener noreferrer">MSA 矿物手册${Number.isInteger(page)&&page>0?' · 第 '+page+' 页':''}</a>`:'<small class="property-source">已收录来源字段</small>';if(fact.status!=='verified')provenance+=`<small class="property-source">${fact.status==='source_inferred'?'据来源推定 · ':''}待复核</small>`;}
       else if(field==='formula'&&(reference?.formula||k.formula_source)){const source=reference?{url:reference.source_url,page:reference.source_page}:k.formula_source,url=safeLink(source.url),page=Number(source.page);text=html(reference?.formula||k.formula);provenance=url?`<a class="property-source" href="${html(url.replace(/#.*$/,'')+(Number.isInteger(page)&&page>0?'#page='+page:''))}" target="_blank" rel="noopener noreferrer">IMA 官方清单${Number.isInteger(page)&&page>0?' · 第 '+page+' 页':''}</a>`:'<small class="property-source">IMA 官方清单</small>';}
-      else if(fact){const url=safeLink(fact.source_url),page=Number(fact.source_page);text='未收录';provenance='<small class="property-source">原文未给出可用值</small>'+(url?`<a class="property-source" href="${html(url.replace(/#.*$/,'')+(Number.isInteger(page)&&page>0?'#page='+page:''))}" target="_blank" rel="noopener noreferrer">查看原始物性页</a>`:'');}
+      else if(fact){const url=safeLink(fact.source_url),page=Number(fact.source_page),review=fact.status==='needs_review';text=review?'待复核':'未收录';provenance=`<small class="property-source">${review?'提取内容待复核，暂不作为有效物性':fact.status==='source_inferred'?'来源推测尚无可核验值':'原文未给出可用值'}${review&&fact.note?'；'+html(fact.note):''}</small>`+(url?`<a class="property-source" href="${html(url.replace(/#.*$/,'')+(Number.isInteger(page)&&page>0?'#page='+page:''))}" target="_blank" rel="noopener noreferrer">查看原始物性页</a>`:'');}
       else{const present=legacy!==undefined&&legacy!==null&&legacy!=='';text=html(present?legacy:'未收录');if(present)provenance='<small class="property-source">原项目资料 · 待复核</small>';}
       return `<div><dt>${label}</dt><dd>${text}${provenance}</dd></div>`;
     }).join('')}</dl>`;
@@ -414,7 +414,7 @@
     if(state.offlineController)return;
     const controller=new AbortController();state.offlineController=controller;
     $('#offlineBtn').disabled=true;$('#cancelOffline').hidden=false;
-    const assets = ['./','./index.html','./styles.css','./app.js','./core.js','./inference.js','./engine-worker.js','./history.js','./media.js','./storage.js','./reference-loader.js','./config.js','./manifest.webmanifest','./model-manifest.json','./icon.svg','./icon-192.png','./icon-512.png','./icon-maskable.png','./version.json','./data/classes.js','./data/minerals.js','./data/sources.js','./data/imagenet.js','./data/catalog.json','./data/crystals.json','./data/image-sources.json','./data/reference-manifest.json','./vendor/lucide.min.js','./vendor/ort.min.js','./vendor/ort-wasm-simd-threaded.mjs','./vendor/ort-wasm-simd-threaded.wasm', ...MineralEngine.models.map(m=>'./models/'+m.file),'./models/imagenet_gate.onnx'];
+    const assets = ['./','./index.html','./styles.css','./app.js','./core.js','./inference.js','./engine-worker.js','./history.js','./media.js','./storage.js','./reference-loader.js','./config.js','./manifest.webmanifest','./model-manifest.json','./icon.svg','./icon-192.png','./icon-512.png','./icon-maskable.png','./version.json','./data/classes.js','./data/minerals.js','./data/sources.js','./data/imagenet.js','./data/catalog.json','./data/crystals.json','./data/image-sources.json','./data/reference-manifest.json','./data/licenses/ima-cnmnc-2026-09.txt','./vendor/lucide.min.js','./vendor/ort.min.js','./vendor/ort-wasm-simd-threaded.mjs','./vendor/ort-wasm-simd-threaded.wasm', ...MineralEngine.models.map(m=>'./models/'+m.file),'./models/imagenet_gate.onnx'];
     try {
       await bounded(()=>navigator.serviceWorker.register('./sw.js'),15000,'离线服务启动超时',controller.signal);
       const manifest=await bounded(async signal=>{const response=await fetch('./model-manifest.json',{signal,cache:'reload'});if(!response.ok)throw new Error(`模型目录下载失败 (${response.status})`);return response.json();},30000,'模型目录读取超时',controller.signal);
@@ -422,7 +422,7 @@
       for (let i=0;i<assets.length;i++) {
         if(controller.signal.aborted)throw new DOMException('准备已停止','AbortError');
         $('#offlineProgress').textContent=`正在准备资源 ${i+1}/${assets.length}（模型共约 70 MB）…`;
-        const cache = await caches.open(assets[i].includes('/models/') || assets[i].endsWith('.wasm') ? 'shikuang-models-v2-20261010':'shikuang-static-2.0.1-preview.1');
+        const cache = await caches.open(assets[i].includes('/models/') || assets[i].endsWith('.wasm') ? 'shikuang-models-v2-20261010':'shikuang-static-2.0.2-preview.1');
         const request = new Request(new URL(assets[i],location.href),{cache:'reload'}),model=manifest.models.find(m=>'./'+m.path===assets[i]);
         await bounded(async signal=>{
           const cached=model?await cache.match(request):null;

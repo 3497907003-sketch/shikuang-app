@@ -80,3 +80,9 @@ test('specimen image references stay collapsed, link to evidence and preserve pe
   assert.doesNotMatch(images,/<img|original-image\.jpg|javascript:/);assert.match(f.node('catalogIntro').innerHTML,/7 条图片出处/);assert.match(f.node('catalogIntro').innerHTML,/通过训练审核 0 条/);
   await f.documentClick('[data-more-images]');assert.equal((f.node('imageRecords').innerHTML.match(/class="image-record"/g)||[]).length,7);assert.equal(f.node('moreImages').hidden,true);
 });
+
+test('review-required extraction is distinct from an unavailable source value and does not display damaged raw text',async()=>{
+  const catalog=mockCatalog(0);catalog.minerals[0].physical_properties={cleavage:{value:null,raw:'damaged-vector-index',status:'needs_review',note:'原 PDF 的矢量指数需要人工复核',source_url:'https://example.org/quartz.pdf',source_page:1}};
+  const f=fixture({catalog});await f.settle();await f.documentClick('[data-detail]',{detail:'quartz'});
+  const body=f.node('detailBody').innerHTML;assert.match(body,/提取内容待复核，暂不作为有效物性/);assert.match(body,/矢量指数需要人工复核/);assert.match(body,/quartz\.pdf#page=1/);assert.doesNotMatch(body,/原文未给出可用值|damaged-vector-index/);
+});
