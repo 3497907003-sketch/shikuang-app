@@ -25,6 +25,10 @@ python3 tools/source-import/extract_ima.py \
 
 ## Handbook 选定物性事实
 
+已核验的原始 89 个标签物性现在逐字段带有 `source_pdf_sha256`。`bind_physical_sources.py --repo /path/to/repo --sources /path/to/private/source-output` 先核对全部实际 PDF 和原字段，再仅增加来源哈希；名称、值、状态及原文均不改。`validate_sources.py` 按同一规则逐字段精确比较，晶系注释必须与事实的 PDF 哈希相等，缺失或变化会回到待复核。
+
+新增物性导入的证据还须带有相邻 `index.json` 的 SHA-256 和拼版中的整数位置。程序核对该位置的矿物 ID、来源 URL、实际 PDF 哈希、页码和裁切坐标；同一张已看过的拼版不能证明另一个位置的资料。
+
 `physical-targets.json` 是原项目 89 个标签的官方 PDF 来源清单，包含原数据缺项信息与未匹配的 16 个标签。它不是新推理类别列表。采集限最多 2 个请求同时运行，请求开始至少相隔 2 秒；本地复跑使用 `--offline`：
 
 ```sh
@@ -48,6 +52,58 @@ python3 tools/source-import/finalize_physical_properties.py \
 ```
 
 此次输出应为 89 个标签、88 个唯一官方 PDF、477 个 verified 字段；32 个不确定解理值与 25 个未刊载字段的 `value` 保持 null。原 PDF 内容变化后应重新渲染逐页核验，并记录新的决定，禁止只替换旧决定中的哈希。不要使用 Python 的 `-O` 关闭提取/复核断言。
+
+### 目录物性扩展
+
+`reviewed-extension-batch001.json` 是另外100个精确 IMA 物种的六项选定事实和逐字段审核状态，不包含完整 PDF、图片或成因段落。100份源 PDF 已实际取得，源页标题、属性、负指数、方向及样品条件逐页核对并绑定原 PDF / 已看渲染图的 SHA-256。498项已核对；89项未刊载、11项待复核、2项只描述来源推定或合成类似物的字段保持 null。`complete=false` 指全目录尚未完成详录，不代表其余物种已经审核。
+
+`extension-translations-zh.json` 只映射完全相同的已核对原值，保留合成、蜕晶质、温度、方向及不确定条件。数值直接保留。旧 Hexagonal 和 pseudohexagonal 不自动变成现代七晶系；有待另按实际点群复核。界面展开使用已核对的来源转录值，提取的 `raw` 留作审计，避免把丢失上划线的旧提取文字再次呈给读者。
+
+```sh
+python3 tools/source-import/import_reviewed_extension.py \
+  --repo . --reviewed tools/source-import/reviewed-extension-batch001.json \
+  --pdf-dir /path/to/private/extension-pdfs \
+  --evidence-root /path/to/private/extension-review \
+  --output-dir /path/to/output/extension-proposal
+python3 -m unittest discover -s tools/source-import -p 'test_extension_import.py'
+```
+
+默认只生成提案；`--publish-to-app` 明确更新本地目录和 reference-manifest。原目录的名称、化学式、IMA字段、旧物性、模型标签、推理知识、权重和图库不改；已经导入的批次不能重复覆盖。仅在原PDF、已看渲染图与精确身份一致时允许导入，来源URL大小写与官方 www / 无www 原址保留。资料图鉴按实际记录计算核对范围：此批加入后185个规范物种、955项已核对物性；原89个兼容标签、477项标签字段含重复物种，不能与目录唯一种数混为同一统计。
+
+扩展后运行完整 `validate_sources.py` 时，必须额外传入 `--reviewed-extension tools/source-import/reviewed-extension-batch001.json --extension-pdf-dir /path/to/private/extension-pdfs --extension-evidence-root /path/to/private/extension-review`。每个已导入批次的源JSON哈希必须一致，缺少源批次、重复物种、源图/PDF变化、翻译不匹配或原值变化都不能通过。这种来源一致性审计不证明照片识别、训练完成、独立样品的实测属性或Kappa目标。
+
+### 产状与典型分布
+
+`literature_contract.py` 从精确 IMA 身份、实际PDF字节、页数、字段裁切和已实际查看的拼图槽位核对来源。`import_reviewed_literature.py` 还要求外部明确提供 Root 逐字段 ledger 的可信 SHA；JSON 中的角色字符串不构成身份认证。原提案、查看索引、物性来源记录、字段和证据哈希必须完全相同；术语待核和未刊载状态不能提升。Root覆盖另绑定原字段、覆盖值、来源和证据哈希，不改原提案。
+
+```sh
+python3 tools/source-import/import_reviewed_literature.py \
+  --repo . --proposal /path/to/private/detailed-facts-proposal.json \
+  --index /path/to/private/viewed-render-index.json \
+  --physical /path/to/private/reviewed-facts.json \
+  --pdf-dir /path/to/private/extension-pdfs \
+  --evidence-root /path/to/private/detailed-review \
+  --ledger /path/to/private/root-field-review-ledger.json \
+  --trusted-ledger-sha256 ROOT_INDEPENDENTLY_CONFIRMED_SHA256 \
+  --output-dir /path/to/new-literature-staging
+python3 -m unittest discover -s tools/source-import -p 'test_literature_import.py'
+```
+
+默认只写独立提案；`--publish-to-app` 仅明确应用到本地App资料文件，不部署网站。`literature_properties.occurrence/distribution` 保存简洁中文释义、短英文定位片段、源URL/PDF页与哈希、字段/证据/index/ledger哈希及审核状态。此批100种矿物中198字段为 `verified`（只核对文献对应关系），Achyrophanite产状为 `unavailable`，Adachiite产状为 `needs_review`，两者 `value_zh=null`。地点固定为该版文献非穷尽典型分布，不推断上传标本产地。全部目录还有大量未详细复核资料，`complete_all_minerals=false`；这批资料不证明图像识别能力。
+
+独立 `window.MINERAL_LITERATURE_PROPERTIES.by_species` 按精确IMA ID与目录一致，不添加原105个推理／人工确认标签。原KB、模型、物性原值和晶系注释保留。reference-manifest的三文件加载合同不变，额外 `literature_bundle` 绑定完整 minerals.js 字节与Root ledger。所有原PDF、图像证据和长转录仍放在私人目录，未宣称Handbook全文／图片开放许可。
+
+含这批资料的完整来源核验还需传入以下参数；缺少私有证据会失败，不将存在于目录的字段自动当作已审计：
+
+```sh
+  --literature-proposal /path/to/private/detailed-facts-proposal.json \
+  --literature-render-index /path/to/private/viewed-render-index.json \
+  --literature-physical-registry /path/to/private/reviewed-facts.json \
+  --literature-pdf-dir /path/to/private/extension-pdfs \
+  --literature-evidence-root /path/to/private/detailed-review \
+  --literature-ledger /path/to/private/root-field-review-ledger.json \
+  --trusted-literature-ledger-sha256 ROOT_INDEPENDENTLY_CONFIRMED_SHA256
+```
 
 ### 七晶系与旧 Hexagonal 分类
 

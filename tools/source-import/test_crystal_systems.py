@@ -11,7 +11,7 @@ class CrystalSystemTests(unittest.TestCase):
     def fixture(self, symbol='32', standard='32'):
         raw=b'%PDF-unit-test-only-not-a-scientific-source'
         url='https://www.handbookofmineralogy.org/pdfs/quartz.pdf'
-        fact={'value':'Hexagonal', 'status':'verified', 'source_url':url}
+        fact={'value':'Hexagonal', 'status':'verified', 'source_url':url, 'source_pdf_sha256':hashlib.sha256(raw).hexdigest()}
         knowledge={'quartz':{'verified_properties':{'crystal_system':fact}}}
         row={'legacy_keys':['quartz'], 'source_url':url, 'source_page':1, 'source_pdf_sha256':hashlib.sha256(raw).hexdigest(), 'source_original_value':'Hexagonal', 'visual_review':{'reviewer':'unit-fixture-not-real-review','page':1,'render_sha256':'a'*64}, 'point_groups':[{'source_symbol':symbol,'standard_symbol':standard,'condition_zh':''}]}
         return raw,knowledge,{'schema_version':1, 'classification_sources':[{},{}], 'records':[row]}
@@ -44,6 +44,11 @@ class CrystalSystemTests(unittest.TestCase):
         r['records'][0]['point_groups'].append({'source_symbol':'3m','standard_symbol':'3m','condition_zh':'3R多型'})
         value=compile_annotations(r,kb)['records'][0]
         self.assertEqual(value['status'],'conditional');self.assertIn('2H多型',value['display_zh']);self.assertIn('3R多型',value['display_zh'])
+
+    def test_unchanged_url_and_value_cannot_reuse_annotation_for_changed_pdf_hash(self):
+        _,kb,reviewed=self.fixture()
+        kb['quartz']['verified_properties']['crystal_system']['source_pdf_sha256']='f'*64
+        with self.assertRaisesRegex(ValueError,'field changed'):compile_annotations(reviewed,kb)
 
     def test_pseudohexagonal_fields_are_not_silently_reclassified(self):
         _,kb,r=self.fixture();kb['aragonite']={'verified_properties':{'crystal_system':{'value':'Orthorhombic, pseudohexagonal'}}}

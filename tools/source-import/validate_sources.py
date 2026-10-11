@@ -19,6 +19,11 @@ from urllib.parse import urlsplit
 import zipfile
 from PIL import Image
 from annotate_crystal_systems import compile_annotations
+from bind_physical_sources import bound_properties
+from import_reviewed_extension import prepare as prepare_extension
+from copy import deepcopy
+from literature_contract import validate_inputs as validate_literature_inputs, stage_import as stage_literature
+from import_reviewed_literature import prepare_catalog as prepare_literature_catalog
 
 
 SUB = str.maketrans('0123456789+-=()aeiorux', '₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ')
@@ -62,6 +67,16 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--re-extracted-ima', type=Path, help='Fresh portable extract_ima.py output for all-row reproducibility comparison')
     parser.add_argument('--re-extracted-physical', type=Path, help='Fresh collector + finalizer output for reproducibility comparison')
+    parser.add_argument('--reviewed-extension', type=Path, nargs='+', help='Each actual finalized extension source file; required when the catalog has extension batches')
+    parser.add_argument('--extension-pdf-dir', type=Path)
+    parser.add_argument('--extension-evidence-root', type=Path)
+    parser.add_argument('--literature-proposal', type=Path)
+    parser.add_argument('--literature-render-index', type=Path)
+    parser.add_argument('--literature-physical-registry', type=Path)
+    parser.add_argument('--literature-pdf-dir', type=Path)
+    parser.add_argument('--literature-evidence-root', type=Path)
+    parser.add_argument('--literature-ledger', type=Path)
+    parser.add_argument('--trusted-literature-ledger-sha256')
     parser.add_argument('--node', default='node')
     args = parser.parse_args()
     repo, source = args.repo, args.sources
@@ -84,7 +99,7 @@ def main():
     originals = {row['id']: row for row in original['minerals']}
     species = {row['id']: row for row in catalog['minerals']}
     by_name = {normal(row['name_en']): row for row in species.values()}
-    expression = "const fs=require('node:fs'),vm=require('node:vm');const c={window:{}};vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),c);process.stdout.write(JSON.stringify({knowledge:c.window.MINERAL_KB,crystal_systems:c.window.MINERAL_CRYSTAL_SYSTEM_ANNOTATIONS}));"
+    expression = "const fs=require('node:fs'),vm=require('node:vm');const c={window:{}};vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),c);process.stdout.write(JSON.stringify({knowledge:c.window.MINERAL_KB,crystal_systems:c.window.MINERAL_CRYSTAL_SYSTEM_ANNOTATIONS,literature:c.window.MINERAL_LITERATURE_PROPERTIES}));"
     extracted = json.loads(subprocess.run([args.node, '-e', expression, str(repo / 'data/minerals.js')], check=True, capture_output=True, text=True).stdout)
     kb = extracted['knowledge']
     check('official_catalog_count_and_unique_ids', [] if catalog['count'] == len(catalog['minerals']) == len(species) == len(originals) == 6239 else ['count or unique ID mismatch'])
@@ -100,6 +115,26 @@ def main():
     legacy_formulas = [key for key, row in kb.items() if row.get('formula_source')]
     check('legacy_official_formula_and_source', [key for key in legacy_formulas if normal(kb[key]['name_en']) not in by_name or kb[key]['formula'] != by_name[normal(kb[key]['name_en'])]['formula'] or kb[key]['formula_source'] != {'source_id': 'ima-cnmnc', 'url': by_name[normal(kb[key]['name_en'])]['source_url'], 'page': by_name[normal(kb[key]['name_en'])]['source_page'], 'version': catalog['version']}])
     check('legacy_kb_count', [] if len(kb) == 105 else ['expected 105 original labels'])
+    literature_rows = [row for row in catalog['minerals'] if row.get('literature_properties')]
+    if literature_rows or catalog.get('literature_stats') or extracted.get('literature'):
+        required_literature = [args.literature_proposal, args.literature_render_index, args.literature_physical_registry,
+                               args.literature_pdf_dir, args.literature_evidence_root, args.literature_ledger,
+                               args.trusted_literature_ledger_sha256]
+        check('literature_private_evidence_supplied', [] if all(required_literature) else ['All private source/index/Root-ledger inputs and independently trusted ledger SHA required'])
+        if all(required_literature):
+            try:
+                inputs = validate_literature_inputs(args.literature_proposal, args.literature_render_index,
+                                                    args.literature_physical_registry, repo / 'data/catalog.json',
+                                                    args.literature_pdf_dir, args.literature_evidence_root)
+                staged = stage_literature(inputs, args.literature_ledger, args.trusted_literature_ledger_sha256)
+                expected, bundle = prepare_literature_catalog(catalog, inputs, staged, read(args.literature_ledger))
+                check('literature_actual_source_and_root_field_decisions', [] if expected == catalog else ['Root-approved catalog facts differ'])
+                check('literature_js_exact_ima_binding', [] if extracted.get('literature') == bundle else ['Independent IMA literature bundle differs'])
+                report['literature_review'] = {'source_species': len(inputs['fields']) // 2, **staged['counts'],
+                                               'root_ledger_sha256': args.trusted_literature_ledger_sha256,
+                                               'scope': 'Chinese source correspondence, not experimental or model accuracy verification.'}
+            except (ValueError, KeyError, OSError, TypeError) as error:
+                check('literature_actual_source_and_root_field_decisions', [str(error)])
     pdf = source / 'IMA_Master_List_2026-09.pdf'
     archive = source / 'amc.zip'
     check('original_pdf_hash', [] if sha(pdf) == catalog['source']['sha256'] else ['IMA PDF SHA-256 mismatch'])
@@ -118,11 +153,41 @@ def main():
             physical_fields[prop['status']] += 1
         physical_sources.setdefault(row['source_url'], {'url': row['source_url'], 'sha256': row['source_pdf_sha256'], 'legacy_keys': []})['legacy_keys'].append(row['key'])
     check('physical_review_complete', [] if physical.get('verification_complete') is True and physical.get('complete') is True and len(physical['records']) == 89 and physical_fields['verified'] == 477 else ['physical review incomplete or counts differ'])
-    check('physical_legacy_import_exact', [r['key'] for r in physical['records'] if kb.get(r['key'], {}).get('verified_properties') != r['properties']])
-    check('physical_catalog_import_exact', [r['key'] for r in physical['records'] if normal(r['name_en']) in by_name and by_name[normal(r['name_en'])].get('physical_properties') != r['properties']])
+    check('physical_legacy_import_exact', [r['key'] for r in physical['records'] if kb.get(r['key'], {}).get('verified_properties') != bound_properties(r)])
+    check('physical_catalog_import_exact', [r['key'] for r in physical['records'] if normal(r['name_en']) in by_name and by_name[normal(r['name_en'])].get('physical_properties') != bound_properties(r)])
     check('physical_status_and_null_semantics', [r['key'] + ':' + key for r in physical['records'] for key, prop in r['properties'].items() if prop['status'] not in {'verified', 'needs_review', 'source_inferred', 'unavailable'} or (prop['status'] != 'verified' and prop['value'] is not None) or (prop['status'] == 'verified' and (not prop['value'] or not prop.get('verification'))) or prop['source_url'] != r['source_url'] or prop['source_page'] != 1])
     check('physical_original_pdf_hashes', [r['key'] for r in physical['records'] if sha(source / 'physical-source-pdfs' / (r['key'] + '.pdf')) != r['source_pdf_sha256']])
     check('physical_no_calculated_density_substitution', [r['key'] for r in physical['records'] if r['properties']['density_measured'].get('unit') != 'g/cm³' or re.search(r'calc|calculated', r['properties']['density_measured']['raw'] or '', re.I)])
+    extension_proofs, extension_keys, extension_failures = [], set(), []
+    batch_hashes = [r['source_json_sha256'] for r in catalog.get('physical_stats', {}).get('extension_batches', [])]
+    actual_hashes = [sha(path) for path in args.reviewed_extension or []]
+    check('physical_extension_sources_required_and_bound', [] if len(set(batch_hashes)) == len(batch_hashes) and sorted(batch_hashes) == sorted(actual_hashes) else ['Every published extension requires its exact reviewed source JSON; unprovided data is not audited'])
+    for path in args.reviewed_extension or []:
+        try:
+            if args.extension_pdf_dir is None or args.extension_evidence_root is None:
+                raise ValueError('Private original extension PDF and actual viewed evidence directories required')
+            extension = read(path)
+            keys = {r['key'] for r in extension['records']}
+            if extension_keys.intersection(keys):
+                raise ValueError('Duplicate extension species across batches')
+            extension_keys.update(keys)
+            temporary = deepcopy(catalog)
+            for row in temporary['minerals']:
+                if row['id'] in keys:
+                    row.pop('physical_properties', None)
+                    row.pop('physical_review', None)
+            expected, proof = prepare_extension(temporary, extension, read(repo / 'tools/source-import/extension-translations-zh.json'), args.extension_pdf_dir, args.extension_evidence_root)
+            expected_rows = {r['id']: r for r in expected['minerals']}
+            for key in keys:
+                if any(species[key].get(field) != expected_rows[key].get(field) for field in ('physical_properties', 'physical_review')):
+                    extension_failures.append(key + ':published source facts/translation/review differ')
+            extension_proofs.append({'source_json_sha256': sha(path), **proof})
+        except (ValueError, KeyError, OSError) as error:
+            extension_failures.append(str(error))
+    check('physical_extensions_source_render_translation_exact', extension_failures)
+    original_physical_ids = {by_name[normal(r['name_en'])]['id'] for r in physical['records'] if normal(r['name_en']) in by_name}
+    check('all_catalog_physical_facts_accounted_for', [r['id'] for r in species.values() if r.get('physical_properties') and r['id'] not in original_physical_ids | extension_keys])
+    report['physical_extensions'] = extension_proofs
     try:
         annotations = compile_annotations(read(repo / 'tools/source-import/crystal-system-reviewed.json'), kb, source / 'physical-source-pdfs')
         check('crystal_system_separate_annotation_exact_and_pdf_bound', [] if extracted.get('crystal_systems') == annotations else ['published annotation differs from reviewed source-bound inference'])
@@ -206,12 +271,19 @@ def main():
         report['files'][item['path']] = {'bytes': path.stat().st_size, 'sha256': sha(path)}
     report['files']['data/minerals.js'] = {'bytes': (repo / 'data/minerals.js').stat().st_size, 'sha256': sha(repo / 'data/minerals.js')}
     check('published_manifest_hashes', [item['path'] for item in manifest['files'] if report['files'][item['path']] != {'bytes': item['bytes'], 'sha256': item['sha256']}])
+    if literature_rows:
+        bundle_hash = manifest.get('literature_bundle', {})
+        expected_bundle = {**report['files']['data/minerals.js'], 'path': 'data/minerals.js',
+                           'root_ledger_sha256': catalog.get('literature_stats', {}).get('root_ledger_sha256')}
+        check('published_literature_bundle_hash', [] if bundle_hash == expected_bundle else ['Literature JS bytes/hash/ledger differ from manifest'])
+        check('published_literature_counts', [] if all(manifest['counts'].get(key) == catalog['literature_stats'].get(key) for key in
+                                                       ('catalog_species_with_literature_facts', 'verified_literature_fields')) else ['Literature manifest counts differ'])
     catalog_physical = [r for r in species.values() if 'physical_properties' in r]
     catalog_physical_counts = Counter(p['status'] for r in catalog_physical for p in r['physical_properties'].values())
     report['counts'] = {'ima_species': len(species), 'official_formulas_in_legacy_kb': len(legacy_formulas), 'original_kb_labels': len(kb), 'handbook_links': sum(bool(r.get('handbook_url')) for r in species.values()), 'physical_legacy_labels': len(physical['records']), 'physical_unique_pdf_sources': len(physical_sources), 'verified_label_fields': physical_fields['verified'], 'physical_label_field_status_counts': dict(physical_fields), 'catalog_physical_unique_ima_species': len(catalog_physical), 'catalog_unique_species_verified_fields': catalog_physical_counts['verified'], 'catalog_unique_species_field_status_counts': dict(catalog_physical_counts), 'crystal_records': len(crystal_rows), 'crystal_species': len(crystals['by_species']), 'image_references': len(rows), 'image_species': len({r['mineral_name'] for r in rows}), 'training_ready_images': sum(r['training_ready'] for r in rows)}
     report['original_sources'] = {'ima_pdf': {'file': pdf.name, 'sha256': sha(pdf), 'url': catalog['source']['url']}, 'amcsd_zip': {'file': archive.name, 'sha256': sha(archive), 'url': crystals['source']['download_url']}, 'handbook_pdfs': sorted(physical_sources.values(), key=lambda r: r['url'])}
     report['license_review'] = {'ima': {'license': catalog['source']['license'], 'attribution_file': 'data/licenses/ima-cnmnc-2026-09.txt', 'credits_sha256': sha(repo / 'data/licenses/ima-cnmnc-2026-09.txt')}, 'handbook': {'citation': physical['source']['citation'], 'permissions_url': physical['source']['permissions_url'], 'scope': 'Selected scientific facts and source links only; no open PDF/body-text redistribution license identified.'}, 'amcsd': {'scope': crystals['source']['scope'], 'terms': crystals['source']['terms']}, 'images': {'scope': 'Original pending references plus individually licensed, source/pixel/hash-reviewed local Commons photographs. RRUFF photo reuse permission remains unverified. Gallery inclusion does not assert model training or independent analytical identity.'}, 'live_primary_pages_checked': ['https://handbookofmineralogy.org/', 'https://msaweb.org/copyright-permission-request-form/', 'https://www.rruff.net/about/download-data/']}
-    report['limitations'] = ['Original legacy formation, uses and unreplaced attributes are not newly verified.', 'Historical Handbook ranges, mixed crystal systems and directional hardness remain as reported.', 'Thirty-two uncertain cleavage fields and all unverified facts remain null.', 'Acquired files are date-specific; updating an original PDF hash requires another visual review.', 'Recorded source/pixel review and public photo bytes are checked; training splits, released weights, independent analytical identity and accuracy are not certified by this data audit.', 'License wording and attribution are checked; this report does not grant rights to reproduce complete source works.']
+    report['limitations'] = ['Original legacy formation, uses and unreplaced attributes are not newly verified.', 'Historical Handbook ranges, mixed crystal systems and directional hardness remain as reported.', 'Uncertain cleavage fields and all unverified facts remain null.', 'Acquired files are date-specific; updating an original PDF hash requires another visual review.', 'Recorded source/pixel review and public photo bytes are checked; training splits, released weights, independent analytical identity and accuracy are not certified by this data audit.', 'License wording and attribution are checked; this report does not grant rights to reproduce complete source works.']
     report['anomaly_count'] = sum(v['count'] for v in report['anomalies'].values())
     report['passed'] = report['anomaly_count'] == 0
     args.output.parent.mkdir(parents=True, exist_ok=True)

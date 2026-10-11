@@ -60,7 +60,7 @@ def compile_annotations(reviewed, knowledge, pdf_dir=None):
             raise ValueError('Missing legacy key')
         for key in keys:
             field = knowledge[key].get('verified_properties', {}).get('crystal_system', {})
-            if field.get('source_url') != url or field.get('value') != row['source_original_value'] or field.get('status') != 'verified':
+            if field.get('source_url') != url or field.get('value') != row['source_original_value'] or field.get('status') != 'verified' or field.get('source_pdf_sha256') != digest:
                 raise ValueError('Original crystal-system field changed: ' + key)
         if pdf_dir is not None:
             path = next((pdf_dir / (key + '.pdf') for key in keys if (pdf_dir / (key + '.pdf')).exists()), None)

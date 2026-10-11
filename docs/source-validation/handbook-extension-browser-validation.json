@@ -1,0 +1,232 @@
+{
+  "scope": "Actual Chrome rendering, source-bound catalog and offline reference cache; not mineral accuracy, native OS font or physical-device validation",
+  "startedAt": "2026-10-11T01:23:51.710Z",
+  "sourceFiles": {
+    "index.html": "43c244da37013a570fba5bb5262bf6426be86cb940d16f71f48ebeaac44df250",
+    "app.js": "5a2265037da0b827bc68f746bff272d35467dc1a38e0a86bf5f561569c226030",
+    "styles.css": "b68292a60cf95e13ba492980c97622ee127d8317ae0a5a686f2779255d96f326",
+    "core.js": "5adc9d389d6b164cd04fd7c1e733612e8532f12f48a76ecc116ca97410b9e5c2",
+    "sw.js": "88ba88b8f8551d1e9332c214dd1d136e6af94333429fc608fde31d1dede73cb6",
+    "data/minerals.js": "6b63fbcf0b2b8ecce7f1b309174bd7c89ed37558c356d0aecf96c2d4aef48a12",
+    "data/catalog.json": "0cdaa54c7e7c9edf7ad2b90ace0923859ec027f1295871f8740bff365fde0304",
+    "data/reference-manifest.json": "23c7f07e208c0dbfc29e98e78d3bb63a9330c0c81ecbc382c232d12125ae46bf"
+  },
+  "widthChecks": [
+    {
+      "width": 320,
+      "horizontalOverflow": false,
+      "negativeIndexOverline": true,
+      "pendingEnglishProperties": false,
+      "closeControlVisibleWhileScrolled": true
+    },
+    {
+      "width": 360,
+      "horizontalOverflow": false,
+      "negativeIndexOverline": true,
+      "pendingEnglishProperties": false,
+      "closeControlVisibleWhileScrolled": true
+    },
+    {
+      "width": 390,
+      "horizontalOverflow": false,
+      "negativeIndexOverline": true,
+      "pendingEnglishProperties": false,
+      "closeControlVisibleWhileScrolled": true
+    },
+    {
+      "width": 393,
+      "horizontalOverflow": false,
+      "negativeIndexOverline": true,
+      "pendingEnglishProperties": false,
+      "closeControlVisibleWhileScrolled": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "extension-320-afghanite.png",
+      "sha256": "8c06a17d9316e68f227c43d8f2a460cd4feb1815e2670e16c1bd9c26af649e37",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-360-afghanite.png",
+      "sha256": "ea2c4bb51ce7015fc17b328106544460f4dda761df08b9af58667afc850d4bfa",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-390-afghanite.png",
+      "sha256": "eec9f91b606a9fa1bb132f4e14d9b8749afd019efdd6f323b1e3e5eb28113013",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-393-afghanite.png",
+      "sha256": "52a786142fec7b7fa7a3d56f0e94234683aaf5a6f6c8f213c2816864ec7c18fd",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-393-long-record.png",
+      "sha256": "9fd58c58d1a1e51f2deb12932f0fea99dcf1b04f85f0b1b0652d538bb7d12639",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-393-record-close-control.png",
+      "sha256": "7ee1b84024c406763f47b9c7b86fb122fa6c945d1025e3067ad3e70f526bcc8a",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    },
+    {
+      "path": "extension-393-offline-clintonite.png",
+      "sha256": "9f7a2b0ba02e2f7e69a78272113303863ed33ee82b0477286c920dd9b048ab9b",
+      "stateSynchronized": true,
+      "actuallyViewed": true,
+      "reviewer": "root",
+      "reviewRecordedAt": "2026-10-11T01:26:30.728954+00:00"
+    }
+  ],
+  "requestFailures": [],
+  "errors": [],
+  "homeReferenceRequests": 0,
+  "counts": {
+    "species": 6239,
+    "physicalSpecies": 185,
+    "verifiedFields": 955
+  },
+  "recordCloseControl": {
+    "outerHTML": "<button id=\"closeRecord\" type=\"button\" class=\"icon-button\" aria-label=\"关闭标本\"><span class=\"close-glyph\" aria-hidden=\"true\">×</span></button>",
+    "rect": {
+      "x": 310,
+      "y": 80.078125,
+      "width": 44,
+      "height": 44,
+      "top": 80.078125,
+      "right": 354,
+      "bottom": 124.078125,
+      "left": 310
+    },
+    "display": "grid",
+    "visibility": "visible",
+    "opacity": "1"
+  },
+  "savedRecordCloseWhileScrolled": true,
+  "preparedThroughActualSettings": true,
+  "referenceCachePersisted": true,
+  "shellCacheSnapshot": [
+    {
+      "url": "http://127.0.0.1:8794/styles.css?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/vendor/lucide.min.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/config.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/data/classes.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/data/minerals.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/data/imagenet.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/data/sources.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/history.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/media.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/native-assets.js",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/core.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/inference.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/storage.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/gallery.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/reference-loader.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    },
+    {
+      "url": "http://127.0.0.1:8794/app.js?v=20261011-2.5.0-preview.1-r4",
+      "exactCached": true,
+      "unversionedCached": true
+    }
+  ],
+  "httpCacheClearedBeforeOffline": true,
+  "offlineShellStyle": {
+    "display": "flex",
+    "maxWidth": "calc(100% - 36px)",
+    "styleSheets": [
+      {
+        "href": "http://127.0.0.1:8794/styles.css?v=20261011-2.5.0-preview.1-r4",
+        "rules": 403
+      }
+    ]
+  },
+  "offlineConditionedFacts": true,
+  "result": "passed",
+  "finishedAt": "2026-10-11T01:23:56.421Z",
+  "visual_review": {
+    "all7_current_screenshots_actually_viewed": true,
+    "close_glyph_visible": true,
+    "offline_app_styles_visible": true,
+    "prior_failure_retained": "work/knowledge25-expansion/static-close-offline-style-failure-001",
+    "scope_limit": "Actual Chrome screenshot review only; not native device or mineral-accuracy acceptance."
+  }
+}
