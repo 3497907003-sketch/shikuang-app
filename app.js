@@ -42,8 +42,8 @@
   const chemicalSup='⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ',chemicalSupPlain='0123456789+-=()n';
   function formulaMarkup(value){
     const text=String(value||'');
-    const convert=(part,from,to)=>Array.from(part).map(char=>to[from.indexOf(char)]).join('');
-    return `<span class="formula" aria-label="${html(text)}">${html(text).replace(/[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ]+/g,part=>'<sub>'+convert(part,chemicalSub,chemicalSubPlain)+'</sub>').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ]+/g,part=>'<sup>'+convert(part,chemicalSup,chemicalSupPlain)+'</sup>')}</span>`;
+    const convert=(part,from,to)=>Array.from(part).map(char=>from.includes(char)?to[from.indexOf(char)]:char).join('');
+    return `<span class="formula" aria-label="${html(text)}">${html(text).replace(/[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ]*[₀₁₂₃₄₅₆₇₈₉](?:\.[₀₁₂₃₄₅₆₇₈₉]+)+|[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ]+/g,part=>'<sub>'+convert(part,chemicalSub,chemicalSubPlain)+'</sub>').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ]*[⁰¹²³⁴⁵⁶⁷⁸⁹](?:\.[⁰¹²³⁴⁵⁶⁷⁸⁹]+)+|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ]+/g,part=>'<sup>'+convert(part,chemicalSup,chemicalSupPlain)+'</sup>')}</span>`;
   }
   // Exact mineralogical terms and complete reviewed descriptions only. The
   // English scientific values and verification metadata remain unchanged.
@@ -657,13 +657,13 @@
     $('#moreCrystals').hidden=crystalsShown>=selectedCrystals.length;
     $('#moreCrystals').textContent=`查看更多 ${Math.min(5,selectedCrystals.length-crystalsShown)} 条记录`;
   }
-  function libraryCard(item){const detail=item.detail||{},kind=item.model?'模型候选':item.expanded?'扩展资料':'基础目录';return `<button type="button" class="mineral-card" data-detail="${html(item.key)}"><span class="mineral-symbol" aria-hidden="true">${html((item.formula || '◇').slice(0,4))}</span><strong>${html(item.title)}</strong>${item.title!==item.english?`<small>${html(item.english)}</small>`:''}<span class="card-formula">${item.formula?formulaMarkup(item.formula):'化学式未收录'}</span><span class="category">${html(types[item.key] || (detail.classification?category(detail,$('#classScheme').value):'分类未收录'))} · ${kind}</span></button>`;}
+  function libraryCard(item){const detail=item.detail||{},kind=item.model?'模型候选':item.expanded?'扩展资料':'基础目录';return `<button type="button" class="mineral-card" data-detail="${html(item.key)}"><span class="mineral-symbol" aria-hidden="true"><i data-lucide="gem"></i></span><strong>${html(item.title)}</strong>${item.title!==item.english?`<small>${html(item.english)}</small>`:''}<span class="card-formula">${item.formula?formulaMarkup(item.formula):'化学式未收录'}</span><span class="category">${html(types[item.key] || (detail.classification?category(detail,$('#classScheme').value):'分类未收录'))} · ${kind}</span></button>`;}
   function updateLibraryPageStatus(){
     $('#libraryStatus').textContent=`已展示 ${libraryShown} / ${libraryMatches.length} 项${libraryMatches.length?' · 每次加载 80 项':''}`;
     $('#libraryMore').hidden=libraryShown>=libraryMatches.length;
     $('#libraryMore').textContent=`加载更多 ${Math.min(libraryPageSize,libraryMatches.length-libraryShown)} 项`;
   }
-  function appendLibraryPage(){const next=libraryMatches.slice(libraryShown,libraryShown+libraryPageSize);if(next.length){$('#libraryList').insertAdjacentHTML('beforeend',next.map(libraryCard).join(''));libraryShown+=next.length;}updateLibraryPageStatus();}
+  function appendLibraryPage(){const next=libraryMatches.slice(libraryShown,libraryShown+libraryPageSize);if(next.length){$('#libraryList').insertAdjacentHTML('beforeend',next.map(libraryCard).join(''));libraryShown+=next.length;icons();}updateLibraryPageStatus();}
   function renderLibrary() {
     const query=normalizeSearch($('#librarySearch').value.trim()),filter=$('#classFilter').value,scheme=$('#classScheme').value,scope=$('#libraryScope').value||'all',fingerprint=JSON.stringify([query,filter,scheme,scope]);
     if(fingerprint===libraryFingerprint){updateLibraryPageStatus();return;}
