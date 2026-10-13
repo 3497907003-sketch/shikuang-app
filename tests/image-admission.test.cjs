@@ -70,6 +70,21 @@ test('invalid camera dimensions fail before canvas creation and release streams'
   f.node('cameraPreview').videoWidth=0;f.node('cameraPreview').videoHeight=480;await f.click('takePhoto');
   assert.equal(f.created.filter(el=>el.id==='canvas').length,0);assert.equal(stops,1);assert.equal(f.node('galleryBtn').disabled,false);
 });
+test('late close from a previous camera dialog does not stop the current open camera',async()=>{
+  let stops=0;const f=fixture();const stream={getTracks:()=>[{stop:()=>stops++}]};
+  f.context.navigator.mediaDevices={getUserMedia:async()=>stream};await f.click('cameraBtn');
+  assert.equal(f.node('cameraDialog').open,true);f.node('cameraDialog').fire('close');
+  assert.equal(stops,0);assert.equal(f.node('cameraPreview').srcObject,stream);assert.equal(f.node('galleryBtn').disabled,true);
+  f.node('cameraDialog').close();assert.equal(stops,1);assert.equal(f.node('galleryBtn').disabled,false);
+});
+test('late close from a previous video dialog preserves the active recording',async()=>{
+  let stops=0,recorder;const f=fixture();
+  f.context.navigator.mediaDevices={getUserMedia:async()=>({getTracks:()=>[{stop:()=>stops++}]})};
+  f.context.MediaRecorder=class{constructor(){recorder=this;this.state='inactive';}start(){this.state='recording';}stop(){this.state='inactive';}};
+  await f.click('videoBtn');await f.click('recordVideo');f.node('videoDialog').fire('close');
+  assert.equal(recorder.state,'recording');assert.equal(stops,0);assert.equal(f.node('stopVideo').hidden,false);
+  f.node('videoDialog').close();assert.equal(recorder.state,'inactive');assert.equal(stops,1);assert.equal(f.node('galleryBtn').disabled,false);
+});
 test('canceling a recording prevents its delayed onstop from starting extraction',async()=>{
   let recorder,extractions=0,stops=0;const f=fixture();f.context.navigator.mediaDevices={getUserMedia:async()=>({getTracks:()=>[{stop:()=>stops++}]})};
   f.context.MediaRecorder=class{constructor(){recorder=this;this.state='inactive';}start(){this.state='recording';}stop(){this.state='inactive';}};
