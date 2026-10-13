@@ -46,6 +46,7 @@ test('leaving identification cancels video extraction and refuses late frames',a
   f.context.MineralMedia={extractVideo:(_file,_report,options)=>{signal=options.signal;return new Promise(resolve=>{complete=resolve;});}};
   f.node('videoInput').files=[{name:'specimen.mp4',type:'video/mp4',size:100}];f.node('videoInput').fire('change');await f.settle();
   assert.equal(f.node('cancelInput').hidden,false);assert.equal(f.node('predictBtn').disabled,true);
+  assert.equal(f.node('cancelInput').textContent,'停止视频取帧');
   f.route('records');assert.equal(signal.aborted,true);
   complete({duration:4,frames:[{src:'data:image/jpeg;base64,TEFURQ==',time:2}]});await f.settle();
   assert.match(f.node('inputSummary').textContent,/已提交 1 张/);assert.equal(f.node('cancelInput').hidden,true);assert.equal(f.node('galleryBtn').disabled,false);

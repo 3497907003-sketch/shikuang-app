@@ -7,13 +7,23 @@
   let cameraStream,videoStream,recorder,recordTimer,discardRecording=false,mediaEpoch=0,inputJob=null,restoreAllowed=true;
   function stopCamera(){cameraStream?.getTracks().forEach(t=>t.stop());cameraStream=null;$('#cameraPreview').srcObject=null;}
   function stopRecording(discard=false){discardRecording=discard;if(recorder?.state==='recording')recorder.stop();clearTimeout(recordTimer);videoStream?.getTracks().forEach(t=>t.stop());videoStream=null;$('#videoPreview').srcObject=null;$('#videoPreview').hidden=true;}
-  function lockMedia(busy){state.mediaBusy=busy;for(const id of ['cameraBtn','videoBtn','galleryBtn','removePhoto','cropRange'])$('#'+id).disabled=busy||state.busy;$('#newSample').disabled=false;$('#predictBtn').disabled=busy||state.busy||!state.photos.length;$('#cancelInput').hidden=!busy||!state.mediaController;document.querySelectorAll('[data-photo],[data-add-photo]').forEach(b=>{b.disabled=busy||state.busy;});}
+  function lockMedia(busy){
+    state.mediaBusy=busy;
+    for(const id of ['cameraBtn','videoBtn','galleryBtn','removePhoto','cropRange'])$('#'+id).disabled=busy||state.busy;
+    $('#newSample').disabled=false;$('#predictBtn').disabled=busy||state.busy||!state.photos.length;
+    const cancel=$('#cancelInput');cancel.hidden=!busy||!state.mediaController;
+    if(busy){
+      const kind=inputJob?.kind;
+      cancel.textContent=kind==='video'?'停止视频取帧':kind==='record-video'?'停止视频录制':kind==='photos'||inputJob?.source==='gallery'?'停止照片读取':'停止拍照';
+    }
+    document.querySelectorAll('[data-photo],[data-add-photo]').forEach(b=>{b.disabled=busy||state.busy;});
+  }
   function inputCurrent(job){return inputJob===job&&job.epoch===mediaEpoch&&!job.controller.signal.aborted&&state.view==='identify';}
   function checkInput(job){if(!inputCurrent(job))throw new DOMException('输入已停止','AbortError');}
   function finishInput(job){clearTimeout(job.timer);if(inputJob===job){inputJob=null;state.mediaController=null;lockMedia(false);}}
-  function beginInput(kind,timeout=45000){
+  function beginInput(kind,timeout=45000,source){
     restoreAllowed=false;cancelAssist();
-    const job={kind,phase:'reading',epoch:++mediaEpoch,controller:new AbortController()};inputJob=job;state.mediaController=job.controller;lockMedia(true);
+    const job={kind,source,phase:'reading',epoch:++mediaEpoch,controller:new AbortController()};inputJob=job;state.mediaController=job.controller;lockMedia(true);
     job.timer=setTimeout(()=>{if(inputJob===job){cancelInput(false);status('输入读取超时，已提交的照片保留。请重新选择或拍摄。',true);}},timeout);
     return job;
   }
@@ -435,7 +445,7 @@
     if (state.busy || state.mediaBusy) return;
     if (state.photos.length >= 3) { toast('已添加 3 个角度，请先分析或移除一张照片'); return; }
     if (isNative()) {
-      const job=beginInput('native-camera',120000);job.phase='external-camera';
+      const job=beginInput('native-camera',120000,source);job.phase='external-camera';
       try {
         const photo = await plugin('Camera').getPhoto({ quality:90, width:1536, height:1536,
           resultType:'uri', source:source === 'camera' ? 'CAMERA':'PHOTOS', correctOrientation:true,
