@@ -26,12 +26,18 @@ const files = ['index.html', 'styles.css', 'app.js', 'native-assets.js', 'core.j
 // A missing optional-looking attribution or reference asset is still a broken
 // installable package. Check the complete set before replacing the prior build.
 for(const file of files)if(!fs.statSync(path.join(root,file)).isFile())throw new Error('Offline asset is not a file: '+file);
+const shellRelease=require('./shell-release.cjs');
+const inputs=files.map(file=>[file,fs.readFileSync(path.join(root,file))]);
+const buildInputs=['tools/build.cjs','tools/shell-release.cjs'].map(file=>['@build/'+file,fs.readFileSync(path.join(root,file))]);
+const shellRevision=shellRelease.revision([...inputs,...buildInputs]);
+// Render and validate every transformed asset before replacing a prior build.
+const rendered=inputs.map(([file,bytes])=>[file,shellRelease.render(file,bytes,shellRevision)]);
 const output = path.join(root, 'dist');
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output, { recursive: true });
-for (const file of files) {
+for (const [file,bytes] of rendered) {
   const target = path.join(output, file);
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(path.join(root, file), target);
+  fs.writeFileSync(target,bytes);
 }
-console.log(`Built ${files.length} offline assets in dist/`);
+console.log(`Built ${files.length} offline assets in dist/; shell ${shellRevision}`);

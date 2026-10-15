@@ -25,10 +25,14 @@ test('build follows the active two-classifier manifest, excludes unused legacy f
     writeSource('models/mobilenet_int8.onnx','unused old weight');writeSource('models/efficientnet_legacy.onnx','unused old weight');write('dist/models/orphan.onnx','stale package');
     writeSource('gallery.js',fs.readFileSync(require.resolve(WEB+'gallery.js')));writeSource('data/reviewed-photo-assets.json',JSON.stringify({schema_version:1,assets:[]}));writeSource('data/image-sources.json',JSON.stringify({schema_version:1,records:[]}));
     writeSource('data/classes.js','window.MINERAL_CLASSES='+JSON.stringify(Object.fromEntries(data.manifest.labels.map(x=>[x,x]))));
-    writeSource('model-manifest.json',JSON.stringify(data.manifest));writeSource('core.js',fs.readFileSync(require.resolve(WEB+'core.js')));write('tools/onnx-contract.cjs',fs.readFileSync(require.resolve('../tools/onnx-contract.cjs')));write('tools/build.cjs',build);
+    writeSource('model-manifest.json',JSON.stringify(data.manifest));writeSource('core.js',fs.readFileSync(require.resolve(WEB+'core.js')));writeSource('sw.js',fs.readFileSync(require.resolve(WEB+'sw.js')));write('tools/onnx-contract.cjs',fs.readFileSync(require.resolve('../tools/onnx-contract.cjs')));write('tools/shell-release.cjs',fs.readFileSync(require.resolve('../tools/shell-release.cjs')));write('tools/build.cjs',build);
     const run=()=>spawnSync(process.execPath,['tools/build.cjs'],{cwd:dir,encoding:'utf8'});
     const result=run();assert.equal(result.status,0,result.stderr);
     assert.deepEqual(fs.readdirSync(path.join(dir,'dist/models')).sort(),['efficientnet.onnx','imagenet_gate.onnx','mobilenet.onnx']);
+    const firstWorker=fs.readFileSync(path.join(dir,'dist/sw.js'),'utf8');
+    fs.appendFileSync(path.join(dir,'tools/shell-release.cjs'),'\n// Build-only revision regression\n');
+    assert.equal(run().status,0);
+    assert.notEqual(fs.readFileSync(path.join(dir,'dist/sw.js'),'utf8'),firstWorker,'Build rules must invalidate an installed worker even when asset inputs are unchanged');
     const good=fs.readFileSync(path.join(dir,'dist/model-manifest.json'),'utf8');
     writeSource(data.manifest.models[0].path,'corrupt');assert.notEqual(run().status,0);assert.equal(fs.readFileSync(path.join(dir,'dist/model-manifest.json'),'utf8'),good);
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
