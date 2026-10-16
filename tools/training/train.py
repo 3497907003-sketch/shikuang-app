@@ -33,6 +33,8 @@ STD = [0.229, 0.224, 0.225]
 SIZE = 224
 MAX_VIEWS = 3  # App accepts at most three photographs of one specimen.
 SPLIT_RATIOS = {'train': 0.8, 'val': 0.1, 'test': 0.1}
+# User amended acceptance on 2026-10-11; historical reports stay immutable.
+ACCEPTANCE_KAPPA_TARGET = 0.80
 
 
 def digest(path):
@@ -763,8 +765,9 @@ def evaluate(args):
                    'evaluation_view_policy': {'maximum_photos_per_group': MAX_VIEWS,
                                               'selection': 'ascending reviewed SHA256 before inference'},
                    'test_used_for_selection': False, 'temperature_calibration_split': 'validation',
-                   'kappa_target': 0.95, 'target_reached_on_this_dataset': result['kappa'] is not None and result['kappa'] >= 0.95,
-                   'target_supported_by_kappa_ci': bool(result['kappa_bootstrap_95_ci'] and result['kappa_bootstrap_95_ci'][0] >= 0.95),
+                   'kappa_target': ACCEPTANCE_KAPPA_TARGET,
+                   'target_reached_on_this_dataset': result['kappa'] is not None and result['kappa'] >= ACCEPTANCE_KAPPA_TARGET,
+                   'target_supported_by_kappa_ci': bool(result['kappa_bootstrap_95_ci'] and result['kappa_bootstrap_95_ci'][0] >= ACCEPTANCE_KAPPA_TARGET),
                    'independent_laboratory_accuracy_validated': False,
                    'physical_specimen_partition_proven': False,
                    'mobile_end_to_end_accuracy_validated': False,
