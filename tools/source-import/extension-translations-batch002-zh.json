@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "hardness": {
+    "2": "2",
+    "2.5": "2.5",
+    "2–2.5": "2–2.5",
+    "2–3": "2–3",
+    "6.5–7.5": "6.5–7.5",
+    "6": "6",
+    "6.5–7": "6.5–7",
+    "6.5": "6.5",
+    "7.5–8": "7.5–8"
+  },
+  "density_measured": {
+    "1.993(5)": "1.993(5)",
+    "1.602": "1.602",
+    "2.60–3.02": "2.60–3.02",
+    "3.0–3.4": "3.0–3.4",
+    "3.23–3.24": "3.23–3.24",
+    "3.08–3.22": "3.08–3.22",
+    "3.28–3.44": "3.28–3.44",
+    "4.392": "4.392",
+    "3.46–3.80": "3.46–3.80",
+    "4.40": "4.40"
+  },
+  "crystal_system": {
+    "Cubic": "等轴晶系",
+    "Orthorhombic": "斜方晶系",
+    "Monoclinic": "单斜晶系",
+    "Monoclinic or triclinic, both pseudohexagonal": "单斜或三斜晶系，二者均呈假六方形态"
+  },
+  "cleavage": {
+    "{001}, perfect": "{001} 面完全解理",
+    "Perfect on {010}": "{010} 面完全解理",
+    "Perfect on {110}, intersecting at ~56° and ~124°; partings on {010}, {001}": "{110} 面完全解理，交角约 56° 和 124°；{010}、{001} 面有裂理",
+    "Perfect on {110}, intersecting at 56° and 124°; partings on {100}, {010}": "{110} 面完全解理，交角 56° 和 124°；{100}、{010} 面有裂理",
+    "{010}, {100}, imperfect": "{010}、{100} 面解理不完全",
+    "Perfect on {001}, distinct on {110}; parting on {010}": "{001} 面完全解理，{110} 面解理清楚；{010} 面有裂理"
+  },
+  "luster": {
+    "Vitreous": "玻璃光泽",
+    "Greasy, shining": "油脂光泽，明亮",
+    "Pearly, greasy, dull": "珍珠光泽、油脂光泽或暗淡",
+    "Pearly": "珍珠光泽",
+    "Vitreous to subadamantine": "玻璃至半金刚光泽",
+    "Vitreous to pearly": "玻璃至珍珠光泽",
+    "Vitreous to silky": "玻璃至丝绢光泽",
+    "Vitreous to resinous on fractures": "断口呈玻璃至树脂光泽",
+    "Somewhat pearly on cleavage surfaces": "解理面略呈珍珠光泽"
+  },
+  "streak": {
+    "Greenish white to white": "绿白色至白色",
+    "Green to gray": "绿色至灰色",
+    "White": "白色",
+    "Blue-gray": "蓝灰色",
+    "White, grayish, or very slightly greenish": "白色、带灰色或极浅的绿色",
+    "Dark grayish green to dark green": "深灰绿色至深绿色"
+  }
+}

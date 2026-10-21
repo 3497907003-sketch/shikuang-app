@@ -22,8 +22,9 @@ from annotate_crystal_systems import compile_annotations
 from bind_physical_sources import bound_properties
 from import_reviewed_extension import prepare as prepare_extension
 from copy import deepcopy
-from literature_contract import validate_inputs as validate_literature_inputs, stage_import as stage_literature
-from import_reviewed_literature import prepare_catalog as prepare_literature_catalog
+from import_reviewed_literature import (prepare_catalog as prepare_literature_catalog, load_validated_batch,
+                                       load_additional_batches, literature_bundle_identity)
+from literature_contract import require, read_json as strict_read_json
 
 
 SUB = str.maketrans('0123456789+-=()aeiorux', '₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ')
@@ -32,6 +33,7 @@ ORIGINAL_FIELDS = ('name_en', 'formula', 'formula_html', 'ima_status', 'ima_numb
                    'discovery_country', 'first_reference', 'second_reference',
                    'source_url', 'source_page', 'source_id')
 EXCLUDED = r'synthetic|synthesi|calculated|simulat|theoretical|hypothetical|idealized|ab initio|first.princip|density functional|\bDFT\b|quantum|mathematical model|optimized|predicted'
+EXTENSION_CONFIG_SCHEMA = 'shikuang.private.extension-source-config.v1'
 
 
 def read(path):
@@ -60,6 +62,101 @@ def formula_plain(value):
     return re.sub(r'\s+', ' ', html.unescape(value)).strip()
 
 
+def audit_literature_batches(catalog, catalog_path, primary_spec, additional_config=None, trusted_config_sha256=None):
+    """Revalidate the originals and Root decisions for every published batch."""
+    inputs, staged, ledger = load_validated_batch(primary_spec, catalog_path)
+    additional = load_additional_batches(additional_config, trusted_config_sha256, catalog_path)
+    expected, bundle = prepare_literature_catalog(catalog, inputs, staged, ledger, additional)
+    stats = expected['literature_stats']
+    counts = stats['field_status_counts']
+    review = {'source_species': bundle['count'], 'source_batches': stats.get('source_batches', []),
+              'approved_fields': counts.get('verified', 0),
+              'withheld_fields': sum(counts.values()) - counts.get('verified', 0),
+              'root_ledger_sha256': stats['root_ledger_sha256'],
+              'root_ledger_sha256s': [batch['root_ledger_sha256'] for batch in stats.get('source_batches', [])] or [stats['root_ledger_sha256']],
+              'all_declared_batches_revalidated': True,
+              'scope': 'Chinese source correspondence, not experimental or model accuracy verification.'}
+    return expected, bundle, review
+
+
+def extension_source_specs(batch_hashes, config_path=None, trusted_config_sha256=None,
+                           pdf_dir=None, evidence_root=None, translations=None):
+    """Resolve complete, independently SHA-bound per-batch source locations."""
+    require(bool(config_path) == bool(trusted_config_sha256), 'Extension config and independently trusted config SHA are both required')
+    if config_path is None:
+        require(not batch_hashes or all(path is not None for path in (pdf_dir, evidence_root, translations)),
+                'Private extension PDF, actual viewed evidence and translations paths required')
+        return {digest: {'pdf_dir': Path(pdf_dir), 'evidence_root': Path(evidence_root), 'translations': Path(translations)}
+                for digest in batch_hashes}
+    config_path = Path(config_path)
+    require(type(trusted_config_sha256) is str and re.fullmatch('[a-f0-9]{64}', trusted_config_sha256) and
+            sha(config_path) == trusted_config_sha256, 'Extension source config checksum differs')
+    config = strict_read_json(config_path)
+    require(set(config) == {'schema', 'batches'} and config['schema'] == EXTENSION_CONFIG_SCHEMA and
+            type(config['batches']) is dict, 'Unknown extension source config schema')
+    require(set(config['batches']) == set(batch_hashes), 'Extension config must name exactly all published source batches; missing or unknown batch')
+    resolved = {}
+    for digest, raw in config['batches'].items():
+        require(type(raw) is dict and set(raw) == {'pdf_dir', 'evidence_root', 'translations'}, 'Unknown/missing per-batch extension source fields')
+        spec = {}
+        for key, value in raw.items():
+            require(type(value) is str and value, 'Invalid per-batch extension source path')
+            path = Path(value)
+            spec[key] = (config_path.parent / path).resolve() if not path.is_absolute() else path
+        resolved[digest] = spec
+    return resolved
+
+
+def audit_extension_sources(catalog, reviewed_paths, default_translations, pdf_dir=None, evidence_root=None,
+                            config_path=None, trusted_config_sha256=None):
+    """Actually prepare and compare each declared extension from its own roots.
+
+    This remains read-only. A catalog entry and its self-reported counters are
+    not evidence that its original PDF, viewed render or translation was read.
+    """
+    declared = catalog.get('physical_stats', {}).get('extension_batches', [])
+    batch_hashes = [row['source_json_sha256'] for row in declared]
+    require(all(type(digest) is str and re.fullmatch('[a-f0-9]{64}', digest) for digest in batch_hashes) and
+            len(set(batch_hashes)) == len(batch_hashes), 'Invalid/duplicate published extension source batches')
+    paths = [Path(path) for path in reviewed_paths or []]
+    actual_hashes = [sha(path) for path in paths]
+    require(len(set(actual_hashes)) == len(actual_hashes) and sorted(batch_hashes) == sorted(actual_hashes),
+            'Every published extension requires its exact reviewed source JSON; missing, duplicate or unknown source is not audited')
+    specs = extension_source_specs(batch_hashes, config_path, trusted_config_sha256, pdf_dir, evidence_root, default_translations)
+    declared_by_hash = {row['source_json_sha256']: row for row in declared}
+    species = {row['id']: row for row in catalog['minerals']}
+    require(len(species) == len(catalog['minerals']), 'Duplicate catalog IMA IDs')
+    proofs, all_keys = [], set()
+    for path, digest in zip(paths, actual_hashes):
+        extension = strict_read_json(path)
+        keys = [row['key'] for row in extension['records']]
+        require(len(set(keys)) == len(keys) and not all_keys.intersection(keys), 'Duplicate extension species within/across batches')
+        require(set(keys) <= set(species), 'Unknown extension species')
+        spec = specs[digest]
+        translation_sha = sha(spec['translations'])
+        require(declared_by_hash[digest].get('translations_sha256') == translation_sha, 'Published extension translations checksum differs')
+        temporary = deepcopy(catalog)
+        for row in temporary['minerals']:
+            if row['id'] in keys:
+                row.pop('physical_properties', None)
+                row.pop('physical_review', None)
+        expected, proof = prepare_extension(temporary, extension, strict_read_json(spec['translations']),
+                                            spec['pdf_dir'], spec['evidence_root'])
+        expected_rows = {row['id']: row for row in expected['minerals']}
+        require(all(species[key].get(field) == expected_rows[key].get(field)
+                    for key in keys for field in ('physical_properties', 'physical_review')),
+                'Published extension source facts/translation/review differ')
+        require(all(declared_by_hash[digest].get(field) == proof[field]
+                    for field in ('species', 'field_status_counts', 'records')),
+                'Published extension batch species/count/source proof differs')
+        require(sha(path) == digest and sha(spec['translations']) == translation_sha, 'Extension source/translation changed during audit')
+        proofs.append({'source_json_sha256': digest, **proof})
+        all_keys.update(keys)
+    if config_path is not None:
+        require(sha(Path(config_path)) == trusted_config_sha256, 'Extension source config changed during audit')
+    return proofs, all_keys
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, required=True)
@@ -70,6 +167,8 @@ def main():
     parser.add_argument('--reviewed-extension', type=Path, nargs='+', help='Each actual finalized extension source file; required when the catalog has extension batches')
     parser.add_argument('--extension-pdf-dir', type=Path)
     parser.add_argument('--extension-evidence-root', type=Path)
+    parser.add_argument('--extension-source-config', type=Path, help='SHA-bound complete per-reviewed-JSON source-root/translation map')
+    parser.add_argument('--trusted-extension-source-config-sha256')
     parser.add_argument('--literature-proposal', type=Path)
     parser.add_argument('--literature-render-index', type=Path)
     parser.add_argument('--literature-physical-registry', type=Path)
@@ -77,6 +176,8 @@ def main():
     parser.add_argument('--literature-evidence-root', type=Path)
     parser.add_argument('--literature-ledger', type=Path)
     parser.add_argument('--trusted-literature-ledger-sha256')
+    parser.add_argument('--additional-literature-batch-config', type=Path)
+    parser.add_argument('--trusted-additional-literature-batch-config-sha256')
     parser.add_argument('--node', default='node')
     args = parser.parse_args()
     repo, source = args.repo, args.sources
@@ -123,16 +224,14 @@ def main():
         check('literature_private_evidence_supplied', [] if all(required_literature) else ['All private source/index/Root-ledger inputs and independently trusted ledger SHA required'])
         if all(required_literature):
             try:
-                inputs = validate_literature_inputs(args.literature_proposal, args.literature_render_index,
-                                                    args.literature_physical_registry, repo / 'data/catalog.json',
-                                                    args.literature_pdf_dir, args.literature_evidence_root)
-                staged = stage_literature(inputs, args.literature_ledger, args.trusted_literature_ledger_sha256)
-                expected, bundle = prepare_literature_catalog(catalog, inputs, staged, read(args.literature_ledger))
+                expected, bundle, review = audit_literature_batches(catalog, repo / 'data/catalog.json', {'proposal': args.literature_proposal,
+                    'index': args.literature_render_index, 'physical': args.literature_physical_registry,
+                    'pdf_dir': args.literature_pdf_dir, 'evidence_root': args.literature_evidence_root,
+                    'ledger': args.literature_ledger, 'trusted_ledger_sha256': args.trusted_literature_ledger_sha256},
+                    args.additional_literature_batch_config, args.trusted_additional_literature_batch_config_sha256)
                 check('literature_actual_source_and_root_field_decisions', [] if expected == catalog else ['Root-approved catalog facts differ'])
                 check('literature_js_exact_ima_binding', [] if extracted.get('literature') == bundle else ['Independent IMA literature bundle differs'])
-                report['literature_review'] = {'source_species': len(inputs['fields']) // 2, **staged['counts'],
-                                               'root_ledger_sha256': args.trusted_literature_ledger_sha256,
-                                               'scope': 'Chinese source correspondence, not experimental or model accuracy verification.'}
+                report['literature_review'] = review
             except (ValueError, KeyError, OSError, TypeError) as error:
                 check('literature_actual_source_and_root_field_decisions', [str(error)])
     pdf = source / 'IMA_Master_List_2026-09.pdf'
@@ -158,33 +257,16 @@ def main():
     check('physical_status_and_null_semantics', [r['key'] + ':' + key for r in physical['records'] for key, prop in r['properties'].items() if prop['status'] not in {'verified', 'needs_review', 'source_inferred', 'unavailable'} or (prop['status'] != 'verified' and prop['value'] is not None) or (prop['status'] == 'verified' and (not prop['value'] or not prop.get('verification'))) or prop['source_url'] != r['source_url'] or prop['source_page'] != 1])
     check('physical_original_pdf_hashes', [r['key'] for r in physical['records'] if sha(source / 'physical-source-pdfs' / (r['key'] + '.pdf')) != r['source_pdf_sha256']])
     check('physical_no_calculated_density_substitution', [r['key'] for r in physical['records'] if r['properties']['density_measured'].get('unit') != 'g/cm³' or re.search(r'calc|calculated', r['properties']['density_measured']['raw'] or '', re.I)])
-    extension_proofs, extension_keys, extension_failures = [], set(), []
-    batch_hashes = [r['source_json_sha256'] for r in catalog.get('physical_stats', {}).get('extension_batches', [])]
-    actual_hashes = [sha(path) for path in args.reviewed_extension or []]
-    check('physical_extension_sources_required_and_bound', [] if len(set(batch_hashes)) == len(batch_hashes) and sorted(batch_hashes) == sorted(actual_hashes) else ['Every published extension requires its exact reviewed source JSON; unprovided data is not audited'])
-    for path in args.reviewed_extension or []:
-        try:
-            if args.extension_pdf_dir is None or args.extension_evidence_root is None:
-                raise ValueError('Private original extension PDF and actual viewed evidence directories required')
-            extension = read(path)
-            keys = {r['key'] for r in extension['records']}
-            if extension_keys.intersection(keys):
-                raise ValueError('Duplicate extension species across batches')
-            extension_keys.update(keys)
-            temporary = deepcopy(catalog)
-            for row in temporary['minerals']:
-                if row['id'] in keys:
-                    row.pop('physical_properties', None)
-                    row.pop('physical_review', None)
-            expected, proof = prepare_extension(temporary, extension, read(repo / 'tools/source-import/extension-translations-zh.json'), args.extension_pdf_dir, args.extension_evidence_root)
-            expected_rows = {r['id']: r for r in expected['minerals']}
-            for key in keys:
-                if any(species[key].get(field) != expected_rows[key].get(field) for field in ('physical_properties', 'physical_review')):
-                    extension_failures.append(key + ':published source facts/translation/review differ')
-            extension_proofs.append({'source_json_sha256': sha(path), **proof})
-        except (ValueError, KeyError, OSError) as error:
-            extension_failures.append(str(error))
-    check('physical_extensions_source_render_translation_exact', extension_failures)
+    extension_proofs, extension_keys = [], set()
+    try:
+        extension_proofs, extension_keys = audit_extension_sources(catalog, args.reviewed_extension,
+            repo / 'tools/source-import/extension-translations-zh.json', args.extension_pdf_dir, args.extension_evidence_root,
+            args.extension_source_config, args.trusted_extension_source_config_sha256)
+        check('physical_extension_sources_required_and_bound', [])
+        check('physical_extensions_source_render_translation_exact', [])
+    except (ValueError, KeyError, OSError, TypeError) as error:
+        check('physical_extension_sources_required_and_bound', [str(error)])
+        check('physical_extensions_source_render_translation_exact', [str(error)])
     original_physical_ids = {by_name[normal(r['name_en'])]['id'] for r in physical['records'] if normal(r['name_en']) in by_name}
     check('all_catalog_physical_facts_accounted_for', [r['id'] for r in species.values() if r.get('physical_properties') and r['id'] not in original_physical_ids | extension_keys])
     report['physical_extensions'] = extension_proofs
@@ -273,9 +355,11 @@ def main():
     check('published_manifest_hashes', [item['path'] for item in manifest['files'] if report['files'][item['path']] != {'bytes': item['bytes'], 'sha256': item['sha256']}])
     if literature_rows:
         bundle_hash = manifest.get('literature_bundle', {})
-        expected_bundle = {**report['files']['data/minerals.js'], 'path': 'data/minerals.js',
-                           'root_ledger_sha256': catalog.get('literature_stats', {}).get('root_ledger_sha256')}
-        check('published_literature_bundle_hash', [] if bundle_hash == expected_bundle else ['Literature JS bytes/hash/ledger differ from manifest'])
+        try:
+            expected_bundle = literature_bundle_identity((repo / 'data/minerals.js').read_bytes(), catalog.get('literature_stats', {}))
+            check('published_literature_bundle_hash', [] if bundle_hash == expected_bundle else ['Literature JS bytes/hash/ledger differ from manifest'])
+        except (KeyError, TypeError, ValueError) as error:
+            check('published_literature_bundle_hash', ['Invalid literature source registry: ' + str(error)])
         check('published_literature_counts', [] if all(manifest['counts'].get(key) == catalog['literature_stats'].get(key) for key in
                                                        ('catalog_species_with_literature_facts', 'verified_literature_fields')) else ['Literature manifest counts differ'])
     catalog_physical = [r for r in species.values() if 'physical_properties' in r]

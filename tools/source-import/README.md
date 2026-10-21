@@ -74,6 +74,12 @@ python3 -m unittest discover -s tools/source-import -p 'test_extension_import.py
 
 ### 产状与典型分布
 
+2026-10-21：新增第二批10种常见盐类、变质岩与火成岩组成矿物的详录，目录现有195种/1010项已核对物性、110种/218项已核对产状与非穷尽分布字段。四项原文缺失物性、一项推测裂理继续为空；原100种文献字段及其Root来源不改。原PDF和渲染仍只用于本地审核，不随App分发；这些资料数量不表示图像识别覆盖或Kappa达标。
+
+多批文献导入保留旧批，分别以实际原PDF、渲染和可信Root ledger核验每批。使用 `--additional-literature-batch-config` 与 `--trusted-additional-literature-batch-config-sha256` 指定新批来源；配置schema为 `shikuang.private.additional-literature-batches.v1`，`batches`中每项包含 `proposal/index/physical/pdf_dir/evidence_root/ledger/trusted_ledger_sha256`。各路径可相对配置文件。目录登记全部批次的源哈希、物种集合和状态统计，JS与清单使用同一汇总；不能省略旧批证据、覆盖旧事实或把目录中存在的字段自动当作已核验。
+
+完整来源核验另支持 `--extension-source-config` 和 `--trusted-extension-source-config-sha256`：schema为 `shikuang.private.extension-source-config.v1`，`batches`以每个物性审核JSON的SHA为键，值为该批的 `pdf_dir/evidence_root/translations` 路径。必须精确覆盖全部已导入批次，仍传全部 `--reviewed-extension`。旧的全局PDF/渲染根参数保留兼容；新的逐批方式无需移动或修改旧缓存。所有批次都实际执行原物性来源合同，缺批或错误翻译不能通过。
+
 `literature_contract.py` 从精确 IMA 身份、实际PDF字节、页数、字段裁切和已实际查看的拼图槽位核对来源。`import_reviewed_literature.py` 还要求外部明确提供 Root 逐字段 ledger 的可信 SHA；JSON 中的角色字符串不构成身份认证。原提案、查看索引、物性来源记录、字段和证据哈希必须完全相同；术语待核和未刊载状态不能提升。Root覆盖另绑定原字段、覆盖值、来源和证据哈希，不改原提案。
 
 ```sh

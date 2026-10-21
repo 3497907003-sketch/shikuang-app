@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "validated_at": "2026-10-11T01:00:23.463878+00:00",
+  "validated_at": "2026-10-21T02:19:41.219340+00:00",
   "scope": "All published reference records compared to acquired official-source files and reviewed imports. This audit does not establish ML accuracy, photograph quality or photo reuse permission.",
   "checks": {
     "official_catalog_count_and_unique_ids": true,
@@ -11,11 +11,12 @@
     "source_page_valid": true,
     "legacy_official_formula_and_source": true,
     "legacy_kb_count": true,
+    "literature_private_evidence_supplied": true,
+    "literature_actual_source_and_root_field_decisions": true,
+    "literature_js_exact_ima_binding": true,
     "original_pdf_hash": true,
     "original_zip_hash": true,
     "ima_license_and_credits_preserved": true,
-    "all_ima_rows_reproduced_from_original_pdf": true,
-    "reviewed_physical_import_reproduced": true,
     "physical_review_complete": true,
     "physical_legacy_import_exact": true,
     "physical_catalog_import_exact": true,
@@ -42,13 +43,15 @@
     "commons_individual_author_license_metadata": true,
     "rruff_permissions_not_invented": true,
     "handbook_and_rruff_no_blanket_open_license_claim": true,
-    "published_manifest_hashes": true
+    "published_manifest_hashes": true,
+    "published_literature_bundle_hash": true,
+    "published_literature_counts": true
   },
   "anomalies": {},
   "files": {
     "data/catalog.json": {
-      "bytes": 4272171,
-      "sha256": "0cdaa54c7e7c9edf7ad2b90ace0923859ec027f1295871f8740bff365fde0304"
+      "bytes": 4653375,
+      "sha256": "e656ed6035b35d08a74c0d86501b0e93d286127cd1055f087cf18e6b10f14e0b"
     },
     "data/crystals.json": {
       "bytes": 6162899,
@@ -59,8 +62,8 @@
       "sha256": "7895e0cc81769658fdcbc3067cab1181292cda23f405e7c7acf7a3d295f7fef6"
     },
     "data/minerals.js": {
-      "bytes": 324240,
-      "sha256": "6b63fbcf0b2b8ecce7f1b309174bd7c89ed37558c356d0aecf96c2d4aef48a12"
+      "bytes": 662489,
+      "sha256": "382b334980daf9f31e130bbdf58d7d9c0e3ab084ee32d7d7a08c63455f482325"
     }
   },
   "original_sources": {
@@ -694,6 +697,160 @@
       }
     ]
   },
+  "literature_review": {
+    "source_species": 110,
+    "source_batches": [
+      {
+        "batch_id": "9fec87a71c28f6d5ad5e51cf4871c48f06811fe62e9dcd7233c249f5078da6ea",
+        "source_json_sha256": "9423970b920a646182ea1f321d4c15266afb16df63867725c5a6e9a99e0192ea",
+        "render_index_sha256": "cbb2a20df7f6804a0398ea513e37cb4ac24d64c046d69ba2cf3a2ceec660fd0a",
+        "physical_decision_sha256": "a13cd90496cb5160d4866d5e5b85771ada7184b521a2af0835a230c35d60a77c",
+        "root_ledger_sha256": "1d3223d772c275db9677f2fa1a7d02ccae1c46450a478db1f19013b578f51b58",
+        "species_ids": [
+          "ima-abellaite",
+          "ima-abelsonite",
+          "ima-abernathyite",
+          "ima-abhurite",
+          "ima-abramovite",
+          "ima-abswurmbachite",
+          "ima-abuite",
+          "ima-acanthite",
+          "ima-acetamide",
+          "ima-achalaite",
+          "ima-achyrophanite",
+          "ima-acmonidesite",
+          "ima-acuminite",
+          "ima-adachiite",
+          "ima-adamite",
+          "ima-adamsite-y",
+          "ima-adanite",
+          "ima-addibischoffite",
+          "ima-adelite",
+          "ima-admontite",
+          "ima-adolfpateraite",
+          "ima-adranosite",
+          "ima-adranosite-fe",
+          "ima-adrianite",
+          "ima-aenigmatite",
+          "ima-aerinite",
+          "ima-aerugite",
+          "ima-aeschynite-ce",
+          "ima-aeschynite-nd",
+          "ima-aeschynite-y",
+          "ima-afghanite",
+          "ima-afmite",
+          "ima-afwillite",
+          "ima-agaite",
+          "ima-agakhanovite-y",
+          "ima-agardite-ce",
+          "ima-agardite-la",
+          "ima-anhydrite",
+          "ima-anorthite",
+          "ima-arfvedsonite",
+          "ima-aurichalcite",
+          "ima-benitoite",
+          "ima-bismuthinite",
+          "ima-borax",
+          "ima-bornite",
+          "ima-brucite",
+          "ima-bustamite",
+          "ima-cavansite",
+          "ima-chabazite-ca",
+          "ima-chlorargyrite",
+          "ima-clintonite",
+          "ima-colemanite",
+          "ima-cordierite",
+          "ima-crocoite",
+          "ima-datolite",
+          "ima-dawsonite",
+          "ima-diaspore",
+          "ima-dumortierite",
+          "ima-enstatite",
+          "ima-epsomite",
+          "ima-forsterite",
+          "ima-gahnite",
+          "ima-gibbsite",
+          "ima-glauberite",
+          "ima-grunerite",
+          "ima-halite",
+          "ima-harmotome",
+          "ima-hydrozincite",
+          "ima-jamesonite",
+          "ima-kaolinite",
+          "ima-krennerite",
+          "ima-lawsonite",
+          "ima-lepidocrocite",
+          "ima-leucite",
+          "ima-magnesite",
+          "ima-manganite",
+          "ima-melanterite",
+          "ima-monticellite",
+          "ima-montmorillonite",
+          "ima-nepheline",
+          "ima-niter",
+          "ima-nontronite",
+          "ima-olivenite",
+          "ima-orpiment",
+          "ima-paragonite",
+          "ima-petalite",
+          "ima-phlogopite",
+          "ima-portlandite",
+          "ima-pyrolusite",
+          "ima-realgar",
+          "ima-sanidine",
+          "ima-saponite",
+          "ima-scolecite",
+          "ima-staurolite",
+          "ima-strontianite",
+          "ima-talc",
+          "ima-tridymite",
+          "ima-ulexite",
+          "ima-uraninite",
+          "ima-zinkenite"
+        ],
+        "species_count": 100,
+        "field_status_counts": {
+          "needs_review": 1,
+          "unavailable": 1,
+          "verified": 198
+        },
+        "verified_literature_fields": 198
+      },
+      {
+        "batch_id": "22e748c7056748e991775890ff0f3d8f783b3d86c653e1853a2fb2a951364d40",
+        "source_json_sha256": "e609aed47b0b0d33d3a813de792707c7444e63719a52070ca47a11aa420cf64f",
+        "render_index_sha256": "7646c496b3268638049afc61556005dde5ff9c6d02e7e482dde642b9c60147c4",
+        "physical_decision_sha256": "30fb59ccf68fc11e86790a75d30fbddc1f4888580df964003190d20024b426a4",
+        "root_ledger_sha256": "c6f377928428c61b8c96f51e6d17b0d5067cc5ee240d0f0db2e26d7615d03aa3",
+        "species_ids": [
+          "ima-carnallite",
+          "ima-chamosite",
+          "ima-chloritoid",
+          "ima-clinochlore",
+          "ima-fayalite",
+          "ima-glaucophane",
+          "ima-hercynite",
+          "ima-riebeckite",
+          "ima-sillimanite",
+          "ima-sylvite"
+        ],
+        "species_count": 10,
+        "field_status_counts": {
+          "verified": 20
+        },
+        "verified_literature_fields": 20
+      }
+    ],
+    "approved_fields": 218,
+    "withheld_fields": 2,
+    "root_ledger_sha256": "1d3223d772c275db9677f2fa1a7d02ccae1c46450a478db1f19013b578f51b58",
+    "root_ledger_sha256s": [
+      "1d3223d772c275db9677f2fa1a7d02ccae1c46450a478db1f19013b578f51b58",
+      "c6f377928428c61b8c96f51e6d17b0d5067cc5ee240d0f0db2e26d7615d03aa3"
+    ],
+    "all_declared_batches_revalidated": true,
+    "scope": "Chinese source correspondence, not experimental or model accuracy verification."
+  },
   "physical_extensions": [
     {
       "source_json_sha256": "a13cd90496cb5160d4866d5e5b85771ada7184b521a2af0835a230c35d60a77c",
@@ -1306,6 +1463,77 @@
           "viewed_render_sha256": "bee29a4e3024dd2e0b9d4f7b57804fff11ef16fcb0ae62b87f4440806cf5395e"
         }
       ]
+    },
+    {
+      "source_json_sha256": "30fb59ccf68fc11e86790a75d30fbddc1f4888580df964003190d20024b426a4",
+      "species": 10,
+      "field_status_counts": {
+        "verified": 55,
+        "unavailable": 4,
+        "source_inferred": 1
+      },
+      "records": [
+        {
+          "catalog_id": "ima-sylvite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "viewed_render_sha256": "2cbbd5a0533161900d4486eafdac5b2177eb8c2d2aa74640bab79c9e4b2a2832"
+        },
+        {
+          "catalog_id": "ima-carnallite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "viewed_render_sha256": "5992a4ea00c631283818b823f9c92d9f3eedeec47baea7fa1afc52a17f1cdc4f"
+        },
+        {
+          "catalog_id": "ima-clinochlore",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "viewed_render_sha256": "268f05653c960bb146379326ab56c10af9129e361ceffc3d3d4fec9421a4ce7d"
+        },
+        {
+          "catalog_id": "ima-chamosite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "viewed_render_sha256": "b8d055567c0b27770ab8f82ec4dc02e8173673714436a7a99797533e9de50cec"
+        },
+        {
+          "catalog_id": "ima-sillimanite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "viewed_render_sha256": "fc3da401b6728d79af34f8ab5c7c0e09135303a6f018afeebf13f835b53f84fd"
+        },
+        {
+          "catalog_id": "ima-glaucophane",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "viewed_render_sha256": "e64df0f508570278af878f0618e1b5485c83cd15a834f3137bcc20d25ce36ab5"
+        },
+        {
+          "catalog_id": "ima-riebeckite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "viewed_render_sha256": "395ca23fc880831a2625f65f2b914100bb0389c7be57c8bb2d61b0308846f694"
+        },
+        {
+          "catalog_id": "ima-fayalite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "viewed_render_sha256": "ee32c5f63cbf623aa2e0be0ff64fd31f0e44d7e8b8c02493cfac68730a09d470"
+        },
+        {
+          "catalog_id": "ima-chloritoid",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "viewed_render_sha256": "c4b86f4dc9b357ffb1fe4481d58080b0fdd93a548cdd6283bdd9b608172ae78b"
+        },
+        {
+          "catalog_id": "ima-hercynite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "viewed_render_sha256": "74c9b3df1cafca057262b7bf251f2870a13189703cfdcd76134b2c5ee066f04f"
+        }
+      ]
     }
   ],
   "crystal_system_annotations": {
@@ -1327,12 +1555,12 @@
       "needs_review": 32,
       "unavailable": 25
     },
-    "catalog_physical_unique_ima_species": 185,
-    "catalog_unique_species_verified_fields": 955,
+    "catalog_physical_unique_ima_species": 195,
+    "catalog_unique_species_verified_fields": 1010,
     "catalog_unique_species_field_status_counts": {
-      "unavailable": 112,
-      "verified": 955,
-      "source_inferred": 2,
+      "unavailable": 116,
+      "verified": 1010,
+      "source_inferred": 3,
       "needs_review": 41
     },
     "crystal_records": 9895,

@@ -1,0 +1,1108 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-10-21",
+  "source": {
+    "title": "Handbook of Mineralogy - ten missing common mineral detail cards",
+    "publisher": "Mineralogical Society of America",
+    "url": "https://handbookofmineralogy.org/",
+    "citation": "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols, Eds., Handbook of Mineralogy, Mineralogical Society of America.",
+    "scope": "Selected scientific facts and short Chinese paraphrases only; full PDFs/renders are not app assets.",
+    "license": "No open redistribution license asserted for Handbook PDFs or page pixels."
+  },
+  "complete": false,
+  "reviewed_species_count": 10,
+  "unique_pdf_count": 10,
+  "field_status_counts": {
+    "verified": 55,
+    "unavailable": 4,
+    "source_inferred": 1
+  },
+  "records": [
+    {
+      "key": "ima-sylvite",
+      "name_en": "Sylvite",
+      "original_name_en": "Sylvite",
+      "ima_species": true,
+      "source_title": "Sylvite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+      "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "2",
+          "raw": "2",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2",
+            "text_zh": "2"
+          }
+        },
+        "density_measured": {
+          "value": "1.993(5)",
+          "raw": "1.993(5)",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "1.993(5)",
+            "text_zh": "1.993(5)"
+          }
+        },
+        "crystal_system": {
+          "value": "Cubic",
+          "raw": "Cubic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Cubic",
+            "text_zh": "等轴晶系"
+          }
+        },
+        "cleavage": {
+          "value": "{001}, perfect",
+          "raw": "{001}, perfect.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "{001}, perfect",
+            "text_zh": "{001} 面完全解理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous",
+          "raw": "Vitreous.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous",
+            "text_zh": "玻璃光泽"
+          }
+        },
+        "streak": {
+          "value": null,
+          "raw": "",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sylvite.pdf",
+          "source_page": 1,
+          "status": "unavailable",
+          "source_pdf_sha256": "5701504c5baabadc3a94bc2b8de83bc9f7e0af5654f2f61610e5d190e2082331",
+          "note": "This specific source page does not report this field; absence is not interpreted as no cleavage/white streak or an unknown material measurement."
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-sylvite-p1.png",
+          "sha256": "2cbbd5a0533161900d4486eafdac5b2177eb8c2d2aa74640bab79c9e4b2a2832",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-carnallite",
+      "name_en": "Carnallite",
+      "original_name_en": "Carnallite",
+      "ima_species": true,
+      "source_title": "Carnallite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+      "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "2.5",
+          "raw": "2.5",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2.5",
+            "text_zh": "2.5"
+          }
+        },
+        "density_measured": {
+          "value": "1.602",
+          "raw": "1.602",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "1.602",
+            "text_zh": "1.602"
+          }
+        },
+        "crystal_system": {
+          "value": "Orthorhombic",
+          "raw": "Orthorhombic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Orthorhombic",
+            "text_zh": "斜方晶系"
+          }
+        },
+        "cleavage": {
+          "value": null,
+          "raw": "",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "unavailable",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "note": "This specific source page does not report this field; absence is not interpreted as no cleavage/white streak or an unknown material measurement."
+        },
+        "luster": {
+          "value": "Greasy, shining",
+          "raw": "Greasy, shining.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Greasy, shining",
+            "text_zh": "油脂光泽，明亮"
+          }
+        },
+        "streak": {
+          "value": null,
+          "raw": "",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/carnallite.pdf",
+          "source_page": 1,
+          "status": "unavailable",
+          "source_pdf_sha256": "382b0410dca6c655dc1d4c72834dfbe20bc62d0f0b30432d7988be5f1e1f189d",
+          "note": "This specific source page does not report this field; absence is not interpreted as no cleavage/white streak or an unknown material measurement."
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-carnallite-p1.png",
+          "sha256": "5992a4ea00c631283818b823f9c92d9f3eedeec47baea7fa1afc52a17f1cdc4f",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-clinochlore",
+      "name_en": "Clinochlore",
+      "original_name_en": "Clinochlore",
+      "ima_species": true,
+      "source_title": "Clinochlore",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+      "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "2–2.5",
+          "raw": "2{2.5",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2–2.5",
+            "text_zh": "2–2.5"
+          }
+        },
+        "density_measured": {
+          "value": "2.60–3.02",
+          "raw": "2.60{3.02",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2.60–3.02",
+            "text_zh": "2.60–3.02"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "{001}, perfect",
+          "raw": "f001g, perfect.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "{001}, perfect",
+            "text_zh": "{001} 面完全解理"
+          }
+        },
+        "luster": {
+          "value": "Pearly, greasy, dull",
+          "raw": "Pearly, greasy, dull.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Pearly, greasy, dull",
+            "text_zh": "珍珠光泽、油脂光泽或暗淡"
+          }
+        },
+        "streak": {
+          "value": "Greenish white to white",
+          "raw": "Greenish white to white.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/clinochlore.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "b7a2dd1fc5ce6c3dd1d72ba4ba253b67920e028115104b9064137fd7aead6326",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Greenish white to white",
+            "text_zh": "绿白色至白色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-clinochlore-p1.png",
+          "sha256": "268f05653c960bb146379326ab56c10af9129e361ceffc3d3d4fec9421a4ce7d",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-chamosite",
+      "name_en": "Chamosite",
+      "original_name_en": "Chamosite",
+      "ima_species": true,
+      "source_title": "Chamosite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+      "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "2–3",
+          "raw": "2{3",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2–3",
+            "text_zh": "2–3"
+          }
+        },
+        "density_measured": {
+          "value": "3.0–3.4",
+          "raw": "3.0{3.4",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.0–3.4",
+            "text_zh": "3.0–3.4"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "{001}, perfect",
+          "raw": "f001g, perfect.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "{001}, perfect",
+            "text_zh": "{001} 面完全解理"
+          }
+        },
+        "luster": {
+          "value": "Pearly",
+          "raw": "Pearly.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Pearly",
+            "text_zh": "珍珠光泽"
+          }
+        },
+        "streak": {
+          "value": "Green to gray",
+          "raw": "Green to gray.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chamosite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "171b45dfb4cd4ecb74181feae080e6aebe2d29af46918445c03b6e34d551bffc",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Green to gray",
+            "text_zh": "绿色至灰色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-chamosite-p1.png",
+          "sha256": "b8d055567c0b27770ab8f82ec4dc02e8173673714436a7a99797533e9de50cec",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-sillimanite",
+      "name_en": "Sillimanite",
+      "original_name_en": "Sillimanite",
+      "ima_species": true,
+      "source_title": "Sillimanite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+      "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6.5–7.5",
+          "raw": "6.5{7.5",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6.5–7.5",
+            "text_zh": "6.5–7.5"
+          }
+        },
+        "density_measured": {
+          "value": "3.23–3.24",
+          "raw": "3.23{3.24",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.23–3.24",
+            "text_zh": "3.23–3.24"
+          }
+        },
+        "crystal_system": {
+          "value": "Orthorhombic",
+          "raw": "Orthorhombic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Orthorhombic",
+            "text_zh": "斜方晶系"
+          }
+        },
+        "cleavage": {
+          "value": "Perfect on {010}",
+          "raw": "Perfect on f010g.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Perfect on {010}",
+            "text_zh": "{010} 面完全解理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to subadamantine",
+          "raw": "Vitreous to subadamantine.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to subadamantine",
+            "text_zh": "玻璃至半金刚光泽"
+          }
+        },
+        "streak": {
+          "value": "White",
+          "raw": "White.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/sillimanite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "5750733d54a35f76c7273e89b5db80371c7c71bfb5383f3f3819899db06ff0a0",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "White",
+            "text_zh": "白色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-sillimanite-p1.png",
+          "sha256": "fc3da401b6728d79af34f8ab5c7c0e09135303a6f018afeebf13f835b53f84fd",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-glaucophane",
+      "name_en": "Glaucophane",
+      "original_name_en": "Glaucophane",
+      "ima_species": true,
+      "source_title": "Glaucophane",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+      "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6",
+          "raw": "6",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6",
+            "text_zh": "6"
+          }
+        },
+        "density_measured": {
+          "value": "3.08–3.22",
+          "raw": "3.08{3.22",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.08–3.22",
+            "text_zh": "3.08–3.22"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "Perfect on {110}, intersecting at ~56° and ~124°; partings on {010}, {001}",
+          "raw": "Perfect on f110g, intersecting at »56± and »124±; partings on f010g, f001g.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Perfect on {110}, intersecting at ~56° and ~124°; partings on {010}, {001}",
+            "text_zh": "{110} 面完全解理，交角约 56° 和 124°；{010}、{001} 面有裂理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to pearly",
+          "raw": "Vitreous to pearly.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to pearly",
+            "text_zh": "玻璃至珍珠光泽"
+          }
+        },
+        "streak": {
+          "value": "Blue-gray",
+          "raw": "Blue-gray.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/glaucophane.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "125417565afc525dcdbd52e276a8b2fb1326c6a5c4ba20ddbbd29537e9778412",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Blue-gray",
+            "text_zh": "蓝灰色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-glaucophane-p1.png",
+          "sha256": "e64df0f508570278af878f0618e1b5485c83cd15a834f3137bcc20d25ce36ab5",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-riebeckite",
+      "name_en": "Riebeckite",
+      "original_name_en": "Riebeckite",
+      "ima_species": true,
+      "source_title": "Riebeckite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+      "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6",
+          "raw": "6",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6",
+            "text_zh": "6"
+          }
+        },
+        "density_measured": {
+          "value": "3.28–3.44",
+          "raw": "3.28{3.44",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.28–3.44",
+            "text_zh": "3.28–3.44"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "Perfect on {110}, intersecting at 56° and 124°; partings on {100}, {010}",
+          "raw": "Perfect on f110g, intersecting at 56± and 124±; partings on f100g, f010g.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Perfect on {110}, intersecting at 56° and 124°; partings on {100}, {010}",
+            "text_zh": "{110} 面完全解理，交角 56° 和 124°；{100}、{010} 面有裂理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to silky",
+          "raw": "Vitreous to silky.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to silky",
+            "text_zh": "玻璃至丝绢光泽"
+          }
+        },
+        "streak": {
+          "value": null,
+          "raw": "",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/riebeckite.pdf",
+          "source_page": 1,
+          "status": "unavailable",
+          "source_pdf_sha256": "acfb2c8cafe534260785ecedf1a9f01e3f76cdfe06737a21e53a93af96b9c6ad",
+          "note": "This specific source page does not report this field; absence is not interpreted as no cleavage/white streak or an unknown material measurement."
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-riebeckite-p1.png",
+          "sha256": "395ca23fc880831a2625f65f2b914100bb0389c7be57c8bb2d61b0308846f694",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-fayalite",
+      "name_en": "Fayalite",
+      "original_name_en": "Fayalite",
+      "ima_species": true,
+      "source_title": "Fayalite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+      "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6.5–7",
+          "raw": "6.5{7",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6.5–7",
+            "text_zh": "6.5–7"
+          }
+        },
+        "density_measured": {
+          "value": "4.392",
+          "raw": "4.392",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "4.392",
+            "text_zh": "4.392"
+          }
+        },
+        "crystal_system": {
+          "value": "Orthorhombic",
+          "raw": "Orthorhombic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Orthorhombic",
+            "text_zh": "斜方晶系"
+          }
+        },
+        "cleavage": {
+          "value": "{010}, {100}, imperfect",
+          "raw": "f010g, f100g, imperfect.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "{010}, {100}, imperfect",
+            "text_zh": "{010}、{100} 面解理不完全"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to resinous on fractures",
+          "raw": "Vitreous to resinous on fractures.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to resinous on fractures",
+            "text_zh": "断口呈玻璃至树脂光泽"
+          }
+        },
+        "streak": {
+          "value": "White",
+          "raw": "White.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/fayalite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "0a6fdc49930e3b3c714c2fbbd2807899829ce35265442ad8ef62d867b0c88331",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "White",
+            "text_zh": "白色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-fayalite-p1.png",
+          "sha256": "ee32c5f63cbf623aa2e0be0ff64fd31f0e44d7e8b8c02493cfac68730a09d470",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-chloritoid",
+      "name_en": "Chloritoid",
+      "original_name_en": "Chloritoid",
+      "ima_species": true,
+      "source_title": "Chloritoid",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+      "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6.5",
+          "raw": "6.5",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6.5",
+            "text_zh": "6.5"
+          }
+        },
+        "density_measured": {
+          "value": "3.46–3.80",
+          "raw": "3.46{3.80",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.46–3.80",
+            "text_zh": "3.46–3.80"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic or triclinic, both pseudohexagonal",
+          "raw": "Monoclinic or triclinic, both pseudohexagonal.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic or triclinic, both pseudohexagonal",
+            "text_zh": "单斜或三斜晶系，二者均呈假六方形态"
+          }
+        },
+        "cleavage": {
+          "value": "Perfect on {001}, distinct on {110}; parting on {010}",
+          "raw": "Perfect on f001g, distinct on f110g; parting on f010g.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Perfect on {001}, distinct on {110}; parting on {010}",
+            "text_zh": "{001} 面完全解理，{110} 面解理清楚；{010} 面有裂理"
+          }
+        },
+        "luster": {
+          "value": "Somewhat pearly on cleavage surfaces",
+          "raw": "Somewhat pearly on cleavage surfaces.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Somewhat pearly on cleavage surfaces",
+            "text_zh": "解理面略呈珍珠光泽"
+          }
+        },
+        "streak": {
+          "value": "White, grayish, or very slightly greenish",
+          "raw": "White, grayish, or very slightly greenish.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/chloritoid.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "7ba40e7cb0601883790dbec594b06d95f663781a14bec94d30ef32770093e65e",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "White, grayish, or very slightly greenish",
+            "text_zh": "白色、带灰色或极浅的绿色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-chloritoid-p1.png",
+          "sha256": "c4b86f4dc9b357ffb1fe4481d58080b0fdd93a548cdd6283bdd9b608172ae78b",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    },
+    {
+      "key": "ima-hercynite",
+      "name_en": "Hercynite",
+      "original_name_en": "Hercynite",
+      "ima_species": true,
+      "source_title": "Hercynite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+      "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "7.5–8",
+          "raw": "7.5-8",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "unit": "Mohs",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "7.5–8",
+            "text_zh": "7.5–8"
+          }
+        },
+        "density_measured": {
+          "value": "4.40",
+          "raw": "4.40",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "4.40",
+            "text_zh": "4.40"
+          }
+        },
+        "crystal_system": {
+          "value": "Cubic",
+          "raw": "Cubic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Cubic",
+            "text_zh": "等轴晶系"
+          }
+        },
+        "cleavage": {
+          "value": null,
+          "raw": "Parting on {Ill}, probable.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "source_inferred",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "note": "Original source reports only probable parting on {111}; a definite cleavage property is not asserted."
+        },
+        "luster": {
+          "value": "Vitreous",
+          "raw": "Vitreous.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous",
+            "text_zh": "玻璃光泽"
+          }
+        },
+        "streak": {
+          "value": "Dark grayish green to dark green",
+          "raw": "Dark grayish green to dark green.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/hercynite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "af722a37f1ab887b36d7d4ae8745429c276a90833919b3890d1b2c2824d93367",
+          "verification": "knowledge22 actually viewed the complete original PDF page and manually checked this selected factual value, retaining range, direction, parting/cleavage distinction and material conditions; Root approval remains separate.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Dark grayish green to dark green",
+            "text_zh": "深灰绿色至深绿色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-21",
+        "reviewer": "/root/knowledge22",
+        "evidence": {
+          "path": "ima-hercynite-p1.png",
+          "sha256": "74c9b3df1cafca057262b7bf251f2870a13189703cfdcd76134b2c5ee066f04f",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "e7419205eba33b75b8700b9be78810ff5db1e464770985da43ff0a1f66ac01cd"
+        },
+        "source_integrity": "Original PDF, actually viewed full-page render, exact IMA source URL and slot are hash bound."
+      }
+    }
+  ],
+  "review_scope": "Agent source/value verification; no Root field-ledger approval or app import performed."
+}
