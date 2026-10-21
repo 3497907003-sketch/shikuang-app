@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "validated_at": "2026-10-21T02:19:41.219340+00:00",
+  "validated_at": "2026-10-21T02:40:14.852382+00:00",
   "scope": "All published reference records compared to acquired official-source files and reviewed imports. This audit does not establish ML accuracy, photograph quality or photo reuse permission.",
   "checks": {
     "official_catalog_count_and_unique_ids": true,
@@ -1587,11 +1587,13 @@
     "images": {
       "scope": "Original pending references plus individually licensed, source/pixel/hash-reviewed local Commons photographs. RRUFF photo reuse permission remains unverified. Gallery inclusion does not assert model training or independent analytical identity."
     },
-    "live_primary_pages_checked": [
+    "primary_policy_pages_for_reference": [
       "https://handbookofmineralogy.org/",
       "https://msaweb.org/copyright-permission-request-form/",
       "https://www.rruff.net/about/download-data/"
-    ]
+    ],
+    "fresh_live_policy_page_verification_performed": false,
+    "audit_uses_saved_sources_without_network_requests": true
   },
   "limitations": [
     "Original legacy formation, uses and unreplaced attributes are not newly verified.",
