@@ -188,7 +188,15 @@ test('workerAssets and shellResourceURL bind every dependency to the same shell 
   assert.deepEqual(assets.map(value => new URL(value).pathname), [
     '/shikuang/compat.js', '/shikuang/engine-worker.js', '/shikuang/core.js',
     '/shikuang/vendor/ort.min.js', '/shikuang/vendor/ort-wasm-simd-threaded.mjs',
-    '/shikuang/vendor/ort-wasm-simd-threaded.wasm'
+    '/shikuang/vendor/ort-wasm-simd-threaded.wasm',
+    '/shikuang/research-input.js', '/shikuang/research-photo.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/encoded-header.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/worker.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/profile.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/frozen/native-roi-entry.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/frozen/vendor/native-roi-q16.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/frozen/vendor/normalization.js',
+    '/shikuang/research/shikuang-research-native-roi-q16-torchf32-v1/frozen/vendor/normalization-lut.f32le.bin'
   ]);
   assert.equal(new Set(assets).size, assets.length);
   for (const value of assets) {

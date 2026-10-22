@@ -3,6 +3,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const root = path.resolve(__dirname, '..');
+for(const file of require('./research-input-contract.cjs').validate(root))if(file.endsWith('.js'))new vm.Script(fs.readFileSync(path.join(root,file),'utf8'),{filename:file});
 for (const file of ['app.js','native-assets.js','core.js','inference.js','storage.js','sw.js','engine-worker.js','media.js','history.js','reference-loader.js','gallery.js', 'viewport.js','data/sources.js']) new vm.Script(fs.readFileSync(path.join(root,file),'utf8'), { filename:file });
 const context = { window: {} };
 for (const file of ['classes','minerals','imagenet']) vm.runInNewContext(fs.readFileSync(path.join(root,`data/${file}.js`),'utf8'),context);
