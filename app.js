@@ -610,7 +610,9 @@
     return `<section class="detail-section" data-literature-field="${field}"><h3>${title}</h3><p>${html(value)}</p>${source}${field==='distribution'?'<p class="field-hint">仅列举该版文献中的典型分布，非完整或实时地点清单；不代表上传图片中标本的产地。</p>':''}${excerpt}</section>`;
   }
   function industrialUsesSection(k,reference){
-    const fact=k.verified_industrial_uses;
+    const extension=window.MINERAL_INDUSTRIAL_USE_EXTENSIONS?.[reference?.id];
+    const canonicalFact=reference&&extension?.id===reference.id&&extension.name_en===reference.name_en&&extension.formula===reference.formula?extension.verified_industrial_uses:null;
+    const fact=k.verified_industrial_uses||canonicalFact;
     let source='';
     try{const url=new URL(fact?.source_url);if(url.protocol==='https:'&&['www.usgs.gov','pubs.usgs.gov'].includes(url.hostname)&&!url.username&&!url.password)source=url.href;}catch(_){}
     const reviewed=fact?.status==='verified'&&Array.isArray(fact.value)&&fact.value.length>0&&fact.value.every(value=>typeof value==='string'&&value.trim())&&source&&/^[a-f0-9]{64}$/i.test(fact.source_text_sha256||'')&&['source_title','source_section','retrieved_at','commodity_scope_zh'].every(field=>typeof fact[field]==='string'&&fact[field].trim());

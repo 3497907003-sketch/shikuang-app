@@ -1,0 +1,51 @@
+{
+  "scope": "Local web source integration only; no deployment, model change or device acceptance.",
+  "source_reviewed_added_minerals": 4,
+  "reviewed_uses_total_unique_minerals": 8,
+  "legacy_use_records": 6,
+  "canonical_only_use_records": 2,
+  "legacy_mineral_count_unchanged": 105,
+  "canonical_identity_binding": [
+    "id",
+    "name_en",
+    "formula"
+  ],
+  "source_records": [
+    {
+      "canonical_id": null,
+      "legacy_key": "barite",
+      "name_zh": "重晶石",
+      "source_url": "https://www.usgs.gov/centers/national-minerals-information-center/barite-statistics-and-information",
+      "source_text_sha256": "aa5eafb885d0ad382bca0ca6894daf9fa684cffd0676604b3f729c4d2d234c58",
+      "retrieved_at": "2026-10-24",
+      "scope": "Source-reviewed Chinese commodity-use paraphrase; does not establish uploaded specimen grade or model recognition."
+    },
+    {
+      "canonical_id": "ima-halite",
+      "legacy_key": null,
+      "name_zh": "石盐",
+      "source_url": "https://www.usgs.gov/centers/national-minerals-information-center/salt-statistics-and-information",
+      "source_text_sha256": "0d8a795a9ed6e115b7c55c3582759ec7390ae6596fbd3476367dee3de08da4cb",
+      "retrieved_at": "2026-10-24",
+      "scope": "Source-reviewed Chinese commodity-use paraphrase; does not establish uploaded specimen grade or model recognition."
+    },
+    {
+      "canonical_id": "ima-talc",
+      "legacy_key": null,
+      "name_zh": "滑石",
+      "source_url": "https://www.usgs.gov/centers/national-minerals-information-center/talc-and-pyrophyllite-statistics-and-information",
+      "source_text_sha256": "1a2b51b627fcb0d0efe4570aeaec3958ad30809e321f5a9f5929f2db132299cd",
+      "retrieved_at": "2026-10-24",
+      "scope": "Source-reviewed Chinese commodity-use paraphrase; does not establish uploaded specimen grade or model recognition."
+    },
+    {
+      "canonical_id": null,
+      "legacy_key": "cassiterite",
+      "name_zh": "锡石",
+      "source_url": "https://www.usgs.gov/centers/national-minerals-information-center/tin-statistics-and-information",
+      "source_text_sha256": "6da1cea2f5c1a93e10c47720a1b1e4f8d1c743ac269ba60cf0815e58e8db537b",
+      "retrieved_at": "2026-10-24",
+      "scope": "Source-reviewed Chinese commodity-use paraphrase; does not establish uploaded specimen grade or model recognition."
+    }
+  ]
+}
