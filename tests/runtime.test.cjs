@@ -107,6 +107,31 @@ test('browser waits for worker readiness and reports bootstrap failures with a r
   assert.equal(instances[0].posted,undefined);assert.equal(instances[0].terminated,true);
   assert.equal((await engine.analyze([{src:'fixture'}])).engine,'onnx-worker-wasm');assert.equal(instances[1].posted,true);
 });
+test('an idle Worker failure discards the stale thread before the next explicit analysis',async()=>{
+  const instances=[];let retryPosted;
+  class FakeWorker {
+    constructor(){this.alive=true;instances.push(this);setImmediate(()=>this.onmessage?.({data:{type:'ready'}}));}
+    postMessage(payload){
+      retryPosted?.();
+      if(this.alive)setImmediate(()=>this.onmessage?.({data:{type:'result',...raw(payload)}}));
+    }
+    terminate(){this.terminated=true;this.alive=false;}
+    failWhileIdle(){this.alive=false;this.onerror?.({message:'idle thread failure'});}
+  }
+  const engine=harness(null,false,FakeWorker);
+  assert.equal((await engine.analyze([{src:'fixture'}])).engine,'onnx-worker-wasm');
+  assert.equal((await engine.analyze([{src:'fixture'}])).engine,'onnx-worker-wasm');
+  assert.equal(instances.length,1,'A healthy idle Worker remains reusable');
+  instances[0].failWhileIdle();
+  const posted=new Promise(resolve=>retryPosted=resolve);
+  const controller=new AbortController(),retry=engine.analyze([{src:'fixture'}],{signal:controller.signal});
+  try {
+    await posted;
+    assert.equal(instances.length,2,'A dead idle thread must not be reused until the whole analysis timeout');
+    assert.equal(instances[0].terminated,true);
+    assert.equal((await retry).engine,'onnx-worker-wasm');
+  } finally {controller.abort();await retry.catch(()=>{});}
+});
 test('worker fails closed if the screening model cannot load; never emits mineral results',async()=>{
   const messages=[],modelFetches=[],fixtureData=fixture(),bytes=Buffer.from(JSON.stringify(fixtureData.manifest));
   const context={URL,TextDecoder,Float32Array,MineralCore:Core,self:{location:{origin:'https://localhost'}},onmessage:null,postMessage:m=>messages.push(m),importScripts(){},ort:{env:{wasm:{}}},crypto:require('node:crypto').webcrypto,
