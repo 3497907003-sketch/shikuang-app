@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "validated_at": "2026-10-21T02:40:14.852382+00:00",
+  "validated_at": "2026-10-28T01:13:31.766090+00:00",
   "scope": "All published reference records compared to acquired official-source files and reviewed imports. This audit does not establish ML accuracy, photograph quality or photo reuse permission.",
   "checks": {
     "official_catalog_count_and_unique_ids": true,
@@ -50,8 +50,8 @@
   "anomalies": {},
   "files": {
     "data/catalog.json": {
-      "bytes": 4653375,
-      "sha256": "e656ed6035b35d08a74c0d86501b0e93d286127cd1055f087cf18e6b10f14e0b"
+      "bytes": 4676574,
+      "sha256": "0a668da54d7c8a54b71cd548993533bc33ffdf37ccdf100a4aee248d557ffb25"
     },
     "data/crystals.json": {
       "bytes": 6162899,
@@ -62,8 +62,8 @@
       "sha256": "7895e0cc81769658fdcbc3067cab1181292cda23f405e7c7acf7a3d295f7fef6"
     },
     "data/minerals.js": {
-      "bytes": 662489,
-      "sha256": "382b334980daf9f31e130bbdf58d7d9c0e3ab084ee32d7d7a08c63455f482325"
+      "bytes": 680522,
+      "sha256": "23d86ea611c06f2662c458f4391fe86c29aaa466ec8d500cc9bf0c2464accd52"
     }
   },
   "original_sources": {
@@ -698,7 +698,7 @@
     ]
   },
   "literature_review": {
-    "source_species": 110,
+    "source_species": 113,
     "source_batches": [
       {
         "batch_id": "9fec87a71c28f6d5ad5e51cf4871c48f06811fe62e9dcd7233c249f5078da6ea",
@@ -839,14 +839,32 @@
           "verified": 20
         },
         "verified_literature_fields": 20
+      },
+      {
+        "batch_id": "fcd027b57b357ca76c8dde8f2259bf899c03f9071c68334a0d22d50890e182f0",
+        "source_json_sha256": "4f01fd1f2ed373da7fdc4ea2c2a118facf0e2f77fa7c2735e97a1d5e3d9db93f",
+        "render_index_sha256": "f2b1cc267c92c692e450a329f681863c720efc950201de0185ce4b263b00394d",
+        "physical_decision_sha256": "8d0354f5fbe4adcfdbc0f796d36b3e9e18056cad6956153bdaf71799ed34597a",
+        "root_ledger_sha256": "5c6e606879dfbb9ff2778002cc3a31979fe62004c4514c5e5ef3af44d4d2eddb",
+        "species_ids": [
+          "ima-jadeite",
+          "ima-laumontite",
+          "ima-omphacite"
+        ],
+        "species_count": 3,
+        "field_status_counts": {
+          "verified": 6
+        },
+        "verified_literature_fields": 6
       }
     ],
-    "approved_fields": 218,
+    "approved_fields": 224,
     "withheld_fields": 2,
     "root_ledger_sha256": "1d3223d772c275db9677f2fa1a7d02ccae1c46450a478db1f19013b578f51b58",
     "root_ledger_sha256s": [
       "1d3223d772c275db9677f2fa1a7d02ccae1c46450a478db1f19013b578f51b58",
-      "c6f377928428c61b8c96f51e6d17b0d5067cc5ee240d0f0db2e26d7615d03aa3"
+      "c6f377928428c61b8c96f51e6d17b0d5067cc5ee240d0f0db2e26d7615d03aa3",
+      "5c6e606879dfbb9ff2778002cc3a31979fe62004c4514c5e5ef3af44d4d2eddb"
     ],
     "all_declared_batches_revalidated": true,
     "scope": "Chinese source correspondence, not experimental or model accuracy verification."
@@ -1534,6 +1552,34 @@
           "viewed_render_sha256": "74c9b3df1cafca057262b7bf251f2870a13189703cfdcd76134b2c5ee066f04f"
         }
       ]
+    },
+    {
+      "source_json_sha256": "8d0354f5fbe4adcfdbc0f796d36b3e9e18056cad6956153bdaf71799ed34597a",
+      "species": 3,
+      "field_status_counts": {
+        "verified": 17,
+        "unavailable": 1
+      },
+      "records": [
+        {
+          "catalog_id": "ima-jadeite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "viewed_render_sha256": "5c1659db8347f37a327565ec85b7dfd4583bad447994260fcd05f7a3e0052d5c"
+        },
+        {
+          "catalog_id": "ima-omphacite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "viewed_render_sha256": "e7fb8d4210e3fe8afafb2736d54a87e9b330fbaea2f630db4f85c4234fdeea7c"
+        },
+        {
+          "catalog_id": "ima-laumontite",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "viewed_render_sha256": "45fc100f2924fec4416fab7bcc84a7bc8560ea4cc5dc35102c924e16aab72c5a"
+        }
+      ]
     }
   ],
   "crystal_system_annotations": {
@@ -1555,11 +1601,11 @@
       "needs_review": 32,
       "unavailable": 25
     },
-    "catalog_physical_unique_ima_species": 195,
-    "catalog_unique_species_verified_fields": 1010,
+    "catalog_physical_unique_ima_species": 198,
+    "catalog_unique_species_verified_fields": 1027,
     "catalog_unique_species_field_status_counts": {
-      "unavailable": 116,
-      "verified": 1010,
+      "unavailable": 117,
+      "verified": 1027,
       "source_inferred": 3,
       "needs_review": 41
     },

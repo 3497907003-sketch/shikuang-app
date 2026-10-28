@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "hardness": {
+    "6–7": "6–7",
+    "5–6": "5–6",
+    "3–4": "3–4"
+  },
+  "density_measured": {
+    "3.24–3.43": "3.24–3.43",
+    "3.16–3.43": "3.16–3.43",
+    "2.23–2.41": "2.23–2.41"
+  },
+  "crystal_system": {
+    "Monoclinic": "单斜晶系"
+  },
+  "cleavage": {
+    "Good on {110}, intersecting at ~87°": "{110} 面解理良好，交角约 87°",
+    "Good on {110}, intersecting at ~87°; parting on {100}": "{110} 面解理良好，交角约 87°；{100} 面有裂理",
+    "{010}, {110}, perfect": "{010}、{110} 面完全解理"
+  },
+  "luster": {
+    "Subvitreous, pearly on cleavages": "半玻璃光泽；解理面呈珍珠光泽",
+    "Vitreous to silky": "玻璃至丝绢光泽",
+    "Vitreous to pearly on cleavages": "玻璃光泽；解理面可呈珍珠光泽"
+  },
+  "streak": {
+    "White": "白色"
+  }
+}

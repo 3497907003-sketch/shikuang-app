@@ -1,0 +1,394 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-10-28",
+  "source": {
+    "title": "Handbook of Mineralogy - three missing detailed cards",
+    "publisher": "Mineralogical Society of America",
+    "url": "https://handbookofmineralogy.org/",
+    "citation": "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols, Eds., Handbook of Mineralogy, Mineralogical Society of America.",
+    "scope": "Selected facts/paraphrases proposed for independent Root review only; no source PDF or page pixels are app assets.",
+    "license": "No open redistribution license asserted."
+  },
+  "complete": true,
+  "reviewed_species_count": 3,
+  "unique_pdf_count": 3,
+  "field_status_counts": {
+    "verified": 17,
+    "unavailable": 1
+  },
+  "records": [
+    {
+      "key": "ima-jadeite",
+      "name_en": "Jadeite",
+      "original_name_en": "Jadeite",
+      "ima_species": true,
+      "source_title": "Jadeite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+      "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "6–7",
+          "raw": "6{7",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "unit": "Mohs",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "6–7",
+            "text_zh": "6–7"
+          }
+        },
+        "density_measured": {
+          "value": "3.24–3.43",
+          "raw": "3.24{3.43",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.24–3.43",
+            "text_zh": "3.24–3.43"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "Good on {110}, intersecting at ~87°",
+          "raw": "Good on f110g, (110) ^ (110) »87±.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Good on {110}, intersecting at ~87°",
+            "text_zh": "{110} 面解理良好，交角约 87°"
+          }
+        },
+        "luster": {
+          "value": "Subvitreous, pearly on cleavages",
+          "raw": "Subvitreous, pearly on cleavages.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Subvitreous, pearly on cleavages",
+            "text_zh": "半玻璃光泽；解理面呈珍珠光泽"
+          }
+        },
+        "streak": {
+          "value": "White",
+          "raw": "White.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/jadeite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "fefbe1b14f8040205c7e3e6cdd30306408c7fb33c44be285c82c71130415f47a",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "White",
+            "text_zh": "白色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-28T09:09:17.721022+08:00",
+        "reviewer": "root",
+        "evidence": {
+          "path": "ima-jadeite-p1.png",
+          "sha256": "5c1659db8347f37a327565ec85b7dfd4583bad447994260fcd05f7a3e0052d5c",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "b263e4d40b898aa01dfb97b83e9d389c9caaa516a9526a2bd61f353ffdf07362"
+        },
+        "source_integrity": "Exact official PDF/page and original catalog identity; full PDFs and page pixels stay outside app."
+      }
+    },
+    {
+      "key": "ima-omphacite",
+      "name_en": "Omphacite",
+      "original_name_en": "Omphacite",
+      "ima_species": true,
+      "source_title": "Omphacite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+      "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "5–6",
+          "raw": "5{6",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "Root_actual_source_review": true,
+          "unit": "Mohs",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "5–6",
+            "text_zh": "5–6"
+          }
+        },
+        "density_measured": {
+          "value": "3.16–3.43",
+          "raw": "3.16{3.43",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "Root_actual_source_review": true,
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3.16–3.43",
+            "text_zh": "3.16–3.43"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "Good on {110}, intersecting at ~87°; parting on {100}",
+          "raw": "Good on f110g, (110) ^ (110) »87±; parting on f100g.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Good on {110}, intersecting at ~87°; parting on {100}",
+            "text_zh": "{110} 面解理良好，交角约 87°；{100} 面有裂理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to silky",
+          "raw": "Vitreous to silky.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to silky",
+            "text_zh": "玻璃至丝绢光泽"
+          }
+        },
+        "streak": {
+          "value": null,
+          "raw": "",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/omphacite.pdf",
+          "source_page": 1,
+          "status": "unavailable",
+          "source_pdf_sha256": "042c234693db145c2bda2a35c1000fe0d2f59b88f6083dad3d9e4171977f0e58",
+          "proposed_value": null,
+          "proposed_translation_zh": null,
+          "Root_actual_source_review": false,
+          "note": "This source page does not report streak for Omphacite; absence is not interpreted as a white streak."
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-28T09:09:17.721022+08:00",
+        "reviewer": "root",
+        "evidence": {
+          "path": "ima-omphacite-p1.png",
+          "sha256": "e7fb8d4210e3fe8afafb2736d54a87e9b330fbaea2f630db4f85c4234fdeea7c",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "b263e4d40b898aa01dfb97b83e9d389c9caaa516a9526a2bd61f353ffdf07362"
+        },
+        "source_integrity": "Exact official PDF/page and original catalog identity; full PDFs and page pixels stay outside app."
+      }
+    },
+    {
+      "key": "ima-laumontite",
+      "name_en": "Laumontite",
+      "original_name_en": "Laumontite",
+      "ima_species": true,
+      "source_title": "Laumontite",
+      "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+      "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+      "source_page": 1,
+      "properties": {
+        "hardness": {
+          "value": "3–4",
+          "raw": "3{4",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "unit": "Mohs",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "3–4",
+            "text_zh": "3–4"
+          }
+        },
+        "density_measured": {
+          "value": "2.23–2.41",
+          "raw": "2.23{2.41",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "unit": "g/cm³",
+          "source_quantity_label": "D(meas.)",
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "2.23–2.41",
+            "text_zh": "2.23–2.41"
+          }
+        },
+        "crystal_system": {
+          "value": "Monoclinic",
+          "raw": "Monoclinic.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Monoclinic",
+            "text_zh": "单斜晶系"
+          }
+        },
+        "cleavage": {
+          "value": "{010}, {110}, perfect",
+          "raw": "f010g, f110g, perfect.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "{010}, {110}, perfect",
+            "text_zh": "{010}、{110} 面完全解理"
+          }
+        },
+        "luster": {
+          "value": "Vitreous to pearly on cleavages",
+          "raw": "Vitreous to pearly on cleavages.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "Vitreous to pearly on cleavages",
+            "text_zh": "玻璃光泽；解理面可呈珍珠光泽"
+          }
+        },
+        "streak": {
+          "value": "White",
+          "raw": "White.",
+          "source_url": "https://www.handbookofmineralogy.org/pdfs/laumontite.pdf",
+          "source_page": 1,
+          "status": "verified",
+          "source_pdf_sha256": "44b6ca59f10eb3920bf9013000fbe9348fae64c754e5043beebc20a4cb77a38f",
+          "Root_actual_source_review": true,
+          "review_note": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "verification": "Root viewed complete rendered source page and checked exact physical value, source qualifier and Chinese translation.",
+          "translation": {
+            "status": "reviewed",
+            "source_value": "White",
+            "text_zh": "白色"
+          }
+        }
+      },
+      "verification": {
+        "reviewed_at": "2026-10-28T09:09:17.721022+08:00",
+        "reviewer": "root",
+        "evidence": {
+          "path": "ima-laumontite-p1.png",
+          "sha256": "45fc100f2924fec4416fab7bcc84a7bc8560ea4cc5dc35102c924e16aab72c5a",
+          "position": 1,
+          "actual_image_viewed": true,
+          "index_sha256": "b263e4d40b898aa01dfb97b83e9d389c9caaa516a9526a2bd61f353ffdf07362"
+        },
+        "source_integrity": "Exact official PDF/page and original catalog identity; full PDFs and page pixels stay outside app."
+      }
+    }
+  ],
+  "Root_review_pending": true,
+  "verified_fields_admitted": 0,
+  "structural_normalization_source": {
+    "path": "/Users/victory/Documents/Codex/2026-10-10/https-3497907003-sketch-github-io-shikuang/work/knowledge25-detail3-preparation-resume35-001/reviewed-physical-extension3.json",
+    "sha256": "189b27125b49a7461b67b3ff4ab3fd1ffe9fbc4cbdde03952dfaea9424edc2cd",
+    "facts_changed": false,
+    "reason": "Existing importer requires verification and reviewed translation shape; values and explicit Root decisions unchanged."
+  }
+}
