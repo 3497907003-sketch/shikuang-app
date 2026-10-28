@@ -25,6 +25,7 @@ from copy import deepcopy
 from import_reviewed_literature import (prepare_catalog as prepare_literature_catalog, load_validated_batch,
                                        load_additional_batches, literature_bundle_identity)
 from literature_contract import require, read_json as strict_read_json
+from import_reviewed_names import reviewed_records as reviewed_name_records
 
 
 SUB = str.maketrans('0123456789+-=()aeiorux', '₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑᵢₒᵣᵤₓ')
@@ -205,6 +206,11 @@ def main():
     kb = extracted['knowledge']
     check('official_catalog_count_and_unique_ids', [] if catalog['count'] == len(catalog['minerals']) == len(species) == len(originals) == 6239 else ['count or unique ID mismatch'])
     check('official_names_unique', [] if len({r['name_en'] for r in species.values()}) == 6239 else ['duplicate name'])
+    try:
+        expected_names = reviewed_name_records(read(Path(__file__).with_name('reviewed-names-zh.json')), catalog)
+        check('source_reviewed_chinese_names', [] if catalog.get('reviewed_names_zh') == {'schema_version': 1, 'records': expected_names} else ['Reviewed name overlay differs'])
+    except (ValueError, KeyError, TypeError) as error:
+        check('source_reviewed_chinese_names', ['Invalid source-reviewed names: ' + str(error)])
     check('official_fields_preserved', [row['id'] + ':' + field for row in species.values() for field in ORIGINAL_FIELDS if row.get(field) != originals.get(row['id'], {}).get(field)])
     check('formula_unicode_html_equivalent', [r['id'] for r in species.values() if formula_plain(r['formula_html']) != r['formula'] or re.search(r'</?(?:sub|sup)\b|�|[\ue000-\uf8ff]', r['formula'])])
     check('symbol_formula_glyphs_match_reviewed_pdf_pages', [name for name, formula in {

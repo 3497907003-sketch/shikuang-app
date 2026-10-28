@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "source_review": {
+    "reviewer": "root",
+    "reviewed_at": "2026-10-28",
+    "actual_source_pages_read": true,
+    "scope": "Chinese/English mineral-name correspondence in original bilingual journal titles, abstracts and keywords only; no model-label or phase-truth change."
+  },
+  "records": [
+    {
+      "catalog_id": "ima-jadeite",
+      "name_en": "Jadeite",
+      "name_zh": "硬玉",
+      "status": "reviewed",
+      "source_url": "https://jogg.cug.edu.cn/cn/article/doi/10.15964/j.cnki.027jgg.2026.02.003",
+      "source_title": "宝石和宝石学杂志 · 中英文论文",
+      "source_doi": "10.15964/j.cnki.027jgg.2026.02.003",
+      "evidence_locator": "中英文题名、摘要及关键词中的硬玉 / jadeite"
+    },
+    {
+      "catalog_id": "ima-omphacite",
+      "name_en": "Omphacite",
+      "name_zh": "绿辉石",
+      "status": "reviewed",
+      "source_url": "https://jogg.cug.edu.cn/cn/article/doi/10.15964/j.cnki.027jgg.2026.02.003",
+      "source_title": "宝石和宝石学杂志 · 中英文论文",
+      "source_doi": "10.15964/j.cnki.027jgg.2026.02.003",
+      "evidence_locator": "中英文题名、摘要及关键词中的绿辉石 / omphacite"
+    },
+    {
+      "catalog_id": "ima-laumontite",
+      "name_en": "Laumontite",
+      "name_zh": "浊沸石",
+      "status": "reviewed",
+      "source_url": "https://xuebao.jlu.edu.cn/dxb/CN/10.13278/j.cnki.jjuese.20180210",
+      "source_title": "吉林大学学报（地球科学版）· 中英文论文",
+      "source_doi": "10.13278/j.cnki.jjuese.20180210",
+      "evidence_locator": "中英文题名及关键词中的浊沸石 / laumontite"
+    }
+  ]
+}
