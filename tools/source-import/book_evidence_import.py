@@ -14,7 +14,13 @@ import re
 import sys
 import tempfile
 
-FIELDS = {'formula','hardness','relative_density','crystal_system','cleavage','luster','streak'}
+FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses'}
+# New intake IDs are admitted only with their exact source bytes. The duplicate
+# Rafferty intake is published under its already assigned user-book-17 identity.
+PDF_SOURCE_IDENTITIES = {
+ 'new-book-03':'6b61c081c7f630e787486cadb2fcaf40539f746a47f69f2aa43a42e16c9765f1',
+ 'new-book-08':'af7dc5ce2fd8e6c9c1d05025521d249fecb5afcbad5490f3ee642c5eb5132a89',
+}
 SUBJECTS = {'ima-cuprite':'Cuprite','ima-aragonite':'Aragonite','ima-andalusite':'Andalusite','ima-jadeite':'Jadeite'}
 SOURCE_TITLES = {'ima-cuprite':'赤铜矿','ima-aragonite':'文石（霰石）','ima-andalusite':'红柱石','ima-jadeite':'硬玉'}
 SOURCE_PAGES = {'ima-cuprite':'053','ima-aragonite':'092','ima-andalusite':'159','ima-jadeite':'189'}
@@ -37,6 +43,29 @@ def digest(raw): return hashlib.sha256(raw).hexdigest()
 
 
 def encoded(value): return (json.dumps(value,ensure_ascii=False,separators=(',',':'),allow_nan=False)+'\n').encode()
+
+
+def page_key(row):
+ """PDF identity does not invent a printed folio; legacy print keys stay exact."""
+ return ('pdf',row['pdf_page_1based']) if 'pdf_page_1based' in row else ('printed',row.get('printed_page'))
+
+
+def valid_page(row):
+ printed=row.get('printed_page');pdf=row.get('pdf_page_1based')
+ printed_ok=isinstance(printed,str) and re.fullmatch('[0-9]{1,5}',printed)
+ if 'pdf_page_1based' not in row:return bool(printed_ok)
+ return type(pdf) is int and 1<=pdf<=100000 and (printed is None or bool(printed_ok))
+
+
+def statement_key(row):
+ return (row.get('source_id'),row.get('catalog_id'),row.get('field'),page_key(row))
+
+
+def public_text_only(overlay):
+ text=encoded(overlay).decode()
+ need(not any(s in text for s in ('/Users/','file://','EPUB/','private-sources/','private-books.sqlite3',
+   'source_page_image','image_member','render_path','private_source_path','native_text','navigation_src')),
+   'private book paths, pages or full text cannot enter public source overlay')
 
 
 def read_json(path):
@@ -140,63 +169,79 @@ def validate_overlay(overlay,catalog):
  minerals={r['id']:r for r in catalog['minerals']};books={};owners={};keys=set()
  ishash=lambda v:isinstance(v,str) and re.fullmatch('[a-f0-9]{64}',v)
  for book in overlay['books']:
-  source=book.get('source_id');need(isinstance(source,str) and re.fullmatch('user-book-[0-9]{2,}',source) and source not in books,'duplicate or invalid book identity')
+  source=book.get('source_id');need(isinstance(source,str) and
+       (re.fullmatch('user-book-[0-9]{2,}',source) or PDF_SOURCE_IDENTITIES.get(source)==book.get('book_sha256'))
+       and source not in books,'duplicate or invalid book identity')
   need(book.get('status')=='reviewed_selected_pages' and book.get('full_book_reviewed') is False and
        ishash(book.get('book_sha256')) and ishash(book.get('root_review_sha256')) and
        isinstance(book.get('title'),str) and 0<len(book['title'])<=200 and
        isinstance(book.get('authors'),list) and 0<len(book['authors'])<=8 and
        all(isinstance(v,str) and 0<len(v)<=80 for v in book['authors']) and isinstance(book.get('subjects'),list),'invalid book source metadata')
+  need(book.get('credit_role','author') in ('author','editor'),'invalid book author role')
+  if 'intake_aliases' in book:
+   need(book['intake_aliases']==['new-book-02'] and source=='user-book-17' and
+        book['book_sha256']=='66b43cd348f1f902380d86a3fb2c1db005990ece468c6428cff82d44d57c9702',
+        'intake alias must bind the exact existing source bytes')
   books[source]=book
   for subject in book['subjects']:
    mid=subject.get('catalog_id');page=subject.get('printed_page');fields=subject.get('approved_fields');review=subject.get('root_review_sha256',book['root_review_sha256'])
    need(mid in minerals and subject.get('name_en')==minerals[mid]['name_en'] and
-        isinstance(page,str) and re.fullmatch('[0-9]{1,5}',page) and ishash(review) and
+        valid_page(subject) and ishash(review) and
         isinstance(fields,list) and len(set(fields))==len(fields) and all(f in FIELDS for f in fields),'invalid source subject')
+   if 'pdf_page_1based' in subject:need(book.get('source_format')=='PDF','PDF locator requires PDF source')
    for field in fields:
-    key=(source,mid,field,page);need(key not in owners,'duplicate subject field ownership');owners[key]=review
+    key=(source,mid,field,page_key(subject));need(key not in owners,'duplicate subject field ownership');owners[key]=(review,subject)
  for row in overlay['records']:
-  key=tuple(row.get(k) for k in ('source_id','catalog_id','field','printed_page'));source,mid,field,page=key
+  key=statement_key(row);source,mid,field,_=key
   need(key not in keys and key in owners,'duplicate or unowned source statement');keys.add(key);book=books[source];review=row.get('review',{})
+  owner_review,subject=owners[key]
   need(row.get('name_en')==minerals[mid]['name_en'] and row.get('status')=='reviewed_source_statement' and
        isinstance(row.get('value'),str) and 0<len(row['value'])<=250 and isinstance(row.get('limits'),list) and
-       review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owners[key] and
+       valid_page(row) and row.get('printed_page')==subject.get('printed_page') and
+       row.get('table_number')==subject.get('table_number') and
+       review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owner_review and
        review.get('source_book_sha256')==book['book_sha256'] and all(ishash(review.get(k)) for k in ('source_evidence_sha256','proposal_field_sha256')),'missing or mismatched source review')
+  if row.get('printed_page') is None:need('printed_folio_not_visible_do_not_invent' in row['limits'],'missing printed-page condition')
   if field=='hardness':need(row.get('quantity_kind')=='hardness_scale_unspecified' and row.get('unit') is row.get('hardness_scale') is None and 'hardness_scale_not_explicit_on_source_page' in row['limits'],'hardness scale changed')
   elif field=='relative_density':need(row.get('quantity_kind')=='relative_density' and row.get('unit')=='dimensionless' and 'relative_density_is_not_measured_density' in row['limits'],'density conversion forbidden')
+  elif field=='density':need(row.get('quantity_kind')=='mass_density_method_unspecified' and row.get('unit')=='g/cm³' and
+       all(limit in row['limits'] for limit in ('mass_density_not_dimensionless_relative_density','measurement_method_temperature_and_uncertainty_not_reported','do_not_label_measured_or_calculated')),'mass density quantity or conditions changed')
   else:need(row.get('unit') is None,'source unit changed')
+  if field=='uses':need(row.get('quantity_kind')=='literature_use_statement' and 'no_current_specimen_measurement' in row['limits'],'invalid source use statement')
  need(keys==set(owners),'missing source statements')
  heldkeys=set()
  for row in overlay['withheld']:
-  key=tuple(row.get(k) for k in ('source_id','catalog_id','field','printed_page'));source,mid,field,page=key
+  key=statement_key(row);source,mid,field,_=key
   need(source in books and mid in minerals and row.get('name_en')==minerals[mid]['name_en'] and
        key not in keys and key not in heldkeys and field=='cleavage' and row.get('status')=='hold' and
        row.get('reason')=='source_internal_ambiguity' and 'value' not in row and
-       any(s['catalog_id']==mid and s['printed_page']==page for s in books[source]['subjects']),'invalid held marker')
+       valid_page(row) and any(s['catalog_id']==mid and page_key(s)==page_key(row) for s in books[source]['subjects']),'invalid held marker')
   heldkeys.add(key)
+ public_text_only(overlay)
  return books
 
 
 def merge_overlay(old,incoming,catalog):
  """Append reviewed increments, retaining all old statements and subject objects.
  New subjects bind their own review, while old book-level review remains valid.
- A statement identity is source + catalog mineral + field + printed page.
+ A statement identity is source + catalog mineral + field + PDF or printed page.
  """
  newbooks=validate_overlay(incoming,catalog)
  if old is None:return deepcopy(incoming)
  oldbooks=validate_overlay(old,catalog);result=deepcopy(old)
  # An increment may omit old sources: omission never deletes those sources.
  for kind in ('records','withheld'):
-  existing={tuple(r[k] for k in ('source_id','catalog_id','field','printed_page')):r for r in old[kind]}
-  opposite={tuple(r[k] for k in ('source_id','catalog_id','field','printed_page')) for r in old['withheld' if kind=='records' else 'records']}
+  existing={statement_key(r):r for r in old[kind]}
+  opposite={statement_key(r) for r in old['withheld' if kind=='records' else 'records']}
   additions=[]
   for row in incoming[kind]:
-   key=tuple(row[k] for k in ('source_id','catalog_id','field','printed_page'))
+   key=statement_key(row)
    need(key not in opposite,'old source decision cannot be replaced')
    if key in existing:need(existing[key]==row,'old source statement cannot be changed or removed')
    else:additions.append(deepcopy(row))
-  result[kind].extend(sorted(additions,key=lambda r:tuple(r[k] for k in ('source_id','catalog_id','printed_page','field'))))
+  result[kind].extend(sorted(additions,key=statement_key))
  resultbooks={b['source_id']:b for b in result['books']}
- oldkeys={tuple(r[k] for k in ('source_id','catalog_id','field','printed_page')) for r in old['records']}
+ oldkeys={statement_key(r) for r in old['records']}
  for source in sorted(newbooks):
   book=newbooks[source]
   if source not in oldbooks:result['books'].append(deepcopy(book));continue
@@ -205,16 +250,16 @@ def merge_overlay(old,incoming,catalog):
   need(stable(book)==stable(oldbooks[source]),'old book credit or source metadata cannot change')
   added=[]
   for subject in book['subjects']:
-   fields=[f for f in subject['approved_fields'] if (source,subject['catalog_id'],f,subject['printed_page']) not in oldkeys]
+   fields=[f for f in subject['approved_fields'] if (source,subject['catalog_id'],f,page_key(subject)) not in oldkeys]
    # Marker-only increments still need their printed-page subject locator.
-   has_old_page=any(s['catalog_id']==subject['catalog_id'] and s['printed_page']==subject['printed_page'] for s in oldbooks[source]['subjects'])
+   has_old_page=any(s['catalog_id']==subject['catalog_id'] and page_key(s)==page_key(subject) for s in oldbooks[source]['subjects'])
    if not fields and has_old_page:continue
    newsubject=deepcopy(subject);newsubject['approved_fields']=fields
    newsubject['root_review_sha256']=subject.get('root_review_sha256',book['root_review_sha256'])
    added.append(newsubject)
-  resultbooks[source]['subjects'].extend(sorted(added,key=lambda s:(s['catalog_id'],s['printed_page'],s['root_review_sha256'],tuple(s['approved_fields']))))
+  resultbooks[source]['subjects'].extend(sorted(added,key=lambda s:(s['catalog_id'],page_key(s),s['root_review_sha256'],tuple(s['approved_fields']))))
  result['counts']={'reviewed_source_statements':len(result['records']),
-                   'selected_source_pages':len({(b['source_id'],s['printed_page']) for b in result['books'] for s in b['subjects']}),
+                   'selected_source_pages':len({(b['source_id'],page_key(s)) for b in result['books'] for s in b['subjects']}),
                    'withheld_fields':len(result['withheld']),'full_book_reviewed':False}
  validate_overlay(result,catalog)
  return result
@@ -222,6 +267,10 @@ def merge_overlay(old,incoming,catalog):
 
 def prepare(catalog,manifest,stage,bibliography,review_sha):
  incoming=public_overlay(catalog,stage,bibliography,review_sha)
+ return prepare_increment(catalog,manifest,incoming)
+
+
+def prepare_increment(catalog,manifest,incoming):
  result=deepcopy(catalog);overlay=merge_overlay(catalog.get('reviewed_book_evidence'),incoming,catalog);result['reviewed_book_evidence']=overlay
  need(result['minerals']==catalog['minerals'],'primary mineral objects changed')
  raw=encoded(result);updated=deepcopy(manifest)
