@@ -177,3 +177,98 @@ test('OCR-reviewed occurrence and habit never become physical evidence or image-
   assert.deepEqual(Core.evidenceFor({reviewed_book_evidence:sourceRows},{hardness:'2.5',luster:'glass'}),[]);
   assert.deepEqual(Object.keys(f.context.MINERAL_CLASSES),['quartz']);
 });
+
+test('all40 approved source statements render Chinese fields and every contributing source page',async()=>{
+  const rows=catalog.reviewed_book_evidence.records.filter(r=>r.review.root_record_sha256==='ac37968d5d88c49cef73182cd5cf5426991922540fce73d7c4f190ae5cb3fe56');
+  assert.equal(rows.length,40);assert.equal(catalog.minerals.length,6239);
+  const f=fixture({catalog});await f.settle();
+  const escape=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  for(const id of new Set(rows.map(r=>r.catalog_id))){
+    await f.documentClick('[data-detail]',{detail:'catalog:'+id});const body=f.node('detailBody').innerHTML;
+    for(const row of rows.filter(r=>r.catalog_id===id)){
+      assert.ok(body.includes(escape(row.value)),row.review.approved_candidate_id);
+      for(const page of row.source_pages)assert.ok(body.includes('PDF 第 '+page.pdf_page_1based+' 页'),row.review.approved_candidate_id);
+    }
+    assert.doesNotMatch(body,/undefined|\/Users\/|native_text_path|full_page_render|[a-f0-9]{64}/);
+  }
+});
+
+test('explicit Mohs reference standards and ranges remain ordinal, with no unknown-scale claim',async()=>{
+  const f=fixture({catalog});await f.settle();
+  for(const [id,value] of [['ima-diamond','10'],['ima-graphite','1–2'],['ima-talc','1 级标准']]){
+    await f.documentClick('[data-detail]',{detail:'catalog:'+id});const html=f.node('detailBody').innerHTML;
+    assert.ok(html.includes(value));assert.match(html,/明确标注莫氏硬度/);assert.match(html,/顺序标度，不表示硬度倍数/);
+    assert.doesNotMatch(section(html),/该页未明示硬度标度/);
+  }
+});
+
+test('processing, habit and qualitative comparisons have readable labels and source limits',async()=>{
+  const f=fixture({catalog});await f.settle();
+  await f.documentClick('[data-detail]',{detail:'catalog:ima-gypsum'});let html=f.node('detailBody').innerHTML;
+  for(const label of ['抛光外观示例','双晶示例','加工过程','加工材料使用','集合体与产状示例'])assert.ok(html.includes(label),label);
+  assert.match(html,/温度和脱水程度/);assert.match(html,/不替代当前天然标本的物性/);
+  await f.documentClick('[data-detail]',{detail:'catalog:ima-pyrite'});html=(f.node('detailBody').innerHTML.match(/<section class="detail-section book-evidence-section"[\s\S]*?<\/section>/g)||[]).join('');
+  assert.match(html,/硬度定性比较/);assert.match(html,/密度定性比较/);assert.match(html,/不补数值、标度或单位/);
+  assert.doesNotMatch(html,/g\/cm³|无量纲，不替代实测密度|明确标注莫氏硬度/);
+});
+
+test('book42 wrong scales, new quantities, missing page proof and review mismatch fail closed',async()=>{
+  for(const mode of ['ratio','unknown-scale','numeric-comparison','missing-page','wrong-render','wrong-review']){
+    const c=structuredClone(catalog),id=mode==='numeric-comparison'?'ima-pyrite':'ima-graphite';
+    const row=c.reviewed_book_evidence.records.find(r=>r.catalog_id===id&&r.field===(mode==='numeric-comparison'?'density_comparison':'hardness'));
+    if(mode==='ratio')row.unit='ratio';
+    if(mode==='unknown-scale')row.quantity_kind='hardness_scale_unspecified';
+    if(mode==='numeric-comparison'){row.quantity_kind='relative_density';row.unit='dimensionless';}
+    if(mode==='missing-page')row.source_pages=[null];
+    if(mode==='wrong-render')row.source_pages[0].render_sha256='0'.repeat(64);
+    if(mode==='wrong-review')row.review.root_record_sha256='0'.repeat(64);
+    const before=JSON.stringify(c.minerals),f=fixture({catalog:c});await f.settle();
+    await f.documentClick('[data-detail]',{detail:'catalog:'+id});assert.equal(section(f.node('detailBody').innerHTML),'',mode);
+    assert.equal(JSON.stringify(c.minerals),before);assert.deepEqual(Core.evidenceFor({reviewed_book_evidence:[row]},{hardness:'7'}),[]);
+  }
+});
+
+test('reviewed bibliography shows known authors and omits unknown-author credit without process placeholders',async()=>{
+  const f=fixture({catalog});await f.settle();
+  const sections=()=>f.node('detailBody').innerHTML.match(/<section class="detail-section book-evidence-section"[\s\S]*?<\/section>/g)||[];
+  await f.documentClick('[data-detail]',{detail:'catalog:ima-graphite'});
+  const first=sections().find(s=>s.includes('Eyewitness Rocks &amp; Minerals'))||'';
+  assert.match(first,/作者：Dr R\. F\. Symes、伦敦自然历史博物馆工作人员/);
+  assert.match(first,/出版：DK Publishing/);assert.match(first,/美国修订版，2008/);assert.match(first,/978-0-7566-3777-4/);assert.match(first,/书目页：PDF 第 4、5 页/);
+  await f.documentClick('[data-detail]',{detail:'catalog:ima-pyrite'});
+  const second=sections().find(s=>s.includes('The Rock &amp; Gem Book'))||'';
+  assert.match(second,/出版：DK Publishing/);assert.match(second,/美国第一版，2016/);assert.match(second,/978-1-4654-5070-8/);assert.match(second,/书目页：PDF 第 1、6 页/);
+  assert.match(second,/仅核对所列资料页，未通读全书。/);assert.doesNotMatch(second,/作者：|主编：|作者未在本批|本批未另行|new-book-|[a-f0-9]{64}/);
+});
+
+test('unknown-author exception rejects invented names, missing proof and other-source empty credits',async()=>{
+  for(const mode of ['DK-author','editor-author','missing-proof','wrong-bib-proof','wrong-source','other-source-empty']){
+    const c=structuredClone(catalog),book=c.reviewed_book_evidence.books.find(b=>b.source_id==='new-book-07');
+    if(mode==='DK-author')book.authors=['DK'];
+    if(mode==='editor-author')book.authors=['Bharti Bedi'];
+    if(mode==='missing-proof')delete book.bibliography_review;
+    if(mode==='wrong-bib-proof')book.bibliography_review.root_record_sha256='0'.repeat(64);
+    if(mode==='wrong-source')book.book_sha256='0'.repeat(64);
+    if(mode==='other-source-empty')c.reviewed_book_evidence.books[0].authors=[];
+    const f=fixture({catalog:c});await f.settle();await f.documentClick('[data-detail]',{detail:'catalog:'+(mode==='other-source-empty'?'ima-jadeite':'ima-pyrite')});
+    assert.equal(section(f.node('detailBody').innerHTML),'',mode);
+  }
+});
+
+test('books scope selects actual reviewed rows only and does not change model scope or trust reported counts',async()=>{
+  const actual=catalog.minerals.find(r=>r.id==='ima-aragonite');
+  for(const mode of ['valid','missing-review','marker-only']){
+    const c=structuredClone(catalog),o=c.reviewed_book_evidence;
+    c.minerals=[{id:'ima-quartz',name_en:'Quartz',detail_key:'quartz'},{id:actual.id,name_en:actual.name_en,formula:actual.formula}];
+    o.records=o.records.filter(r=>r.catalog_id===actual.id);o.withheld=o.withheld.filter(r=>r.catalog_id===actual.id);
+    if(mode==='missing-review')delete o.records[0].review;
+    if(mode==='marker-only'){o.records=[];for(const book of o.books)for(const subject of book.subjects)if(subject.catalog_id===actual.id)subject.approved_fields=[];}
+    const f=fixture({catalog:c});await f.settle();let requests=0;f.context.fetch=()=>{requests++;throw Error('no extra request');};
+    f.node('libraryScope').value='books';f.node('libraryScope').fire('change');
+    assert.equal((f.node('libraryList').innerHTML.match(/data-detail=/g)||[]).length,mode==='valid'?1:0,mode);
+    if(mode==='valid'){assert.match(f.node('libraryList').innerHTML,/catalog:ima-aragonite/);assert.match(f.node('catalogIntro').innerHTML,/书籍核对：1 种矿物/);assert.match(f.node('catalogIntro').innerHTML,/所选书页/);assert.doesNotMatch(f.node('catalogIntro').innerHTML,/118 条陈述/);}
+    else assert.doesNotMatch(f.node('catalogIntro').innerHTML,/书籍核对：/);
+    f.node('libraryScope').value='model';f.node('libraryScope').fire('change');assert.equal((f.node('libraryList').innerHTML.match(/data-detail=/g)||[]).length,1);
+    assert.deepEqual(Object.keys(f.context.MINERAL_CLASSES),['quartz']);assert.equal(requests,0);
+  }
+});

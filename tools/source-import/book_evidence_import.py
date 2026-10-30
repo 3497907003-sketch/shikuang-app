@@ -13,8 +13,9 @@ import os
 import re
 import sys
 import tempfile
+import book42_profile
 
-FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'}
+FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'} | book42_profile.EXTRA_FIELDS
 # New intake IDs are admitted only with their exact source bytes. The duplicate
 # Rafferty intake is published under its already assigned user-book-17 identity.
 PDF_SOURCE_IDENTITIES = {
@@ -23,6 +24,7 @@ PDF_SOURCE_IDENTITIES = {
  'new-book-11':'0106f3f8fd882fd4b5b3e4dbb7cafc11abba909af4ff7c863a27592bbabefdf6',
  'new-book-13':'d2a548bd548e4995d8bd92f21568e2e0d7c7e15afc0da832af9cdf48e4ad456c',
 }
+PDF_SOURCE_IDENTITIES.update(book42_profile.SOURCES)
 PDF_SOURCE_ALIASES = {
  'new-book-02':('user-book-17','66b43cd348f1f902380d86a3fb2c1db005990ece468c6428cff82d44d57c9702'),
  'new-book-12':('user-book-07','e3e256234aaec3ff754b8d36f1bdea4993b4ef93d59bf0a2a4df04c0e93a9011'),
@@ -181,9 +183,12 @@ def validate_overlay(overlay,catalog):
   need(book.get('status')=='reviewed_selected_pages' and book.get('full_book_reviewed') is False and
        ishash(book.get('book_sha256')) and ishash(book.get('root_review_sha256')) and
        isinstance(book.get('title'),str) and 0<len(book['title'])<=200 and
-       isinstance(book.get('authors'),list) and 0<len(book['authors'])<=8 and
+       isinstance(book.get('authors'),list) and len(book['authors'])<=8 and
+       (len(book['authors'])>0 or (source=='new-book-07' and book42_profile.valid_bibliography(book))) and
        all(isinstance(v,str) and 0<len(v)<=80 for v in book['authors']) and isinstance(book.get('subjects'),list),'invalid book source metadata')
   need(book.get('credit_role','author') in ('author','editor'),'invalid book author role')
+  if source in book42_profile.SOURCES or 'bibliography_review' in book:
+   need(book42_profile.valid_bibliography(book),'exact source and Root-approved bibliography required')
   if 'bibliography_note' in book:need(isinstance(book['bibliography_note'],str) and 0<len(book['bibliography_note'])<=200,'invalid bibliography scope note')
   if 'intake_aliases' in book:
    aliases=book['intake_aliases']
@@ -210,15 +215,18 @@ def validate_overlay(overlay,catalog):
        review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owner_review and
        review.get('source_book_sha256')==book['book_sha256'] and all(ishash(review.get(k)) for k in ('source_evidence_sha256','proposal_field_sha256')),'missing or mismatched source review')
   if row.get('printed_page') is None:need('printed_folio_not_visible_do_not_invent' in row['limits'],'missing printed-page condition')
-  if field=='hardness':need(row.get('quantity_kind')=='hardness_scale_unspecified' and row.get('unit') is row.get('hardness_scale') is None and 'hardness_scale_not_explicit_on_source_page' in row['limits'],'hardness scale changed')
-  elif field=='relative_density':need(row.get('quantity_kind')=='relative_density' and row.get('unit')=='dimensionless' and 'relative_density_is_not_measured_density' in row['limits'],'density conversion forbidden')
-  elif field=='density':need(row.get('quantity_kind')=='mass_density_method_unspecified' and row.get('unit')=='g/cm³' and
-       all(limit in row['limits'] for limit in ('mass_density_not_dimensionless_relative_density','measurement_method_temperature_and_uncertainty_not_reported','do_not_label_measured_or_calculated')),'mass density quantity or conditions changed')
-  else:need(row.get('unit') is None,'source unit changed')
-  if field=='uses':need(row.get('quantity_kind')=='literature_use_statement' and 'no_current_specimen_measurement' in row['limits'],'invalid source use statement')
-  if field in ('occurrence','habit'):need(row.get('quantity_kind')=='literal_source_statement' and
-       all(limit in row['limits'] for limit in ('no_current_specimen_measurement','no_primary_property_replacement','no_model_score_or_training_use')),
-       'book environment or habit cannot become specimen evidence')
+  if row['source_id'] in book42_profile.SOURCES:book42_profile.validate_row(row)
+  else:
+   need(field not in book42_profile.EXTRA_FIELDS,'book42 fields require exact source and Root review')
+   if field=='hardness':need(row.get('quantity_kind')=='hardness_scale_unspecified' and row.get('unit') is row.get('hardness_scale') is None and 'hardness_scale_not_explicit_on_source_page' in row['limits'],'hardness scale changed')
+   elif field=='relative_density':need(row.get('quantity_kind')=='relative_density' and row.get('unit')=='dimensionless' and 'relative_density_is_not_measured_density' in row['limits'],'density conversion forbidden')
+   elif field=='density':need(row.get('quantity_kind')=='mass_density_method_unspecified' and row.get('unit')=='g/cm³' and
+        all(limit in row['limits'] for limit in ('mass_density_not_dimensionless_relative_density','measurement_method_temperature_and_uncertainty_not_reported','do_not_label_measured_or_calculated')),'mass density quantity or conditions changed')
+   else:need(row.get('unit') is None,'source unit changed')
+   if field=='uses':need(row.get('quantity_kind')=='literature_use_statement' and 'no_current_specimen_measurement' in row['limits'],'invalid source use statement')
+   if field in ('occurrence','habit'):need(row.get('quantity_kind')=='literal_source_statement' and
+        all(limit in row['limits'] for limit in ('no_current_specimen_measurement','no_primary_property_replacement','no_model_score_or_training_use')),
+        'book environment or habit cannot become specimen evidence')
  need(keys==set(owners),'missing source statements')
  heldkeys=set()
  for row in overlay['withheld']:
