@@ -14,12 +14,18 @@ import re
 import sys
 import tempfile
 
-FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses'}
+FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'}
 # New intake IDs are admitted only with their exact source bytes. The duplicate
 # Rafferty intake is published under its already assigned user-book-17 identity.
 PDF_SOURCE_IDENTITIES = {
  'new-book-03':'6b61c081c7f630e787486cadb2fcaf40539f746a47f69f2aa43a42e16c9765f1',
  'new-book-08':'af7dc5ce2fd8e6c9c1d05025521d249fecb5afcbad5490f3ee642c5eb5132a89',
+ 'new-book-11':'0106f3f8fd882fd4b5b3e4dbb7cafc11abba909af4ff7c863a27592bbabefdf6',
+ 'new-book-13':'d2a548bd548e4995d8bd92f21568e2e0d7c7e15afc0da832af9cdf48e4ad456c',
+}
+PDF_SOURCE_ALIASES = {
+ 'new-book-02':('user-book-17','66b43cd348f1f902380d86a3fb2c1db005990ece468c6428cff82d44d57c9702'),
+ 'new-book-12':('user-book-07','e3e256234aaec3ff754b8d36f1bdea4993b4ef93d59bf0a2a4df04c0e93a9011'),
 }
 SUBJECTS = {'ima-cuprite':'Cuprite','ima-aragonite':'Aragonite','ima-andalusite':'Andalusite','ima-jadeite':'Jadeite'}
 SOURCE_TITLES = {'ima-cuprite':'赤铜矿','ima-aragonite':'文石（霰石）','ima-andalusite':'红柱石','ima-jadeite':'硬玉'}
@@ -178,9 +184,11 @@ def validate_overlay(overlay,catalog):
        isinstance(book.get('authors'),list) and 0<len(book['authors'])<=8 and
        all(isinstance(v,str) and 0<len(v)<=80 for v in book['authors']) and isinstance(book.get('subjects'),list),'invalid book source metadata')
   need(book.get('credit_role','author') in ('author','editor'),'invalid book author role')
+  if 'bibliography_note' in book:need(isinstance(book['bibliography_note'],str) and 0<len(book['bibliography_note'])<=200,'invalid bibliography scope note')
   if 'intake_aliases' in book:
-   need(book['intake_aliases']==['new-book-02'] and source=='user-book-17' and
-        book['book_sha256']=='66b43cd348f1f902380d86a3fb2c1db005990ece468c6428cff82d44d57c9702',
+   aliases=book['intake_aliases']
+   need(isinstance(aliases,list) and len(aliases)==1 and isinstance(aliases[0],str) and
+        PDF_SOURCE_ALIASES.get(aliases[0])==(source,book['book_sha256']),
         'intake alias must bind the exact existing source bytes')
   books[source]=book
   for subject in book['subjects']:
@@ -208,6 +216,9 @@ def validate_overlay(overlay,catalog):
        all(limit in row['limits'] for limit in ('mass_density_not_dimensionless_relative_density','measurement_method_temperature_and_uncertainty_not_reported','do_not_label_measured_or_calculated')),'mass density quantity or conditions changed')
   else:need(row.get('unit') is None,'source unit changed')
   if field=='uses':need(row.get('quantity_kind')=='literature_use_statement' and 'no_current_specimen_measurement' in row['limits'],'invalid source use statement')
+  if field in ('occurrence','habit'):need(row.get('quantity_kind')=='literal_source_statement' and
+       all(limit in row['limits'] for limit in ('no_current_specimen_measurement','no_primary_property_replacement','no_model_score_or_training_use')),
+       'book environment or habit cannot become specimen evidence')
  need(keys==set(owners),'missing source statements')
  heldkeys=set()
  for row in overlay['withheld']:
