@@ -14,6 +14,7 @@ import re
 import sys
 import tempfile
 import book42_profile
+import book43_profile
 
 FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'} | book42_profile.EXTRA_FIELDS
 # New intake IDs are admitted only with their exact source bytes. The duplicate
@@ -187,6 +188,7 @@ def validate_overlay(overlay,catalog):
        (len(book['authors'])>0 or (source=='new-book-07' and book42_profile.valid_bibliography(book))) and
        all(isinstance(v,str) and 0<len(v)<=80 for v in book['authors']) and isinstance(book.get('subjects'),list),'invalid book source metadata')
   need(book.get('credit_role','author') in ('author','editor'),'invalid book author role')
+  if source==book43_profile.SOURCE_ID:need(book43_profile.valid_book(book),'exact approved Chinese source/editor metadata required')
   if source in book42_profile.SOURCES or 'bibliography_review' in book:
    need(book42_profile.valid_bibliography(book),'exact source and Root-approved bibliography required')
   if 'bibliography_note' in book:need(isinstance(book['bibliography_note'],str) and 0<len(book['bibliography_note'])<=200,'invalid bibliography scope note')
@@ -215,7 +217,8 @@ def validate_overlay(overlay,catalog):
        review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owner_review and
        review.get('source_book_sha256')==book['book_sha256'] and all(ishash(review.get(k)) for k in ('source_evidence_sha256','proposal_field_sha256')),'missing or mismatched source review')
   if row.get('printed_page') is None:need('printed_folio_not_visible_do_not_invent' in row['limits'],'missing printed-page condition')
-  if row['source_id'] in book42_profile.SOURCES:book42_profile.validate_row(row)
+  if row['source_id']==book43_profile.SOURCE_ID:book43_profile.validate_row(row)
+  elif row['source_id'] in book42_profile.SOURCES:book42_profile.validate_row(row)
   else:
    need(field not in book42_profile.EXTRA_FIELDS,'book42 fields require exact source and Root review')
    if field=='hardness':need(row.get('quantity_kind')=='hardness_scale_unspecified' and row.get('unit') is row.get('hardness_scale') is None and 'hardness_scale_not_explicit_on_source_page' in row['limits'],'hardness scale changed')
