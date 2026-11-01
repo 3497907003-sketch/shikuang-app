@@ -15,8 +15,9 @@ import sys
 import tempfile
 import book42_profile
 import book43_profile
+import book45_profile
 
-FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'} | book42_profile.EXTRA_FIELDS
+FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'} | book42_profile.EXTRA_FIELDS | book45_profile.EXTRA_FIELDS
 # New intake IDs are admitted only with their exact source bytes. The duplicate
 # Rafferty intake is published under its already assigned user-book-17 identity.
 PDF_SOURCE_IDENTITIES = {
@@ -26,6 +27,7 @@ PDF_SOURCE_IDENTITIES = {
  'new-book-13':'d2a548bd548e4995d8bd92f21568e2e0d7c7e15afc0da832af9cdf48e4ad456c',
 }
 PDF_SOURCE_IDENTITIES.update(book42_profile.SOURCES)
+PDF_SOURCE_IDENTITIES[book45_profile.SOURCE_ID]=book45_profile.SOURCE_SHA
 PDF_SOURCE_ALIASES = {
  'new-book-02':('user-book-17','66b43cd348f1f902380d86a3fb2c1db005990ece468c6428cff82d44d57c9702'),
  'new-book-12':('user-book-07','e3e256234aaec3ff754b8d36f1bdea4993b4ef93d59bf0a2a4df04c0e93a9011'),
@@ -187,9 +189,10 @@ def validate_overlay(overlay,catalog):
        isinstance(book.get('authors'),list) and len(book['authors'])<=8 and
        (len(book['authors'])>0 or (source=='new-book-07' and book42_profile.valid_bibliography(book))) and
        all(isinstance(v,str) and 0<len(v)<=80 for v in book['authors']) and isinstance(book.get('subjects'),list),'invalid book source metadata')
-  need(book.get('credit_role','author') in ('author','editor'),'invalid book author role')
+  need(book.get('credit_role','author') in ('author','editor') or (source==book45_profile.SOURCE_ID and book.get('credit_role')=='compiler' and book45_profile.valid_book(book)),'invalid book author role')
+  if source==book45_profile.SOURCE_ID:need(book45_profile.valid_book(book),'exact approved compiler and no-ISBN bibliography required')
   if source==book43_profile.SOURCE_ID:need(book43_profile.valid_book(book),'exact approved Chinese source/editor metadata required')
-  if source in book42_profile.SOURCES or 'bibliography_review' in book:
+  if source in book42_profile.SOURCES or ('bibliography_review' in book and source!=book45_profile.SOURCE_ID):
    need(book42_profile.valid_bibliography(book),'exact source and Root-approved bibliography required')
   if 'bibliography_note' in book:need(isinstance(book['bibliography_note'],str) and 0<len(book['bibliography_note'])<=200,'invalid bibliography scope note')
   if 'intake_aliases' in book:
@@ -217,10 +220,11 @@ def validate_overlay(overlay,catalog):
        review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owner_review and
        review.get('source_book_sha256')==book['book_sha256'] and all(ishash(review.get(k)) for k in ('source_evidence_sha256','proposal_field_sha256')),'missing or mismatched source review')
   if row.get('printed_page') is None:need('printed_folio_not_visible_do_not_invent' in row['limits'],'missing printed-page condition')
-  if row['source_id']==book43_profile.SOURCE_ID:book43_profile.validate_row(row)
+  if row['source_id']==book45_profile.SOURCE_ID:book45_profile.validate_row(row)
+  elif row['source_id']==book43_profile.SOURCE_ID:book43_profile.validate_row(row)
   elif row['source_id'] in book42_profile.SOURCES:book42_profile.validate_row(row)
   else:
-   need(field not in book42_profile.EXTRA_FIELDS,'book42 fields require exact source and Root review')
+   need(field not in book42_profile.EXTRA_FIELDS|book45_profile.EXTRA_FIELDS,'new typed fields require exact source and Root review')
    if field=='hardness':need(row.get('quantity_kind')=='hardness_scale_unspecified' and row.get('unit') is row.get('hardness_scale') is None and 'hardness_scale_not_explicit_on_source_page' in row['limits'],'hardness scale changed')
    elif field=='relative_density':need(row.get('quantity_kind')=='relative_density' and row.get('unit')=='dimensionless' and 'relative_density_is_not_measured_density' in row['limits'],'density conversion forbidden')
    elif field=='density':need(row.get('quantity_kind')=='mass_density_method_unspecified' and row.get('unit')=='g/cm³' and
