@@ -50,6 +50,14 @@ App 最多输入三张照片。验证与测试组在推理前按已审核照片 
 
 ## 运行与测试
 
+在继续扩充已公开开发队列前，可用独立的标准库工具 `support_audit.py` 统计每类来源代理组及固定折的实际 fit/inner/outer 支持数。调用必须明确提供已暴露开发 manifest、views 及各自 SHA256；脚本只打开这两个文件，不跟随其中的图像、来源或模型路径，不读取独立测试资料，不重划分已有数据。
+
+```sh
+python tools/training/support_audit.py --manifest EXPOSED/development.jsonl --manifest-sha256 MANIFEST_SHA256 --views EXPOSED/views.json --views-sha256 VIEWS_SHA256 --output WORK/support-audit.json
+```
+
+采集优先级按两折较少的 fit 代理组数及总代理组数排序，不使用模型预测或验证错误挑图。默认每类十组只是现有 80/10/10 合同的数量规划下限，不能证明实物独立、标签可靠、场景代表性或准确率达标。逐行审核标记只按原值统计；本审查始终不授予独立测试资格。新增 fit-only 数据不得进入 inner/outer，同一代理组跨角色或类序冲突会停止审查。
+
 环境需 Python、PyTorch、torchvision、timm、safetensors、NumPy 与 Pillow；导出另需 onnx 和 onnxruntime。保留实际环境版本与来源记录。审核后的训练调用需要三份 CSV、标签、数据根目录、完整 ImageNet 权重、来源 URL 与输出路径，例如：
 
 ```sh
