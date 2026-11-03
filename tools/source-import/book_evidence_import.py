@@ -16,6 +16,7 @@ import tempfile
 import book42_profile
 import book43_profile
 import book45_profile
+import book56_profile
 
 FIELDS = {'formula','hardness','relative_density','density','crystal_system','cleavage','luster','streak','uses','occurrence','habit'} | book42_profile.EXTRA_FIELDS | book45_profile.EXTRA_FIELDS
 # New intake IDs are admitted only with their exact source bytes. The duplicate
@@ -192,6 +193,8 @@ def validate_overlay(overlay,catalog):
   need(book.get('credit_role','author') in ('author','editor') or (source==book45_profile.SOURCE_ID and book.get('credit_role')=='compiler' and book45_profile.valid_book(book)),'invalid book author role')
   if source==book45_profile.SOURCE_ID:need(book45_profile.valid_book(book),'exact approved compiler and no-ISBN bibliography required')
   if source==book43_profile.SOURCE_ID:need(book43_profile.valid_book(book),'exact approved Chinese source/editor metadata required')
+  if source==book56_profile.SOURCE_ID and any(book56_profile.claims(r) for r in overlay['records'] if r.get('source_id')==source):
+   need(book56_profile.valid_book(book),'exact existing book17 owner/editor metadata required for new10')
   if source in book42_profile.SOURCES or ('bibliography_review' in book and source!=book45_profile.SOURCE_ID):
    need(book42_profile.valid_bibliography(book),'exact source and Root-approved bibliography required')
   if 'bibliography_note' in book:need(isinstance(book['bibliography_note'],str) and 0<len(book['bibliography_note'])<=200,'invalid bibliography scope note')
@@ -220,7 +223,8 @@ def validate_overlay(overlay,catalog):
        review.get('decision')=='approved_source_statement' and review.get('root_record_sha256')==owner_review and
        review.get('source_book_sha256')==book['book_sha256'] and all(ishash(review.get(k)) for k in ('source_evidence_sha256','proposal_field_sha256')),'missing or mismatched source review')
   if row.get('printed_page') is None:need('printed_folio_not_visible_do_not_invent' in row['limits'],'missing printed-page condition')
-  if row['source_id']==book45_profile.SOURCE_ID:book45_profile.validate_row(row)
+  if book56_profile.claims(row):book56_profile.validate_row(row)
+  elif row['source_id']==book45_profile.SOURCE_ID:book45_profile.validate_row(row)
   elif row['source_id']==book43_profile.SOURCE_ID:book43_profile.validate_row(row)
   elif row['source_id'] in book42_profile.SOURCES:book42_profile.validate_row(row)
   else:
