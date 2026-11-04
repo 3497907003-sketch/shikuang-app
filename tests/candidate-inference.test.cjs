@@ -70,3 +70,23 @@ test('production entry rejects candidate diagnostics before any resource access'
  for(const extra of [{diagnostic:true},{candidateManifest:{}},{candidateProfile:C.PROFILE.profileId}])await assert.rejects(window.MineralEngine.analyze([{src:'preview'}],extra),/研究profile/);
  assert.equal(fetches,0);
 });
+
+test('native candidate uses the two validated tensors and never creates a WASM inference worker',async()=>{
+ const h=harness();let calls=0;
+ h.host.nativeRun=async(record,inputs,gates,blocked,j)=>{calls++;j.check();assert.equal(inputs[0][0],7);assert.equal(gates[0][0],42);assert.notEqual(inputs[0].buffer,gates[0].buffer);assert.equal(blocked.length,1000);return result(h.f);};
+ const r=await h.client.analyze([photo()],h.options);
+ assert.equal(calls,1);assert.equal(h.workers.length,0);assert.equal(r.engine,'onnx-candidate-native-android');assert.equal(r.independentKappa,null);
+});
+test('native candidate errors and malformed results fail without a WASM fallback',async()=>{
+ for(const malformed of [false,true]){
+  const h=harness();h.host.nativeRun=async()=>{if(!malformed)throw Error('native resource absent');const r=result(h.f);r.labels=[...r.labels].reverse();return r;};
+  await assert.rejects(h.client.analyze([photo()],h.options));assert.equal(h.workers.length,0);assert.equal(h.timers.size,0);
+ }
+});
+test('native candidate shares the overall abort deadline and can retry after cancellation',async()=>{
+ const h=harness();let entered,aborted=0;const ready=new Promise(r=>entered=r);
+ h.host.nativeRun=(record,inputs,gates,blocked,j)=>new Promise((resolve,reject)=>{j.signal.addEventListener('abort',()=>{aborted++;reject(new DOMException('stopped','AbortError'));},{once:true});entered();});
+ const controller=new AbortController(),pending=h.client.analyze([photo()],{...h.options,signal:controller.signal});await ready;controller.abort();await assert.rejects(pending,{name:'AbortError'});
+ assert.equal(aborted,1);assert.equal(h.workers.length,0);assert.equal(h.timers.size,0);
+ h.host.nativeRun=async()=>result(h.f);assert.equal((await h.client.analyze([photo()],h.options)).status,'diagnostic');
+});

@@ -47,10 +47,16 @@ const result = await MineralEngine.analyzeCandidate([{
 
 结果只含raw87、逐图的catalog ID排名和诊断状态，不使用旧98类置信阈值、校准概率或隐式fold ensemble。`independentAcceptance=false`、`independentKappa=null`、`confidenceCalibrated=false` 必须保留。
 
+## Android原生候选路径
+
+Android安装环境中，同一个显式候选API在完成双路预处理后调用独立的`MineralInference.classifyCandidate`。原生端再次核对候选和旧gate清单、87类序、双profile、SHA和实际输出格式，并确认gate释放成功后才分配DINO。浏览器继续使用候选Worker。缺少该原生方法、候选清单或模型时会报错，不会改用旧生产模型或静默回退WASM。
+
+原生资源清单必须随工程安装包显式准备；普通构建仍只包含原有生产权重。前端传入两份独立的float32 little-endian base64张量，取消和整体超时会向原生任务发送停止请求，晚到的监听器也会清理。该路径的合同、路由和故障处理软件测试已通过，候选权重的实际Android运行、数值一致性、设备内存和耗时仍待实测。
+
 ## 验证边界
 
 Node行为回归验证契约、双路实际JS归一化、取消/重试、释放顺序、缓存隔离和构建依赖闭包；2026-11-04完整回归361项通过，构建171项离线资源，32项JS/MJS兼容检查通过。
 
 同日使用本机Chrome 156和一张已用于训练的真实公开照片，实际执行两个fold的原图解码、双路预处理、gate和候选WASM推理。研究输入tensor与冻结参考SHA完全一致，两个87维输出相对训练端参考的最大绝对误差分别为1.416×10⁻⁵和1.311×10⁻⁵；两次调用完成后四个自有Worker均已终止。此记录只验证工程数值链路，训练照片不能作为独立准确率测试。
 
-该次本机Chrome进程树采样峰值约2.21GB，不是精确的瞬时峰值，也不代表手机内存表现。此前一次失败由Playwright请求拦截改变Request.cache造成；移除拦截后按原no-store合同通过，没有放宽Service Worker校验。Android原生候选接入、实体设备内存/耗时、未知/共生矿物拒判及独立Kappa仍未验收。
+该次本机Chrome进程树采样峰值约2.21GB，不是精确的瞬时峰值，也不代表手机内存表现。此前一次失败由Playwright请求拦截改变Request.cache造成；移除拦截后按原no-store合同通过，没有放宽Service Worker校验。后续增加原生桥接后，完整Web回归367项通过；该次Chrome实测的Source版本在原生桥接加入之前。实体设备内存/耗时、未知/共生矿物拒判及独立Kappa仍未验收。

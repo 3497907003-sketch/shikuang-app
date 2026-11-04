@@ -171,8 +171,43 @@
       resourceURL:name=>MineralCore.shellResourceURL(name,location.href),blocked:window.IMAGENET_BLOCKED||[],
       setTimeout:(fn,ms)=>window.setTimeout(fn,ms),clearTimeout:id=>window.clearTimeout(id),
       validateFrame:options=>window.ShikuangResearchInput.validateRequest(options),
-      decodePhoto:options=>researchPhotoClient.decodePhoto(options),prepareInput:options=>researchClient.prepare(options),prepareLegacyGate:legacyGateFromNative});
+      decodePhoto:options=>researchPhotoClient.decodePhoto(options),prepareInput:options=>researchClient.prepare(options),prepareLegacyGate:legacyGateFromNative,
+      nativeRun:window.Capacitor?.isNativePlatform?.()?nativeCandidateRun:undefined});
     return candidateClient;
+  }
+  function nativeCandidateRun(record,inputs,gateInputs,blocked,job,report) {
+    job.check();
+    const cap=window.Capacitor;
+    if(!cap?.isPluginAvailable?.('MineralInference'))throw new Error('安装包缺少原生候选组件，请更新 App');
+    nativeEngine=nativeEngine||cap.registerPlugin?.('MineralInference')||cap.Plugins?.MineralInference;
+    const current=nativeEngine,signal=job.signal;
+    if(!current||typeof current.classifyCandidate!=='function')throw new Error('此 App 尚未接入原生候选诊断，请更新 App');
+    const jobId=crypto.randomUUID?.()||`candidate-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const base=new URL('./',location.href),selected=new URL(record.manifestURL);
+    const path=selected.pathname.slice(base.pathname.length);
+    if(selected.origin!==base.origin||!selected.pathname.startsWith(base.pathname)||!/^research\/candidates\/[A-Za-z0-9_.-]+\.json$/.test(path))throw new Error('候选清单不属于当前安装包');
+    return new Promise((resolve,reject)=>{
+      let settled=false,listener;
+      const finish=(error,value,cancelNative=false)=>{
+        if(settled)return;settled=true;signal.removeEventListener('abort',cancel);
+        if(listener)cleanup(()=>listener.remove());
+        if(cancelNative)cleanup(()=>current.cancel({jobId}));
+        error?reject(error):resolve(value);
+      };
+      const cancel=()=>finish(new DOMException('候选诊断已停止','AbortError'),null,true);
+      signal.addEventListener('abort',cancel,{once:true});if(signal.aborted){cancel();return;}
+      Promise.resolve().then(()=>settled?null:current.addListener('mineralProgress',event=>{
+        try{if(!settled&&event.jobId===jobId)report(event.message);}catch(error){finish(error,null,true);}
+      })).then(handle=>{
+        if(settled){if(handle)cleanup(()=>handle.remove());return;}
+        if(!handle||typeof handle.remove!=='function')throw new Error('原生候选进度监听未就绪');
+        listener=handle;job.check();report('正在启动 Android 原生候选诊断…');job.check();
+        return current.classifyCandidate({jobId,diagnostic:true,purpose:window.ShikuangCandidateModel.PURPOSE,
+          profileId:window.ShikuangCandidateModel.PROFILE.profileId,profileVersion:1,gateProfileId:window.ShikuangCandidateModel.GATE_PROFILE,
+          inputEncoding:'float32-le-base64',inputs:inputs.map(encodedInput),gateInputs:gateInputs.map(encodedInput),blocked,
+          candidateManifestPath:path,candidateManifestSha256:record.manifestHash,legacyManifestSha256:record.legacyHash});
+      }).then(result=>{if(!settled)finish(null,result);}).catch(error=>finish(error,null,true));
+    });
   }
   function legacyGateFromNative(frame,crop,input) {
     let source,canvas;

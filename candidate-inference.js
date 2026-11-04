@@ -95,8 +95,12 @@
             gateInputs.push(gate);inputs.push(native.runtimeTensor);
             inputEvidence.push({photo:i,route:frame.route,nativeROI:native.nativeROI,gateCropPercent:photo.gateCropPercent,gateProfileId:C.GATE_PROFILE,researchProfileId:C.PROFILE.profileId});
           }
-          const result=await workerRun(record,inputs,gateInputs,host.blocked,j,report);j.check();
-          return {...C.diagnostics(result,record.manifest),inputEvidence};
+          C.validateInputs(inputs,gateInputs);
+          if(!Array.isArray(host.blocked)||host.blocked.length!==1000||host.blocked.some(x=>typeof x!=='boolean'))throw new Error('候选诊断输入筛查清单不完整');
+          const native=typeof host.nativeRun==='function';
+          const result=await (native?host.nativeRun(record,inputs,gateInputs,host.blocked,j,report):workerRun(record,inputs,gateInputs,host.blocked,j,report));j.check();
+          C.validateResult(result,record.manifest,record.manifestHash,inputs.length);
+          return {...C.diagnostics(result,record.manifest),inputEvidence,engine:native?'onnx-candidate-native-android':'onnx-candidate-worker-wasm'};
         });
       }
     });
