@@ -1,0 +1,15 @@
+/* Synthetic runtime fixtures, never trained artifacts or measured quality. */
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const C=require('../../candidate-model.js'),Core=require('../../core.js');
+const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+const clone=value=>JSON.parse(JSON.stringify(value));
+function fixture(){
+  const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../../model-manifest.json'),'utf8'));
+  const gate=old.models.find(m=>m.role==='input-gate'),gateBytes=Buffer.from([1]),classifierBytes=Buffer.from([2]);gate.bytes=gateBytes.length;gate.sha256=sha(gateBytes);
+  const legacyRaw=Buffer.from(JSON.stringify(old)),legacy=Core.validateManifest(old),legacyHash=sha(legacyRaw),modelHash=sha(classifierBytes);
+  const manifest={schemaVersion:2,version:'synthetic-candidate-fold0',purpose:C.PURPOSE,productionRegistered:false,independentAcceptance:false,inputProfile:clone(C.PROFILE),labelOrderSha256:C.LABEL_ORDER_SHA256,labels:[...C.LABELS],catalogMap:clone(C.CATALOG_MAP),classifier:{id:'dinov2-s14-capture24-fold0',role:'mineral-classifier',path:'models/candidates/'+modelHash+'.onnx',bytes:classifierBytes.length,sha256:modelHash,classes:87,inputName:'input',outputName:'logits',output:'logits',backbone:'dinov2_vits14',descriptor:'CLS384',fold:0,selectedEpoch:9,provenance:{trainingPlanSha256:'a'.repeat(64),trainingCompletionSha256:'b'.repeat(64),selectedLockSha256:'c'.repeat(64),selectedDeltaSha256:'d'.repeat(64),officialBaseSha256:'b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9',captureKernelSha256:'e'.repeat(64),exporterSha256:'f'.repeat(64),exportCompletionSha256:'1'.repeat(64),condition:'capture24',trainingPhotos:2272,selectionRule:'min_full87_group_mean_CE_tie_earliest_at_declared_condition_horizon',independentKappa:null}},gate:{legacyManifestSha256:legacyHash,inputProfile:C.GATE_PROFILE,model:C.identity(gate)},policy:{modelSelection:'explicit-single-fold',output:'raw87-per-photo-diagnostic',calibrated:false,unknownRejectionValidated:false,independentKappa:null}};
+  const manifestRaw=Buffer.from(JSON.stringify(manifest)),manifestHash=sha(manifestRaw),manifestURL='https://app.test/app/research/candidates/synthetic-fold0.json';
+  return {manifest,manifestRaw,manifestHash,manifestURL,legacy,legacyRaw,legacyHash,gateBytes,classifierBytes,files:{[gate.path]:gateBytes,[manifest.classifier.path]:classifierBytes}};
+}
+function result(f,photoCount=1){return {type:'result',purpose:C.PURPOSE,productionRegistered:false,independentAcceptance:false,manifestSha256:f.manifestHash,modelVersion:f.manifest.version,classifierId:f.manifest.classifier.id,profileId:C.PROFILE.profileId,labels:[...C.LABELS],runs:Array.from({length:photoCount},(_,photo)=>({photo,model:f.manifest.classifier.id,values:Array.from({length:87},(_,i)=>i)})),screening:Array.from({length:photoCount},(_,photo)=>({photo,values:Array.from({length:1000},(_,i)=>i===500?20:0)}))};}
+module.exports={fixture,result,sha,clone};

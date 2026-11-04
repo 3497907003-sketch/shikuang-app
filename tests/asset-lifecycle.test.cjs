@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const WEB=fs.existsSync(require('node:path').join(__dirname,'../web/core.js'))?'../web/':'../';
-const Core=require(WEB+'core.js'),{fixture,hash}=require('./helpers/model-contract.cjs');
+const Candidate=require(WEB+'candidate-model.js'),Core=require(WEB+'core.js'),{fixture,hash}=require('./helpers/model-contract.cjs');
 const swSource=fs.readFileSync(require.resolve(WEB+'sw.js'),'utf8');
 function cacheStorage() {
   const stores=new Map(),storage={stores,keys:async()=>[...stores.keys()],delete:async key=>stores.delete(key),open:async key=>{
@@ -12,7 +12,7 @@ function cacheStorage() {
   }};return storage;
 }
 function serviceWorker(scope='https://localhost/app/',caches=cacheStorage(),core=Core,runtime=wasm('new')) {
-  const listeners={},state={skipWaiting:0},network={fetch:async()=>{throw Error('offline');}},context={MineralCore:core,URL,Request,Response,Headers,TextDecoder,AbortController,DOMException,setTimeout,clearTimeout,crypto:require('node:crypto').webcrypto,caches,importScripts(){},fetch:(...args)=>network.fetch(...args),self:{registration:{scope},addEventListener:(name,callback)=>listeners[name]=callback,skipWaiting:async()=>{state.skipWaiting++;},clients:{claim:async()=>{}}}};
+  const listeners={},state={skipWaiting:0},network={fetch:async()=>{throw Error('offline');}},context={MineralCore:core,ShikuangCandidateModel:Candidate,URL,Request,Response,Headers,TextDecoder,AbortController,DOMException,setTimeout,clearTimeout,crypto:require('node:crypto').webcrypto,caches,importScripts(){},fetch:(...args)=>network.fetch(...args),self:{registration:{scope},addEventListener:(name,callback)=>listeners[name]=callback,skipWaiting:async()=>{state.skipWaiting++;},clients:{claim:async()=>{}}}};
   caches.fetch=(...args)=>network.fetch(...args);
   // Unit releases explicitly pin a real compilable fixture module. The source
   // pin itself is separately checked against the actual bundled vendor file.
@@ -231,4 +231,22 @@ test('trusted ES5 boot gate exposes unsupported components and has a finite star
   const blocked=h.root.MineralNativeAssets.boot(true);assert.equal(blocked.supported,false);assert.match(h.root.__shikuangBootRecovery.message,/AbortController/);
   h.root.AbortController=AbortController;assert.equal(h.root.MineralNativeAssets.boot(true).supported,true);h.timers[0]();assert.match(h.root.__shikuangBootRecovery.message,/15 秒/);
   const ready=nativeMigration({controller:false});assert.equal(ready.root.MineralNativeAssets.boot(true).supported,true);assert.equal(ready.root.__shikuangBootRecovery,undefined);assert.equal(ready.timers.length,0);
+});
+
+
+test('candidate diagnostic models bind both manifests and stay out of production caches',async()=>{
+  const candidate=require('./helpers/candidate.cjs').fixture(),sw=serviceWorker('https://app.test/app/');
+  let corrupt=false;sw.network.fetch=async request=>{
+    const url=new URL(typeof request==='string'?request:request.url);
+    if(url.pathname.endsWith('/model-manifest.json'))return new Response(candidate.legacyRaw);
+    if(url.pathname.endsWith('/research/candidates/synthetic-fold0.json'))return new Response(candidate.manifestRaw);
+    if(url.pathname.includes('/models/candidates/'))return new Response(corrupt?Buffer.from([9]):candidate.classifierBytes);
+    throw Error('unlisted synthetic resource');
+  };
+  const key=Candidate.modelURL(candidate.manifest.classifier,candidate.manifestHash,'https://app.test/app/',candidate.manifestURL,candidate.legacyHash);
+  assert.equal((await sw.request(key)).type,'error','normal model requests cannot adopt a candidate');
+  const good=await sw.request(key,'no-store');assert.equal(good.status,200);assert.equal(good.headers.get('cache-control'),'no-store');assert.deepEqual(Buffer.from(await good.arrayBuffer()),candidate.classifierBytes);
+  const models=await sw.caches.open(Core.offlineCaches('https://app.test/app/').models);assert.equal(await models.match(key.href),undefined);
+  for(const param of ['manifest','legacy','model']){const bad=new URL(key);bad.searchParams.set(param,'0'.repeat(64));assert.equal((await sw.request(bad,'no-store')).type,'error');}
+  corrupt=true;assert.equal((await sw.request(key,'no-store')).type,'error');assert.equal(await models.match(key.href),undefined);
 });

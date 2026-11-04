@@ -1,4 +1,5 @@
 importScripts('./compat.js');
+importScripts('./candidate-model.js');
 importScripts('./core.js?v=20261011-2.5.0-preview.1-r9');
 const CACHE_NAMES = MineralCore.offlineCaches(self.registration.scope);
 const STATIC = CACHE_NAMES.shell;
@@ -6,7 +7,7 @@ const MODELS = CACHE_NAMES.models;
 // Source-development pin. Build replaces it from the actual vendor bytes after
 // deriving the release identity, so future ORT updates cannot retain this hash.
 const RUNTIME_WASM = Object.freeze({"path":"vendor/ort-wasm-simd-threaded.wasm","bytes":11241642,"sha256":"704f51767fe3e11443aac6b5509c8654688e4cea3d988f96a069390b6eccbabc"});
-const ASSETS = ['./', './index.html', './styles.css', './app.js', './compat.js', './native-assets.js', './core.js', './inference.js', './storage.js', './engine-worker.js', './media.js', './history.js', './icon-192.png', './icon-512.png', './icon-maskable.png', './version.json', './data/sources.js', './config.js', './icon.svg', './manifest.webmanifest', './data/classes.js', './data/minerals.js', './data/imagenet.js', './vendor/lucide.min.js', './vendor/ort.min.js', './reference-loader.js', './gallery.js', './viewport.js', './data/reviewed-photo-assets.json', './data/licenses/reviewed-photos-v25.txt', './data/reference-manifest.json', './data/licenses/ima-cnmnc-2026-09.txt'];
+const ASSETS = ['./', './index.html', './styles.css', './app.js', './compat.js', './native-assets.js', './core.js', './inference.js', './storage.js', './engine-worker.js', './candidate-model.js', './candidate-inference.js', './candidate-worker.js', './media.js', './history.js', './icon-192.png', './icon-512.png', './icon-maskable.png', './version.json', './data/sources.js', './config.js', './icon.svg', './manifest.webmanifest', './data/classes.js', './data/minerals.js', './data/imagenet.js', './vendor/lucide.min.js', './vendor/ort.min.js', './reference-loader.js', './gallery.js', './viewport.js', './data/reviewed-photo-assets.json', './data/licenses/reviewed-photos-v25.txt', './data/reference-manifest.json', './data/licenses/ima-cnmnc-2026-09.txt'];
 const scope = new URL(self.registration.scope);
 const manifestURL = new URL('model-manifest.json',scope);
 const hex = bytes => Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
@@ -66,6 +67,28 @@ async function checkedModel(response,model) {
   if(await digest(bytes)!==model.sha256)throw new Error('Model checksum mismatch');
   const headers=new Headers(response.headers);headers.set('Content-Type','application/octet-stream');
   return new Response(bytes,{status:200,headers});
+}
+async function loadCandidateDiagnostic(request,url) {
+  // Candidate artifacts never enter the production model cache or legacy80MB
+  // path. Every no-store diagnostic remains bound to two manifests and hashes.
+  const C=ShikuangCandidateModel;
+  if(request.cache!=='no-store')throw new Error('Candidate model requires explicit no-store diagnostic');
+  const expected=url.searchParams.get('manifest'),legacyHash=url.searchParams.get('legacy');
+  if(!/^[a-f0-9]{64}$/.test(expected||'')||!/^[a-f0-9]{64}$/.test(legacyHash||''))throw new Error('Candidate diagnostic identity missing');
+  const selected=C.manifestURL(url.searchParams.get('candidate'),scope);
+  const legacy=await checkedManifest(await loadManifest(new Request(manifestURL,{cache:'no-cache'})),'candidate-gate');
+  if(legacy.hash!==legacyHash)throw new Error('Candidate legacy gate changed');
+  const response=await fetchBounded(new Request(selected,{cache:'no-store'}));
+  const bytes=await MineralCore.readResource(response,100000,undefined,undefined,{timeout:15000});
+  if(await digest(bytes)!==expected)throw new Error('Candidate manifest checksum mismatch');
+  const manifest=C.validateManifest(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)),legacy.manifest,legacyHash),model=manifest.classifier;
+  if(C.modelURL(model,expected,scope,selected.href,legacyHash).href!==url.href)throw new Error('Candidate artifact identity mismatch');
+  return await fetchBounded(request,async body=>{
+    const data=await MineralCore.readResource(body,C.MODEL_MAX_BYTES,model.bytes);
+    if(await digest(data)!==model.sha256)throw new Error('Candidate artifact checksum mismatch');
+    const headers=new Headers(body.headers);headers.set('Content-Type','application/octet-stream');headers.set('Cache-Control','no-store');
+    return new Response(data,{status:200,headers});
+  },90000);
 }
 async function checkedWasm(response,timeout=90000) {
   const bytes=await MineralCore.readResource(response,32*1024*1024,RUNTIME_WASM.bytes,undefined,{timeout});
@@ -162,6 +185,7 @@ self.addEventListener('fetch',event=>{
   event.respondWith((async()=>{
     try {
       if(url.pathname===manifestURL.pathname)return await loadManifest(request);
+      if(url.pathname.startsWith(scope.pathname+'models/candidates/'))return await loadCandidateDiagnostic(request,url);
       if(url.pathname.startsWith(scope.pathname+'models/') && url.pathname.endsWith('.onnx'))return await loadModel(request,url);
       if(url.pathname.endsWith('.wasm')){
         if(url.pathname!==new URL(RUNTIME_WASM.path,scope).pathname)throw new Error('Runtime is outside this release');

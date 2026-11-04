@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  let worker, workerReady=false, nativeEngine, researchClient, researchPhotoClient, configuration=null, active=false, manifestCacheState='unprepared', preparationVersion=0;
+  let worker, workerReady=false, nativeEngine, researchClient, researchPhotoClient, candidateClient, configuration=null, active=false, manifestCacheState='unprepared', preparationVersion=0;
   const configurationHashes=new WeakMap();
   const hex = bytes => Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
   function cancellable(promise,signal) {
@@ -11,7 +11,7 @@
   // Older bridge cleanup may return void or throw. Always settle the analysis.
   function cleanup(action) { try { void Promise.resolve(action()).catch(()=>{}); } catch (_) {} }
   function productionOnly(options) {
-    if(['profileId','profileVersion','inputProfile','researchProfile','researchManifest'].some(key=>Object.prototype.hasOwnProperty.call(options,key)))throw new Error('生产模型只接受原schema1输入；研究profile请显式使用prepareResearchInput，尚未注册研究模型');
+    if(['profileId','profileVersion','inputProfile','researchProfile','researchManifest','candidateManifest','candidateProfile','diagnostic'].some(key=>Object.prototype.hasOwnProperty.call(options,key)))throw new Error('生产模型只接受原schema1输入；研究profile请显式使用prepareResearchInput，尚未注册研究模型');
   }
   async function prepare(options={}) {
     productionOnly(options);
@@ -160,6 +160,39 @@
       return await researchPhotoClient.prepare(options);
     }finally{active=false;}
   }
+  function candidateProvider() {
+    if(!window.ShikuangCandidateInference||!window.ShikuangResearchInput||!window.ShikuangResearchPhoto)throw new Error('开发候选诊断组件缺失，请更新诊断资源');
+    if(candidateClient)return candidateClient;
+    researchClient=researchClient||window.ShikuangResearchInput.createClient({Worker:window.Worker,resourceURL:name=>MineralCore.shellResourceURL(name,location.href),setTimeout:(fn,ms)=>window.setTimeout(fn,ms),clearTimeout:id=>window.clearTimeout(id)});
+    researchPhotoClient=researchPhotoClient||window.ShikuangResearchPhoto.createClient({Blob:window.Blob,Image:window.Image,URL:window.URL,document:window.document,setTimeout:(fn,ms)=>window.setTimeout(fn,ms),clearTimeout:id=>window.clearTimeout(id),inputClient:researchClient});
+    candidateClient=window.ShikuangCandidateInference.createClient({base:location.href,Worker:window.Worker,crypto:window.crypto||crypto,
+      prepareLegacy:prepare,legacyHash:value=>configurationHashes.get(value),
+      fetch:(...args)=>fetch(...args),readResource:MineralCore.readResource,
+      resourceURL:name=>MineralCore.shellResourceURL(name,location.href),blocked:window.IMAGENET_BLOCKED||[],
+      setTimeout:(fn,ms)=>window.setTimeout(fn,ms),clearTimeout:id=>window.clearTimeout(id),
+      validateFrame:options=>window.ShikuangResearchInput.validateRequest(options),
+      decodePhoto:options=>researchPhotoClient.decodePhoto(options),prepareInput:options=>researchClient.prepare(options),prepareLegacyGate:legacyGateFromNative});
+    return candidateClient;
+  }
+  function legacyGateFromNative(frame,crop,input) {
+    let source,canvas;
+    try {
+      source=document.createElement('canvas');source.width=frame.width;source.height=frame.height;
+      const ctx=source.getContext('2d',{willReadFrequently:true,colorSpace:'srgb'});if(!ctx)throw new Error('无法创建独立gate画布');
+      const pixels=ctx.createImageData(frame.width,frame.height);pixels.data.set(frame.rgba);ctx.putImageData(pixels,0,0);
+      // cropCanvas is the unchanged schema1 center-square/bilinear geometry.
+      source.naturalWidth=frame.width;source.naturalHeight=frame.height;canvas=cropCanvas(source,224,crop);
+      return MineralCore.pixelsToInput(canvas.getContext('2d').getImageData(0,0,224,224).data,input);
+    }finally{releaseCanvas(canvas);releaseCanvas(source);}
+  }
+  async function prepareCandidate(options) {
+    if(active)throw new Error('已有分析正在进行，请先停止当前分析');active=true;
+    try{return await candidateProvider().prepare(options);}finally{active=false;}
+  }
+  async function analyzeCandidate(photos,options) {
+    if(active)throw new Error('已有分析正在进行，请先停止当前分析');active=true;
+    try{return await candidateProvider().analyze(photos,options);}finally{active=false;}
+  }
   async function analyzePrepared(photos,options={}) {
     const {signal,report=()=>{},observation={},precision=true}=options;
     if(!photos.length||photos.length>3)throw new Error('请添加 1–3 张同一标本的照片或视频帧');
@@ -191,5 +224,5 @@
     if(warnings.length){result.status='uncertain';result.reasons.push(...warnings);}
     return {...result,quality:qualityReports,observations:observation,warnings,engine:native?'onnx-native-android':'onnx-worker-wasm',modelVersion:manifest.version,manifestSha256:manifestHash,diagnostics:raw.diagnostics};
   }
-  window.MineralEngine={analyze,image,cropCanvas,prepare,prepareResearchInput,prepareResearchPhoto,modelResources:(config=configuration)=>{const digest=configurationHashes.get(config);if(!digest)throw new Error('模型清单尚未就绪');return config.models.map(model=>({...model,url:MineralCore.modelResourceURL(model,digest,location.href).href}));},getModels:(precision=true)=>configuration?MineralCore.selectedModels(configuration,precision):[],get models(){return configuration?MineralCore.selectedModels(configuration,true):[];},get configuration(){return configuration;},get manifestCacheState(){return manifestCacheState;}};
+  window.MineralEngine={analyze,image,cropCanvas,prepare,prepareResearchInput,prepareResearchPhoto,prepareCandidate,analyzeCandidate,modelResources:(config=configuration)=>{const digest=configurationHashes.get(config);if(!digest)throw new Error('模型清单尚未就绪');return config.models.map(model=>({...model,url:MineralCore.modelResourceURL(model,digest,location.href).href}));},getModels:(precision=true)=>configuration?MineralCore.selectedModels(configuration,precision):[],get models(){return configuration?MineralCore.selectedModels(configuration,true):[];},get configuration(){return configuration;},get manifestCacheState(){return manifestCacheState;}};
 })();

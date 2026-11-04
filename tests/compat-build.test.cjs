@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,WEB),compile=compat.transformer();
 test('one pinned offline compiler lowers real worker/vendor/MJS syntax and keeps native modules',()=>{
   assert.equal(compat.toolchain().Babel.version,'8.0.7');
   assert.throws(()=>compat.assertSyntax('bad.js','x.a ||= x?.b ?? 1;'),/exceeds/);
-  for(const name of ['app.js','core.js','engine-worker.js','sw.js','compat.js','native-assets.js','vendor/lucide.min.js','vendor/ort.min.js','vendor/ort-wasm-simd-threaded.mjs']){
+  for(const name of ['app.js','core.js','engine-worker.js','candidate-model.js','candidate-inference.js','candidate-worker.js','sw.js','compat.js','native-assets.js','vendor/lucide.min.js','vendor/ort.min.js','vendor/ort-wasm-simd-threaded.mjs']){
     const output=compile(name,fs.readFileSync(path.join(root,name))).toString();assert.equal(compat.assertSyntax(name,output),true,name);
     if(name.endsWith('.mjs')){assert.match(output,/import\.meta/);assert.match(output,/export/);}
   }
@@ -14,12 +14,12 @@ test('one pinned offline compiler lowers real worker/vendor/MJS syntax and keeps
 });
 test('stamp precedes compilation, dependency queries match shell and model cache identity is unchanged',()=>{
   const id='b'.repeat(64),contexts={};
-  for(const name of ['core.js','engine-worker.js','sw.js']){
+  for(const name of ['core.js','engine-worker.js','candidate-worker.js','sw.js']){
     const stamped=shell.render(name,fs.readFileSync(path.join(root,name)),id);
     const output=compile(name,stamped).toString();assert.match(output,new RegExp(id));
     const imports=[],messages=[],context={URL,Map,Set,onmessage:null,postMessage:m=>messages.push(m),importScripts:(...urls)=>imports.push(...urls),self:{registration:{scope:'https://local.test/app/'},addEventListener(){}},MineralCore:require(WEB+'core.js')};
     vm.runInNewContext(output,context);contexts[name]=context;
-    if(name==='engine-worker.js'){assert.equal(messages[0].type,'ready');assert.equal(imports.length,3);assert.equal(new URL(imports[0],'https://local.test/app/').pathname,'/app/compat.js');}
+    if(name==='engine-worker.js'||name==='candidate-worker.js'){assert.equal(messages[0].type,'ready');assert.equal(imports.length,name==='candidate-worker.js'?4:3);assert.equal(new URL(imports[0],'https://local.test/app/').pathname,'/app/compat.js');}
     if(name!=='core.js')for(const url of imports)assert.equal(new URL(url,'https://local.test/app/').searchParams.get('v'),'shell-'+id);
   }
   const core=contexts['core.js'].MineralCore;

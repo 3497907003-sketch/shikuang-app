@@ -29,6 +29,7 @@ test('build follows the active two-classifier manifest, excludes unused legacy f
     // build must leave the previous root dist intact.
     if(sourcePrefix)write('tools/build.cjs',fs.readFileSync(require.resolve('../tools/build.cjs')));
     writeSource('engine-worker.js',fs.readFileSync(require.resolve(WEB+'engine-worker.js')));
+    writeSource('candidate-worker.js',fs.readFileSync(require.resolve(WEB+'candidate-worker.js')));
     const data=fixture();data.manifest.models[0].path='models/mobilenet.onnx';
     for(const model of data.manifest.models){const bytes=graph(model.classes);model.bytes=bytes.length;model.sha256=hash(bytes);writeSource(model.path,bytes);}
     writeSource('models/mobilenet_int8.onnx','unused old weight');writeSource('models/efficientnet_legacy.onnx','unused old weight');write('dist/models/orphan.onnx','stale package');

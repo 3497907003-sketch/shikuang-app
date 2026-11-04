@@ -187,6 +187,7 @@ test('workerAssets and shellResourceURL bind every dependency to the same shell 
   const assets = Array.from(core.workerAssets(base));
   assert.deepEqual(assets.map(value => new URL(value).pathname), [
     '/shikuang/compat.js', '/shikuang/engine-worker.js', '/shikuang/core.js',
+    '/shikuang/candidate-model.js', '/shikuang/candidate-inference.js', '/shikuang/candidate-worker.js',
     '/shikuang/vendor/ort.min.js', '/shikuang/vendor/ort-wasm-simd-threaded.mjs',
     '/shikuang/vendor/ort-wasm-simd-threaded.wasm',
     '/shikuang/research-input.js', '/shikuang/research-photo.js',

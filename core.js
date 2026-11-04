@@ -22,7 +22,7 @@
   }
   function workerAssets(base) {
     const research='research/shikuang-research-native-roi-q16-torchf32-v1/';
-    return ['compat.js','engine-worker.js','core.js','vendor/ort.min.js','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','research-input.js','research-photo.js',...['encoded-header.js','worker.js','profile.js','frozen/native-roi-entry.js','frozen/vendor/native-roi-q16.js','frozen/vendor/normalization.js','frozen/vendor/normalization-lut.f32le.bin'].map(name=>research+name)].map(name=>shellResourceURL(name,base));
+    return ['compat.js','engine-worker.js','core.js','candidate-model.js','candidate-inference.js','candidate-worker.js','vendor/ort.min.js','vendor/ort-wasm-simd-threaded.mjs','vendor/ort-wasm-simd-threaded.wasm','research-input.js','research-photo.js',...['encoded-header.js','worker.js','profile.js','frozen/native-roi-entry.js','frozen/vendor/native-roi-q16.js','frozen/vendor/normalization.js','frozen/vendor/normalization-lut.f32le.bin'].map(name=>research+name)].map(name=>shellResourceURL(name,base));
   }
   async function offlineWorkerIdentity(serviceWorker, base, signal, Channel) {
     const expected = offlineCaches(base), scriptURL = new URL('sw.js', expected.scope).href;
